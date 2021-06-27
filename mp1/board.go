@@ -18,8 +18,9 @@ const (
 )
 
 type Space struct {
-	Type  SpaceType
-	Event func(*Game)
+	Type         SpaceType
+	Event        func(game *Game)
+	PassingEvent func(game *Game, player, moves int) Event
 }
 
 type Chain []Space
@@ -36,17 +37,14 @@ type Board struct {
 
 func (b Board) Copy() Board {
 	chains := make([]Chain, 0)
-
 	for _, c := range b.Chains {
 		chain := make([]Space, 0)
 		for _, s := range c {
-			chain = append(chain, Space{s.Type, s.Event})
+			chain = append(chain, s)
 		}
 		chains = append(chains, chain)
 	}
-
 	links := make(map[int][]ChainSpace)
-
 	for i, s := range b.Links {
 		slice := make([]ChainSpace, 0)
 		for _, j := range s {
@@ -55,9 +53,4 @@ func (b Board) Copy() Board {
 		links[i] = s
 	}
 	return Board{Chains: chains, Links: links}
-}
-
-type Game struct {
-	Board
-	Players []Player
 }
