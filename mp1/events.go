@@ -8,3 +8,7 @@ type BranchEvent struct {
 	Chain  int
 	Moves  int
 }
+
+type MushroomEvent struct {
+	Player int
+}

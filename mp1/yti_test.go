@@ -8,10 +8,10 @@ func TestMove(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}},
-			{"Luigi", 0, 10, ChainSpace{0, 0}},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}},
-			{"Mario", 0, 10, ChainSpace{0, 0}},
+			{"Daisy", 0, 10, ChainSpace{1, 23}, false},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false},
 		},
 	}
 	g.MovePlayer(0, 4)
@@ -27,10 +27,10 @@ func TestBranchingResponse(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}},
-			{"Luigi", 0, 10, ChainSpace{0, 0}},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}},
-			{"Mario", 0, 10, ChainSpace{0, 0}},
+			{"Daisy", 0, 10, ChainSpace{1, 23}, false},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false},
 		},
 	}
 	expected := BranchEvent{0, 1, 6}
@@ -44,10 +44,10 @@ func TestGainCoins(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}},
-			{"Luigi", 0, 10, ChainSpace{0, 0}},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}},
-			{"Mario", 0, 10, ChainSpace{0, 0}},
+			{"Daisy", 0, 10, ChainSpace{1, 23}, false},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false},
 		},
 	}
 

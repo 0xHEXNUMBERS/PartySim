@@ -5,4 +5,5 @@ type Player struct {
 	Stars        int
 	Coins        int
 	CurrentSpace ChainSpace
+	SkipTurn     bool
 }
