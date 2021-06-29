@@ -18,9 +18,9 @@ const (
 )
 
 type Space struct {
-	Type         SpaceType
-	Event        func(game *Game)
-	PassingEvent func(game *Game, player, moves int) Event
+	Type          SpaceType
+	StoppingEvent func(game *Game) Event
+	PassingEvent  func(game *Game, player, moves int) Event
 }
 
 type Chain []Space
@@ -30,9 +30,15 @@ type ChainSpace struct {
 	Space int
 }
 
+type ExtraBoardData interface {
+	Copy() ExtraBoardData
+}
+
 type Board struct {
-	Chains []Chain
-	Links  map[int][]ChainSpace
+	Chains       []Chain
+	Links        map[int][]ChainSpace
+	Data         ExtraBoardData
+	EventHandler func(e Event, g *Game)
 }
 
 func (b Board) Copy() Board {
@@ -52,5 +58,10 @@ func (b Board) Copy() Board {
 		}
 		links[i] = s
 	}
-	return Board{Chains: chains, Links: links}
+	return Board{
+		Chains:       chains,
+		Links:        links,
+		Data:         b.Data.Copy(),
+		EventHandler: b.EventHandler,
+	}
 }
