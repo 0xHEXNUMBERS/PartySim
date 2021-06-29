@@ -23,7 +23,7 @@ func TestMove(t *testing.T) {
 
 }
 
-func TestBranchingResponse(t *testing.T) {
+func TestCanPayThwomp(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
@@ -37,6 +37,23 @@ func TestBranchingResponse(t *testing.T) {
 	got := g.MovePlayer(0, 10)
 	if expected != got {
 		t.Errorf("Event type expected: %#v, got: %#v", expected, got)
+	}
+}
+
+func TestCanNotPayThwomp(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			{"Daisy", 0, 0, ChainSpace{1, 23}, false},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false},
+		},
+	}
+
+	evt := g.MovePlayer(0, 10)
+	if evt != nil {
+		t.Error("Could not pay thwomp, yet recieved a branch event")
 	}
 }
 
