@@ -29,6 +29,7 @@ func (y ytiBoardData) CanPassThwomp(game *Game,
 			player,
 			playerPos.Chain,
 			moves,
+			game.Board.Links[playerPos.Chain],
 		}
 	}
 	return nil
@@ -41,10 +42,48 @@ func ytiCheckThwomp(thwomp int) func(*Game, int, int) Event {
 	}
 }
 
+func ytiPayThwomp(thwomp int) func(*Game, int, int) Event {
+	return func(g *Game, player, moves int) Event {
+		bd := g.Board.Data.(ytiBoardData)
+		return PayThwompEvent{
+			PayRangeEvent{
+				player,
+				bd.Thwomps[thwomp],
+				g.Players[player].Coins,
+				moves,
+			},
+			thwomp,
+			g.Board.Links[thwomp+2][0],
+		}
+	}
+}
+
 func ytiSwapStarPosition(g *Game) Event {
 	bd := g.Board.Data.(ytiBoardData)
 	bd.SwapStarPosition(g)
 	return nil
+}
+
+func ytiEventHandler(e Event, r Response, g *Game) Movement {
+	bd := g.Board.Data.(ytiBoardData)
+	switch v := e.(type) {
+	case BranchEvent:
+		if r == nil {
+			return Movement{v.Player, v.Moves}
+		}
+		newPlayerPos := r.(ChainSpace)
+		g.Players[v.Player].CurrentSpace = newPlayerPos
+		return Movement{v.Player, v.Moves}
+	case PayThwompEvent:
+		cost := r.(int)
+		g.AwardCoins(v.Player, -cost, false)
+		bd.Thwomps[v.Thwomp] = cost + 1
+		g.Board.Data = bd
+		g.Players[v.Player].CurrentSpace = v.Link
+		return Movement{v.Player, v.Moves - 1}
+	}
+	//UNREACHABLE
+	return Movement{}
 }
 
 var YTI = Board{
@@ -114,10 +153,19 @@ var YTI = Board{
 			{Type: Blue},
 			{Type: Invisible, PassingEvent: ytiCheckThwomp(1)},
 		},
+		{ //Temporary place for thwomp payment
+			{Type: Invisible, PassingEvent: ytiPayThwomp(0)},
+		},
+		{ //Temporary place for thwomp payment
+			{Type: Invisible, PassingEvent: ytiPayThwomp(1)},
+		},
 	},
 	Links: map[int][]ChainSpace{
-		0: {{1, 6}},
-		1: {{0, 7}},
+		0: {{2, 0}},
+		1: {{3, 0}},
+		2: {{1, 6}}, //Thwomp payments only have 1 link
+		3: {{0, 7}}, //Thwomp payments only have 1 link
 	},
-	Data: ytiBoardData{[2]int{1, 1}, true},
+	Data:         ytiBoardData{[2]int{1, 1}, true},
+	EventHandler: ytiEventHandler,
 }

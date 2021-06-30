@@ -34,11 +34,16 @@ type ExtraBoardData interface {
 	Copy() ExtraBoardData
 }
 
+type Movement struct {
+	Player int
+	Moves  int
+}
+
 type Board struct {
 	Chains       []Chain
 	Links        map[int][]ChainSpace
 	Data         ExtraBoardData
-	EventHandler func(e Event, g *Game)
+	EventHandler func(e Event, r Response, g *Game) Movement
 }
 
 func (b Board) Copy() Board {

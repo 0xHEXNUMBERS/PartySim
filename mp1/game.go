@@ -4,7 +4,24 @@ import "math/rand"
 
 type Game struct {
 	Board
-	Players [4]Player
+	Players       [4]Player
+	CurrentPlayer int
+}
+
+func (g *Game) AwardCoins(player, coins int, minigame bool) {
+	g.Players[player].Coins += coins
+	if g.Players[player].Coins < 0 {
+		g.Players[player].Coins = 0
+	}
+	if minigame {
+		g.Players[player].MinigameCoins += coins
+		if g.Players[player].MinigameCoins < 0 {
+			g.Players[player].MinigameCoins = 0
+		}
+	}
+	if g.Players[player].Coins > g.Players[player].MaxCoins {
+		g.Players[player].MaxCoins = g.Players[player].Coins
+	}
 }
 
 func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
@@ -38,26 +55,23 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 		g.Players[playerIdx].Coins -= 3
 	case Star:
 		if g.Players[playerIdx].Coins >= 20 {
-			g.Players[playerIdx].Coins -= 20
+			g.AwardCoins(playerIdx, -20, false)
 			g.Players[playerIdx].Stars++
 		}
 	case BlackStar:
 		if g.Players[playerIdx].Stars > 0 {
 			g.Players[playerIdx].Stars--
 		} else {
-			if g.Players[playerIdx].Coins >= 20 {
-				g.Players[playerIdx].Coins = 0
-			} else {
-				g.Players[playerIdx].Coins -= 20
-			}
+			g.AwardCoins(playerIdx, -20, false)
 		}
 	case Mushroom:
 		if rand.Intn(2) == 0 {
 			g.Players[playerIdx].SkipTurn = true
 		} else {
-			return MushroomEvent{playerIdx}
+			return nil
 		}
 	}
 	g.Players[playerIdx].CurrentSpace = playerPos
+	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4
 	return nil
 }
