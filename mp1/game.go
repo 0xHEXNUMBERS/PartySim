@@ -51,9 +51,9 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 	curSpace := g.Board.Chains[playerPos.Chain][playerPos.Space]
 	switch curSpace.Type {
 	case Blue:
-		g.Players[playerIdx].Coins += 3
+		g.AwardCoins(playerIdx, 3, false)
 	case Red:
-		g.Players[playerIdx].Coins -= 3
+		g.AwardCoins(playerIdx, -3, false)
 	case Star:
 		if g.Players[playerIdx].Coins >= 20 {
 			g.AwardCoins(playerIdx, -20, false)
