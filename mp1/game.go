@@ -73,6 +73,12 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 		} else {
 			return nil
 		}
+	case Happening:
+		g.Players[playerIdx].HappeningCount++
+		evt := curSpace.StoppingEvent(g)
+		if evt != nil {
+			return evt
+		}
 	}
 	//Switch Active Player
 	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4

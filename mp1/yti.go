@@ -13,10 +13,10 @@ func (y *ytiBoardData) SwapStarPosition(g *Game) {
 	y.StarPosition = !y.StarPosition
 
 	if y.StarPosition {
-		g.Board.Chains[0][23].Type = Star
+		g.Board.Chains[0][19].Type = Star
 		g.Board.Chains[1][18].Type = BlackStar
 	} else {
-		g.Board.Chains[0][23].Type = BlackStar
+		g.Board.Chains[0][19].Type = BlackStar
 		g.Board.Chains[1][18].Type = Star
 	}
 }

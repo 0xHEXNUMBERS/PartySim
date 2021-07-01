@@ -147,3 +147,28 @@ func TestPassThwomp(t *testing.T) {
 		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
 	}
 }
+
+func TestStarSwapViaHappening(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			{"Daisy", 0, 10, ChainSpace{1, 23}, false, 0, 0, 0},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+		},
+	}
+
+	evt := g.MovePlayer(0, 3)
+	if evt != nil {
+		t.Errorf("Unexpected event: %#v", evt)
+	}
+
+	//starSpace := ChainSpace{1, 18}
+	if g.Board.Chains[1][18].Type == BlackStar || g.Board.Chains[0][19].Type == Star {
+		t.Errorf("Star spot did not swap, 1-18: %#v, 0-19: %#v",
+			g.Board.Chains[1][18],
+			g.Board.Chains[0][19],
+		)
+	}
+}
