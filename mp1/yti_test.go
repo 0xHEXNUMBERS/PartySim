@@ -172,3 +172,23 @@ func TestStarSwapViaHappening(t *testing.T) {
 		)
 	}
 }
+
+func TestCoinsOnStart(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			{"Daisy", 0, 10, ChainSpace{0, 22}, false, 0, 0, 0},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+		},
+		CoinsOnStart: true,
+	}
+
+	g.MovePlayer(0, 1)
+	expectedCoins := 20
+	gotCoins := g.Players[0].Coins
+	if expectedCoins != gotCoins {
+		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
+	}
+}

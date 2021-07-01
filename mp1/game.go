@@ -6,6 +6,7 @@ type Game struct {
 	Board
 	Players       [4]Player
 	CurrentPlayer int
+	CoinsOnStart  bool
 }
 
 func (g *Game) AwardCoins(player, coins int, minigame bool) {
@@ -42,6 +43,10 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 			if evt != nil {
 				g.Players[playerIdx].CurrentSpace = playerPos
 				return evt
+			}
+		case Start:
+			if g.CoinsOnStart {
+				g.AwardCoins(playerIdx, 10, false)
 			}
 		default:
 			moves--
