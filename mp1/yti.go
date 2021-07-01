@@ -64,28 +64,6 @@ func ytiSwapStarPosition(g *Game) Event {
 	return nil
 }
 
-func ytiEventHandler(e Event, r Response, g *Game) Movement {
-	bd := g.Board.Data.(ytiBoardData)
-	switch v := e.(type) {
-	case BranchEvent:
-		if r == nil {
-			return Movement{v.Player, v.Moves}
-		}
-		newPlayerPos := r.(ChainSpace)
-		g.Players[v.Player].CurrentSpace = newPlayerPos
-		return Movement{v.Player, v.Moves}
-	case PayThwompEvent:
-		cost := r.(int)
-		g.AwardCoins(v.Player, -cost, false)
-		bd.Thwomps[v.Thwomp] = cost + 1
-		g.Board.Data = bd
-		g.Players[v.Player].CurrentSpace = v.Link
-		return Movement{v.Player, v.Moves - 1}
-	}
-	//UNREACHABLE
-	return Movement{}
-}
-
 var YTI = Board{
 	Chains: []Chain{
 		{ //Left island
@@ -166,6 +144,5 @@ var YTI = Board{
 		2: {{1, 6}}, //Thwomp payments only have 1 link
 		3: {{0, 7}}, //Thwomp payments only have 1 link
 	},
-	Data:         ytiBoardData{[2]int{1, 1}, true},
-	EventHandler: ytiEventHandler,
+	Data: ytiBoardData{[2]int{1, 1}, true},
 }

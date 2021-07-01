@@ -40,10 +40,9 @@ type Movement struct {
 }
 
 type Board struct {
-	Chains       []Chain
-	Links        map[int][]ChainSpace
-	Data         ExtraBoardData
-	EventHandler func(e Event, r Response, g *Game) Movement
+	Chains []Chain
+	Links  map[int][]ChainSpace
+	Data   ExtraBoardData
 }
 
 func (b Board) Copy() Board {
@@ -64,9 +63,8 @@ func (b Board) Copy() Board {
 		links[i] = s
 	}
 	return Board{
-		Chains:       chains,
-		Links:        links,
-		Data:         b.Data.Copy(),
-		EventHandler: b.EventHandler,
+		Chains: chains,
+		Links:  links,
+		Data:   b.Data.Copy(),
 	}
 }

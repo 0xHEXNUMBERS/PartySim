@@ -91,11 +91,11 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	//Move player to invisible space
 	evt := g.MovePlayer(0, 10)
 	//Move player to Chain 3 to pay thwomp 1
-	mvmnt := g.Board.EventHandler(evt, ChainSpace{3, 0}, &g)
+	mvmnt := evt.Handle(ChainSpace{3, 0}, &g)
 	//Instantiate thwomp pay
 	evt = g.MovePlayer(mvmnt.Player, mvmnt.Moves)
 	//Pay thwomp 3 coins
-	mvmnt = g.Board.EventHandler(evt, 3, &g)
+	mvmnt = evt.Handle(3, &g)
 	//Move remaining spaces and gain 3 coins
 	evt = g.MovePlayer(0, mvmnt.Moves)
 
@@ -128,7 +128,7 @@ func TestPassThwomp(t *testing.T) {
 	}
 
 	evt := g.MovePlayer(0, 10)
-	mvmnt := g.Board.EventHandler(evt, nil, &g)
+	mvmnt := evt.Handle(nil, &g)
 	evt = g.MovePlayer(mvmnt.Player, mvmnt.Moves)
 
 	if evt != nil {

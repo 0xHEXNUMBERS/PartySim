@@ -5,6 +5,7 @@ type Response interface{}
 type Event interface {
 	Responses() []Response
 	AffectedPlayer() int
+	Handle(Response, *Game) Movement
 }
 
 type BranchEvent struct {
@@ -26,6 +27,16 @@ func (b BranchEvent) AffectedPlayer() int {
 	return b.Player
 }
 
+func (b BranchEvent) Handle(r Response, g *Game) Movement {
+	if r == nil {
+		return Movement{b.Player, b.Moves}
+	}
+	newPlayerPos := r.(ChainSpace)
+	g.Players[b.Player].CurrentSpace = newPlayerPos
+	return Movement{b.Player, b.Moves}
+
+}
+
 type PayRangeEvent struct {
 	Player int
 	Min    int
@@ -43,4 +54,10 @@ func (p PayRangeEvent) Responses() []Response {
 
 func (p PayRangeEvent) AffectedPlayer() int {
 	return p.Player
+}
+
+func (p PayRangeEvent) Handle(r Response, g *Game) Movement {
+	cost := r.(int)
+	g.AwardCoins(p.Player, -cost, false)
+	return Movement{p.Player, p.Moves}
 }
