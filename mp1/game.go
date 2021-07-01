@@ -1,7 +1,5 @@
 package mp1
 
-import "math/rand"
-
 type Game struct {
 	Board
 	Players       [4]Player
@@ -73,11 +71,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 			g.AwardCoins(playerIdx, -20, false)
 		}
 	case Mushroom:
-		if rand.Intn(2) == 0 {
-			g.Players[playerIdx].SkipTurn = true
-		} else {
-			return nil
-		}
+		return MushroomEvent{playerIdx}
 	case Happening:
 		g.Players[playerIdx].HappeningCount++
 		evt := curSpace.StoppingEvent(g)

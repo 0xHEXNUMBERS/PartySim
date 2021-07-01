@@ -29,11 +29,11 @@ func (b BranchEvent) AffectedPlayer() int {
 
 func (b BranchEvent) Handle(r Response, g *Game) Movement {
 	if r == nil {
-		return Movement{b.Player, b.Moves}
+		return Movement{b.Player, b.Moves, false}
 	}
 	newPlayerPos := r.(ChainSpace)
 	g.Players[b.Player].CurrentSpace = newPlayerPos
-	return Movement{b.Player, b.Moves}
+	return Movement{b.Player, b.Moves, false}
 
 }
 
@@ -59,5 +59,26 @@ func (p PayRangeEvent) AffectedPlayer() int {
 func (p PayRangeEvent) Handle(r Response, g *Game) Movement {
 	cost := r.(int)
 	g.AwardCoins(p.Player, -cost, false)
-	return Movement{p.Player, p.Moves}
+	return Movement{p.Player, p.Moves, false}
+}
+
+type MushroomEvent struct {
+	Player int
+}
+
+func (m MushroomEvent) Responses() []Response {
+	return []Response{false, true}
+}
+
+func (m MushroomEvent) AffectedPlayer() int {
+	return m.Player
+}
+
+func (m MushroomEvent) Handle(r Response, g *Game) Movement {
+	red := r.(bool)
+	if red {
+		return Movement{Skip: true}
+	}
+	g.Players[m.Player].SkipTurn = true
+	return Movement{m.Player, 0, false}
 }

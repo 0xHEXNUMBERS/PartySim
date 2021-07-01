@@ -192,3 +192,45 @@ func TestCoinsOnStart(t *testing.T) {
 		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
 	}
 }
+
+func TestMushroomSpace(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			{"Daisy", 0, 10, ChainSpace{0, 7}, false, 0, 0, 0},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+		},
+	}
+
+	expected := MushroomEvent{0}
+	got := g.MovePlayer(0, 4)
+	if expected != got {
+		t.Errorf("Expected event: %#v, got: %#v", expected, got)
+	}
+
+	//Received red mushroom
+	expectedMvmnt := Movement{Skip: true}
+	gotMvmnt := got.Handle(true, &g)
+	if expectedMvmnt != gotMvmnt {
+		t.Errorf("Expected Red Movement: %#v, got: %#v",
+			expectedMvmnt,
+			gotMvmnt,
+		)
+	}
+
+	//Received poison mushroom
+	expectedMvmnt = Movement{0, 0, false}
+	gotMvmnt = got.Handle(false, &g)
+	if expectedMvmnt != gotMvmnt {
+		t.Errorf("Expected Poison Movement: %#v, got: %#v",
+			expectedMvmnt,
+			gotMvmnt,
+		)
+	}
+
+	if g.Players[0].SkipTurn != true {
+		t.Errorf("SkipTurn not set")
+	}
+}
