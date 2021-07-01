@@ -40,6 +40,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 		case Invisible:
 			evt := curSpace.PassingEvent(g, playerIdx, moves)
 			if evt != nil {
+				g.Players[playerIdx].CurrentSpace = playerPos
 				return evt
 			}
 		default:

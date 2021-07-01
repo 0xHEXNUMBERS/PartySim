@@ -115,3 +115,35 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
 	}
 }
+
+func TestPassThwomp(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			{"Daisy", 0, 10, ChainSpace{1, 23}, false, 0, 0, 0},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+		},
+	}
+
+	evt := g.MovePlayer(0, 10)
+	mvmnt := g.Board.EventHandler(evt, nil, &g)
+	evt = g.MovePlayer(mvmnt.Player, mvmnt.Moves)
+
+	if evt != nil {
+		t.Errorf("Recieved unexpected event: %#v", evt)
+	}
+
+	expectedSquare := ChainSpace{1, 5}
+	gotSquare := g.Players[0].CurrentSpace
+	if expectedSquare != gotSquare {
+		t.Errorf("Space expected: %#v, got: %#v", expectedSquare, gotSquare)
+	}
+
+	expectedCoins := 13
+	gotCoins := g.Players[0].Coins
+	if expectedCoins != gotCoins {
+		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
+	}
+}
