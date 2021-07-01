@@ -47,6 +47,8 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 			moves--
 		}
 	}
+	//Stop on Space
+	g.Players[playerIdx].CurrentSpace = playerPos
 	//Activate Space
 	curSpace := g.Board.Chains[playerPos.Chain][playerPos.Space]
 	switch curSpace.Type {
@@ -72,7 +74,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 			return nil
 		}
 	}
-	g.Players[playerIdx].CurrentSpace = playerPos
+	//Switch Active Player
 	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4
 	return nil
 }
