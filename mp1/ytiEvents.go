@@ -14,5 +14,5 @@ func (p PayThwompEvent) Handle(r Response, g *Game) Movement {
 	bd.Thwomps[p.Thwomp] = cost + 1
 	g.Board.Data = bd
 	g.Players[p.Player].CurrentSpace = p.Link
-	return Movement{p.Player, p.Moves - 1, false}
+	return Movement{p.Player, p.Moves - 1, false, nil}
 }

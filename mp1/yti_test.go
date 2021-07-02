@@ -221,7 +221,7 @@ func TestMushroomSpace(t *testing.T) {
 	}
 
 	//Received poison mushroom
-	expectedMvmnt = Movement{0, 0, false}
+	expectedMvmnt = Movement{0, 0, false, nil}
 	gotMvmnt = got.Handle(false, &g)
 	if expectedMvmnt != gotMvmnt {
 		t.Errorf("Expected Poison Movement: %#v, got: %#v",
@@ -232,5 +232,56 @@ func TestMushroomSpace(t *testing.T) {
 
 	if g.Players[0].SkipTurn != true {
 		t.Errorf("SkipTurn not set")
+	}
+}
+
+func TestStealCoinsViaBoo(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			{"Daisy", 0, 10, ChainSpace{1, 21}, false, 0, 0, 0},
+			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+		},
+	}
+	evt := g.MovePlayer(0, 1)
+	expectedMvmnt := Movement{
+		ExtraEvent: BooCoinsEvent{
+			PayRangeEvent: PayRangeEvent{
+				Player: 1,
+				Min:    1,
+				Max:    15,
+				Moves:  1,
+			},
+			RecvPlayer: 0,
+		},
+	}
+	gotMvmnt := evt.Handle(BooStealAction{0, 1, false}, &g)
+	if expectedMvmnt != gotMvmnt {
+		t.Errorf("Expected movement: %#v, got: %#v",
+			expectedMvmnt,
+			gotMvmnt,
+		)
+	}
+
+	expectedMvmnt.ExtraEvent.Handle(5, &g)
+	expectedDaisyCoins := 15
+	expectedLuigiCoins := 5
+	gotDaisyCoins := g.Players[0].Coins
+	gotLuigiCoins := g.Players[1].Coins
+
+	if expectedDaisyCoins != gotDaisyCoins {
+		t.Errorf("Daisy expected: %d coins, got: %d coins",
+			expectedDaisyCoins,
+			gotDaisyCoins,
+		)
+	}
+
+	if expectedLuigiCoins != gotLuigiCoins {
+		t.Errorf("Luigi expected: %d coins, got: %d coins",
+			expectedLuigiCoins,
+			gotLuigiCoins,
+		)
 	}
 }

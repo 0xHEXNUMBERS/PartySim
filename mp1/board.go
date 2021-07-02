@@ -35,9 +35,10 @@ type ExtraBoardData interface {
 }
 
 type Movement struct {
-	Player int
-	Moves  int
-	Skip   bool
+	Player     int
+	Moves      int
+	Skip       bool
+	ExtraEvent Event
 }
 
 type Board struct {

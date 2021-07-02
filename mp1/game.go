@@ -46,6 +46,8 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 			if g.CoinsOnStart {
 				g.AwardCoins(playerIdx, 10, false)
 			}
+		case Boo:
+			return BooEvent{playerIdx, g.Players, moves, g.Players[playerIdx].Coins}
 		default:
 			moves--
 		}

@@ -10,3 +10,7 @@ type Player struct {
 	HappeningCount int
 	MinigameCoins  int
 }
+
+//CPU_PLAYER acts as a separate player (player 5) to control
+//events that normal players have no control over
+const CPU_PLAYER int = 4
