@@ -4,7 +4,6 @@ type Response interface{}
 
 type Event interface {
 	Responses() []Response
-	AffectedPlayer() int
 	Handle(Response, *Game) Movement
 }
 
@@ -21,10 +20,6 @@ func (b BranchEvent) Responses() []Response {
 		ret = append(ret, l)
 	}
 	return ret
-}
-
-func (b BranchEvent) AffectedPlayer() int {
-	return b.Player
 }
 
 func (b BranchEvent) Handle(r Response, g *Game) Movement {
@@ -52,10 +47,6 @@ func (p PayRangeEvent) Responses() []Response {
 	return ret
 }
 
-func (p PayRangeEvent) AffectedPlayer() int {
-	return p.Player
-}
-
 func (p PayRangeEvent) Handle(r Response, g *Game) Movement {
 	cost := r.(int)
 	g.AwardCoins(p.Player, -cost, false)
@@ -68,10 +59,6 @@ type MushroomEvent struct {
 
 func (m MushroomEvent) Responses() []Response {
 	return []Response{false, true}
-}
-
-func (m MushroomEvent) AffectedPlayer() int {
-	return m.Player
 }
 
 func (m MushroomEvent) Handle(r Response, g *Game) Movement {
