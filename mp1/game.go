@@ -56,6 +56,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 	g.Players[playerIdx].CurrentSpace = playerPos
 	//Activate Space
 	curSpace := g.Board.Chains[playerPos.Chain][playerPos.Space]
+	g.Players[playerIdx].LastSpaceType = curSpace.Type
 	switch curSpace.Type {
 	case Blue:
 		g.AwardCoins(playerIdx, 3, false)

@@ -9,10 +9,10 @@ func TestMove(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 	g.MovePlayer(0, 4)
@@ -28,10 +28,10 @@ func TestCanPayThwomp(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 	expected := BranchEvent{0, 1, 6, []ChainSpace{{1, 6}}}
@@ -45,10 +45,10 @@ func TestCanNotPayThwomp(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 0, ChainSpace{1, 23}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 0, ChainSpace{1, 23}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 
@@ -62,10 +62,10 @@ func TestGainCoins(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 
@@ -81,10 +81,10 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 
@@ -120,10 +120,10 @@ func TestPassThwomp(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 
@@ -152,10 +152,10 @@ func TestStarSwapViaHappening(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 23}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 
@@ -177,10 +177,10 @@ func TestCoinsOnStart(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{0, 22}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{0, 22}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 		CoinsOnStart: true,
 	}
@@ -197,10 +197,10 @@ func TestMushroomSpace(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{0, 7}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{0, 7}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 
@@ -239,10 +239,10 @@ func TestStealCoinsViaBoo(t *testing.T) {
 	g := Game{
 		Board: YTI,
 		Players: [4]Player{
-			{"Daisy", 0, 10, ChainSpace{1, 21}, false, 0, 0, 0},
-			{"Luigi", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Donkey Kong", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
-			{"Mario", 0, 10, ChainSpace{0, 0}, false, 0, 0, 0},
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
 	evt := g.MovePlayer(0, 1)
