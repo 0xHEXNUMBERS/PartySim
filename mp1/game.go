@@ -5,9 +5,11 @@ type Game struct {
 	Players       [4]Player
 	CurrentPlayer int
 	CoinsOnStart  bool
+	ExtraMovement Movement
+	ExtraEvent    Event
 }
 
-func (g *Game) AwardCoins(player, coins int, minigame bool) {
+func AwardCoins(g Game, player, coins int, minigame bool) Game {
 	g.Players[player].Coins += coins
 	if g.Players[player].Coins < 0 {
 		g.Players[player].Coins = 0
@@ -21,33 +23,43 @@ func (g *Game) AwardCoins(player, coins int, minigame bool) {
 	if g.Players[player].Coins > g.Players[player].MaxCoins {
 		g.Players[player].MaxCoins = g.Players[player].Coins
 	}
+	return g
 }
 
-func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
+func ResetGameExtras(g Game) Game {
+	g.ExtraEvent = nil
+	g.ExtraMovement.Skip = false
+	return g
+}
+
+func MovePlayer(g Game, playerIdx, moves int) Game {
 	if g.Players[playerIdx].SkipTurn {
 		g.Players[playerIdx].SkipTurn = false
-		return nil
+		return g
 	}
+
+	chains := *g.Board.Chains
 	playerPos := g.Players[playerIdx].CurrentSpace
 	for moves > 0 {
 		playerPos.Space++
-		if playerPos.Space >= len(g.Board.Chains[playerPos.Chain]) {
+		if playerPos.Space >= len(chains[playerPos.Chain]) {
 			playerPos.Space = 0
 		}
-		curSpace := g.Board.Chains[playerPos.Chain][playerPos.Space]
+		curSpace := chains[playerPos.Chain][playerPos.Space]
 		switch curSpace.Type {
 		case Invisible:
-			evt := curSpace.PassingEvent(g, playerIdx, moves)
-			if evt != nil {
+			g = curSpace.PassingEvent(g, playerIdx, moves)
+			if g.ExtraEvent != nil {
 				g.Players[playerIdx].CurrentSpace = playerPos
-				return evt
+				return g
 			}
 		case Start:
 			if g.CoinsOnStart {
-				g.AwardCoins(playerIdx, 10, false)
+				g = AwardCoins(g, playerIdx, 10, false)
 			}
 		case Boo:
-			return BooEvent{playerIdx, g.Players, moves, g.Players[playerIdx].Coins}
+			g.ExtraEvent = BooEvent{playerIdx, g.Players, moves, g.Players[playerIdx].Coins}
+			return g
 		default:
 			moves--
 		}
@@ -55,34 +67,35 @@ func (g *Game) MovePlayer(playerIdx, moves int) (e Event) {
 	//Stop on Space
 	g.Players[playerIdx].CurrentSpace = playerPos
 	//Activate Space
-	curSpace := g.Board.Chains[playerPos.Chain][playerPos.Space]
+	curSpace := chains[playerPos.Chain][playerPos.Space]
 	g.Players[playerIdx].LastSpaceType = curSpace.Type
 	switch curSpace.Type {
 	case Blue:
-		g.AwardCoins(playerIdx, 3, false)
+		g = AwardCoins(g, playerIdx, 3, false)
 	case Red:
-		g.AwardCoins(playerIdx, -3, false)
+		g = AwardCoins(g, playerIdx, -3, false)
 	case Star:
 		if g.Players[playerIdx].Coins >= 20 {
-			g.AwardCoins(playerIdx, -20, false)
+			g = AwardCoins(g, playerIdx, -20, false)
 			g.Players[playerIdx].Stars++
 		}
 	case BlackStar:
 		if g.Players[playerIdx].Stars > 0 {
 			g.Players[playerIdx].Stars--
 		} else {
-			g.AwardCoins(playerIdx, -20, false)
+			g = AwardCoins(g, playerIdx, -20, false)
 		}
 	case Mushroom:
-		return MushroomEvent{playerIdx}
+		g.ExtraEvent = MushroomEvent{playerIdx}
+		return g
 	case Happening:
 		g.Players[playerIdx].HappeningCount++
-		evt := curSpace.StoppingEvent(g)
-		if evt != nil {
-			return evt
+		g := curSpace.StoppingEvent(g)
+		if g.ExtraEvent != nil {
+			return g
 		}
 	}
 	//Switch Active Player
 	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4
-	return nil
+	return g
 }

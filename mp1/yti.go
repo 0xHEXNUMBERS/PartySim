@@ -9,43 +9,27 @@ func (y ytiBoardData) Copy() ExtraBoardData {
 	return y
 }
 
-func (y *ytiBoardData) SwapStarPosition(g *Game) {
-	y.StarPosition = !y.StarPosition
-
-	if y.StarPosition {
-		g.Board.Chains[0][19].Type = Star
-		g.Board.Chains[1][18].Type = BlackStar
-	} else {
-		g.Board.Chains[0][19].Type = BlackStar
-		g.Board.Chains[1][18].Type = Star
-	}
-}
-
-func (y ytiBoardData) CanPassThwomp(game *Game,
-	player, moves, thwomp int) Event {
-	playerPos := game.Players[player].CurrentSpace
-	if game.Players[player].Coins >= y.Thwomps[thwomp] {
-		return BranchEvent{
-			player,
-			playerPos.Chain,
-			moves,
-			game.Board.Links[playerPos.Chain],
+func ytiCheckThwomp(thwomp int) func(Game, int, int) Game {
+	return func(g Game, player, moves int) Game {
+		bd := g.Board.Data.(ytiBoardData)
+		playerPos := g.Players[player].CurrentSpace
+		if g.Players[player].Coins >= bd.Thwomps[thwomp] {
+			g.ExtraEvent = BranchEvent{
+				player,
+				playerPos.Chain,
+				moves,
+				g.Board.Links[playerPos.Chain],
+			}
+			return g
 		}
-	}
-	return nil
-}
-
-func ytiCheckThwomp(thwomp int) func(*Game, int, int) Event {
-	return func(g *Game, player, moves int) Event {
-		bd := g.Board.Data.(ytiBoardData)
-		return bd.CanPassThwomp(g, player, moves, thwomp)
+		return g
 	}
 }
 
-func ytiPayThwomp(thwomp int) func(*Game, int, int) Event {
-	return func(g *Game, player, moves int) Event {
+func ytiPayThwomp(thwomp int) func(Game, int, int) Game {
+	return func(g Game, player, moves int) Game {
 		bd := g.Board.Data.(ytiBoardData)
-		return PayThwompEvent{
+		g.ExtraEvent = PayThwompEvent{
 			PayRangeEvent{
 				player,
 				bd.Thwomps[thwomp],
@@ -53,19 +37,21 @@ func ytiPayThwomp(thwomp int) func(*Game, int, int) Event {
 				moves,
 			},
 			thwomp,
-			g.Board.Links[thwomp+2][0],
+			(*g.Board.Links[thwomp+2])[0],
 		}
+		return g
 	}
 }
 
-func ytiSwapStarPosition(g *Game) Event {
+func ytiSwapStarPosition(g Game) Game {
 	bd := g.Board.Data.(ytiBoardData)
-	bd.SwapStarPosition(g)
-	return nil
+	bd.StarPosition = !bd.StarPosition
+	g.Board.Data = bd
+	return g
 }
 
 var YTI = Board{
-	Chains: []Chain{
+	Chains: &[]Chain{
 		{ //Left island
 			{Type: Blue}, //Branch #1 Dir A
 			{Type: Happening, StoppingEvent: ytiSwapStarPosition},
@@ -119,7 +105,7 @@ var YTI = Board{
 			{Type: Bowser},
 			{Type: Blue},
 			{Type: Blue},
-			{Type: BlackStar},
+			{Type: Star},
 			{Type: Happening, StoppingEvent: ytiSwapStarPosition},
 			{Type: Blue},
 			{Type: MinigameSpace},
@@ -138,7 +124,7 @@ var YTI = Board{
 			{Type: Invisible, PassingEvent: ytiPayThwomp(1)},
 		},
 	},
-	Links: map[int][]ChainSpace{
+	Links: map[int]*[]ChainSpace{
 		0: {{2, 0}},
 		1: {{3, 0}},
 		2: {{1, 6}}, //Thwomp payments only have 1 link

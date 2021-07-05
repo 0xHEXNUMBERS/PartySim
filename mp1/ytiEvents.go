@@ -6,13 +6,15 @@ type PayThwompEvent struct {
 	Link   ChainSpace
 }
 
-func (p PayThwompEvent) Handle(r Response, g *Game) Movement {
-	p.PayRangeEvent.Handle(r, g)
+func (p PayThwompEvent) Handle(r Response, g Game) Game {
+	g = ResetGameExtras(g)
+	g = p.PayRangeEvent.Handle(r, g)
 
 	cost := r.(int)
 	bd := g.Board.Data.(ytiBoardData)
 	bd.Thwomps[p.Thwomp] = cost + 1
 	g.Board.Data = bd
 	g.Players[p.Player].CurrentSpace = p.Link
-	return Movement{p.Player, p.Moves - 1, false, nil}
+	g.ExtraMovement = Movement{p.Player, p.Moves - 1, false}
+	return g
 }
