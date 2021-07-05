@@ -6,7 +6,7 @@ const (
 	Invisible SpaceType = iota
 	Blue
 	Red
-	Minigame
+	MinigameSpace
 	Happening
 	Star
 	Chance
