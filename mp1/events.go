@@ -151,8 +151,12 @@ func (b BooEvent) Handle(r Response, g Game) Game {
 		g = AwardCoins(g, steal.RecvPlayer, -50, false)
 		g.Players[steal.GivingPlayer].Stars--
 	} else {
+		maxCoins := 15
+		if b.Players[steal.GivingPlayer].Coins <= maxCoins {
+			maxCoins = b.Players[steal.GivingPlayer].Coins
+		}
 		g.ExtraEvent = BooCoinsEvent{
-			PayRangeEvent{steal.GivingPlayer, 1, 15, b.Moves},
+			PayRangeEvent{steal.GivingPlayer, 1, maxCoins, b.Moves},
 			steal.RecvPlayer,
 		}
 		return g

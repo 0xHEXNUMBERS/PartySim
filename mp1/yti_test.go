@@ -255,7 +255,7 @@ func TestStealCoinsViaBoo(t *testing.T) {
 		PayRangeEvent: PayRangeEvent{
 			Player: 1,
 			Min:    1,
-			Max:    15,
+			Max:    10, //Max of 10 coins
 			Moves:  1,
 		},
 		RecvPlayer: 0,
@@ -280,6 +280,56 @@ func TestStealCoinsViaBoo(t *testing.T) {
 	}
 
 	expectedLuigiCoins := 5
+	gotLuigiCoins := g.Players[1].Coins
+	if expectedLuigiCoins != gotLuigiCoins {
+		t.Errorf("Luigi expected: %d coins, got: %d coins",
+			expectedLuigiCoins,
+			gotLuigiCoins,
+		)
+	}
+}
+
+func TestStealTooManyCoinsViaBoo(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
+			NewPlayer("Luigi", 0, 4, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
+		},
+	}
+	g = MovePlayer(g, 0, 1)
+	g = g.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
+	expectedEvent := BooCoinsEvent{
+		PayRangeEvent: PayRangeEvent{
+			Player: 1,
+			Min:    1,
+			Max:    4, //Max of 4 coins
+			Moves:  1,
+		},
+		RecvPlayer: 0,
+	}
+	gotEvent := g.ExtraEvent
+	if expectedEvent != gotEvent {
+		t.Errorf("Expected movement: %#v, got: %#v",
+			expectedEvent,
+			gotEvent,
+		)
+	}
+
+	g = expectedEvent.Handle(4, g)
+	expectedDaisyCoins := 14
+	gotDaisyCoins := g.Players[0].Coins
+
+	if expectedDaisyCoins != gotDaisyCoins {
+		t.Errorf("Daisy expected: %d coins, got: %d coins",
+			expectedDaisyCoins,
+			gotDaisyCoins,
+		)
+	}
+
+	expectedLuigiCoins := 0
 	gotLuigiCoins := g.Players[1].Coins
 	if expectedLuigiCoins != gotLuigiCoins {
 		t.Errorf("Luigi expected: %d coins, got: %d coins",
