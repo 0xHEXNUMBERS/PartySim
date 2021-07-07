@@ -168,3 +168,27 @@ func (b BooEvent) Handle(r Response, g Game) Game {
 func (b BooEvent) ControllingPlayer() int {
 	return b.Player
 }
+
+type DeterminePlayerTeamEvent struct {
+	Player int
+}
+
+func (d DeterminePlayerTeamEvent) Responses() []Response {
+	return []Response{true, false}
+}
+
+func (d DeterminePlayerTeamEvent) Handle(r Response, g Game) Game {
+	g = ResetGameExtras(g)
+	isBlue := r.(bool)
+
+	if isBlue {
+		g.Players[d.Player].LastSpaceType = Blue
+	} else {
+		g.Players[d.Player].LastSpaceType = Red
+	}
+	return g
+}
+
+func (d DeterminePlayerTeamEvent) ControllingPlayer() int {
+	return CPU_PLAYER
+}
