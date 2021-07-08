@@ -2,11 +2,7 @@ package mp1
 
 type ytiBoardData struct {
 	Thwomps      [2]int
-	StarPosition bool
-}
-
-func (y ytiBoardData) Copy() ExtraBoardData {
-	return y
+	StarPosition ChainSpace
 }
 
 func ytiCheckThwomp(thwomp int) func(Game, int, int) Game {
@@ -43,10 +39,31 @@ func ytiPayThwomp(thwomp int) func(Game, int, int) Game {
 	}
 }
 
+var ytiLeftIslandStar = ChainSpace{0, 19}
+var ytiRightIslandStar = ChainSpace{1, 18}
+
 func ytiSwapStarPosition(g Game) Game {
 	bd := g.Board.Data.(ytiBoardData)
-	bd.StarPosition = !bd.StarPosition
+	if bd.StarPosition == ytiLeftIslandStar {
+		bd.StarPosition = ytiRightIslandStar
+	} else {
+		bd.StarPosition = ytiLeftIslandStar
+	}
 	g.Board.Data = bd
+	return g
+}
+
+func ytiGainStar(g Game, player, moves int) Game {
+	bd := g.Board.Data.(ytiBoardData)
+	if bd.StarPosition == g.Players[player].CurrentSpace {
+		if g.Players[player].Coins >= 20 {
+			g = AwardCoins(g, player, -20, false)
+			g.Players[player].Stars++
+			g = ytiSwapStarPosition(g)
+		}
+	} else { //Star at other island
+		g = AwardCoins(g, player, -30, false)
+	}
 	return g
 }
 
@@ -72,7 +89,7 @@ var YTI = Board{
 			{Type: Red},
 			{Type: Blue},
 			{Type: Happening, StoppingEvent: ytiSwapStarPosition},
-			{Type: Star},
+			{Type: Star, PassingEvent: ytiGainStar},
 			{Type: Blue},
 			{Type: Blue},
 			{Type: Blue},
@@ -105,7 +122,7 @@ var YTI = Board{
 			{Type: Bowser},
 			{Type: Blue},
 			{Type: Blue},
-			{Type: Star},
+			{Type: Star, PassingEvent: ytiGainStar},
 			{Type: Happening, StoppingEvent: ytiSwapStarPosition},
 			{Type: Blue},
 			{Type: MinigameSpace},
@@ -130,5 +147,5 @@ var YTI = Board{
 		2: {{1, 6}}, //Thwomp payments only have 1 link
 		3: {{0, 7}}, //Thwomp payments only have 1 link
 	},
-	Data: ytiBoardData{[2]int{1, 1}, true},
+	Data: ytiBoardData{[2]int{1, 1}, ytiLeftIslandStar},
 }

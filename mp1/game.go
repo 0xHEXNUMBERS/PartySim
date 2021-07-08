@@ -42,6 +42,7 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 	playerPos := g.Players[playerIdx].CurrentSpace
 	for moves > 0 {
 		playerPos.Space++
+		g.Players[playerIdx].CurrentSpace = playerPos
 		if playerPos.Space >= len(chains[playerPos.Chain]) {
 			playerPos.Space = 0
 		}
@@ -56,6 +57,11 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		case Start:
 			if g.CoinsOnStart {
 				g = AwardCoins(g, playerIdx, 10, false)
+			}
+		case Star:
+			g = curSpace.PassingEvent(g, playerIdx, moves)
+			if g.ExtraEvent != nil {
+				return g
 			}
 		case Boo:
 			g.ExtraEvent = BooEvent{playerIdx, g.Players, moves, g.Players[playerIdx].Coins}
@@ -74,17 +80,6 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		g = AwardCoins(g, playerIdx, 3, false)
 	case Red:
 		g = AwardCoins(g, playerIdx, -3, false)
-	case Star:
-		if g.Players[playerIdx].Coins >= 20 {
-			g = AwardCoins(g, playerIdx, -20, false)
-			g.Players[playerIdx].Stars++
-		}
-	case BlackStar:
-		if g.Players[playerIdx].Stars > 0 {
-			g.Players[playerIdx].Stars--
-		} else {
-			g = AwardCoins(g, playerIdx, -20, false)
-		}
 	case Mushroom:
 		g.ExtraEvent = MushroomEvent{playerIdx}
 		return g

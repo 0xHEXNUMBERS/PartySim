@@ -150,7 +150,7 @@ func TestIgnoreThwomp(t *testing.T) {
 
 func TestStarSwapViaHappening(t *testing.T) {
 	t.SkipNow()
-	/*g := Game{
+	g := Game{
 		Board: YTI,
 		Players: [4]Player{
 			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
@@ -165,13 +165,10 @@ func TestStarSwapViaHappening(t *testing.T) {
 		t.Errorf("Unexpected event: %#v", g.ExtraEvent)
 	}
 
-	//starSpace := ChainSpace{1, 18}
-	if g.Board.Chains[1][18].Type == BlackStar || g.Board.Chains[0][19].Type == Star {
-		t.Errorf("Star spot did not swap, 1-18: %#v, 0-19: %#v",
-			g.Board.Chains[1][18],
-			g.Board.Chains[0][19],
-		)
-	}*/
+	bd := g.Board.Data.(ytiBoardData)
+	if bd.StarPosition == ytiRightIslandStar {
+		t.Errorf("Expected star position: %#v, got: %#v", ytiRightIslandStar, bd.StarPosition)
+	}
 }
 
 func TestCoinsOnStart(t *testing.T) {
@@ -336,5 +333,36 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 			expectedLuigiCoins,
 			gotLuigiCoins,
 		)
+	}
+}
+
+func TestBuyStar(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 20, ChainSpace{0, 18}),
+			NewPlayer("Luigi", 0, 4, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
+		},
+	}
+
+	g = MovePlayer(g, 0, 1) //Land on blue space
+
+	expectedSpace := ChainSpace{0, 20}
+	expectedCoins := 3
+	expectedStars := 1
+	gotSpace := g.Players[0].CurrentSpace
+	gotCoins := g.Players[0].Coins
+	gotStars := g.Players[0].Stars
+
+	if expectedSpace != gotSpace {
+		t.Errorf("Expected Space: %#v, got: %#v", expectedSpace, gotSpace)
+	}
+	if expectedCoins != gotCoins {
+		t.Errorf("Expected Coins: %#v, got: %#v", expectedCoins, gotCoins)
+	}
+	if expectedStars != gotStars {
+		t.Errorf("Expected Stars: %#v, got: %#v", expectedStars, gotStars)
 	}
 }

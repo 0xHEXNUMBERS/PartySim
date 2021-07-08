@@ -30,9 +30,7 @@ type ChainSpace struct {
 	Space int
 }
 
-type ExtraBoardData interface {
-	Copy() ExtraBoardData
-}
+type ExtraBoardData interface{}
 
 type Movement struct {
 	Player int
