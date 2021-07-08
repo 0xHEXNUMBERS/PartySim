@@ -25,11 +25,15 @@ func ytiCheckThwomp(thwomp int) func(Game, int, int) Game {
 func ytiPayThwomp(thwomp int) func(Game, int, int) Game {
 	return func(g Game, player, moves int) Game {
 		bd := g.Board.Data.(ytiBoardData)
+		maxCoins := 50
+		if maxCoins > g.Players[player].Coins {
+			maxCoins = g.Players[player].Coins
+		}
 		g.ExtraEvent = PayThwompEvent{
 			PayRangeEvent{
 				player,
 				bd.Thwomps[thwomp],
-				g.Players[player].Coins,
+				maxCoins,
 				moves,
 			},
 			thwomp,
