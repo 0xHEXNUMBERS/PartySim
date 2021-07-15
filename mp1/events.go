@@ -192,3 +192,20 @@ func (d DeterminePlayerTeamEvent) Handle(r Response, g Game) Game {
 func (d DeterminePlayerTeamEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
+
+type CPURangeEvent struct {
+	Min int
+	Max int
+}
+
+func (c CPURangeEvent) Responses() []Response {
+	var ret []Response
+	for i := c.Min; i <= c.Max; i++ {
+		ret = append(ret, i)
+	}
+	return ret
+}
+
+func (c CPURangeEvent) ControllingPlayer() int {
+	return CPU_PLAYER
+}

@@ -89,6 +89,18 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		if g.ExtraEvent != nil {
 			return g
 		}
+	case Bowser:
+		//Special events when player has 0 coins
+		if g.Players[playerIdx].Coins == 0 {
+			if g.Players[playerIdx].Stars > 0 {
+				g = AwardCoins(g, playerIdx, 10, false)
+				g.Players[playerIdx].Stars--
+			} else {
+				g = AwardCoins(g, playerIdx, 20, false)
+			}
+		} else {
+			g.ExtraEvent = BowserEvent{playerIdx}
+		}
 	}
 	//Switch Active Player
 	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4

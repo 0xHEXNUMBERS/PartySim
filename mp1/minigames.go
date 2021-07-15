@@ -36,12 +36,12 @@ const (
 	Minigame1P
 )
 
-type Minigame struct {
+type MinigameEvent struct {
 	Type    MinigameType
 	Players [4]int //Player IDs (1V3 -> [Team1, Team2, Team2, Team2], 2V2 -> [Team1, Team1, Team2, Team2], 1P [Team1, nil, nil, nil])
 }
 
-func (m Minigame) Responses() []Response {
+func (m MinigameEvent) Responses() []Response {
 	switch m.Type {
 	case MinigameFFA:
 		return MinigameRewardsFFA
@@ -56,7 +56,11 @@ func (m Minigame) Responses() []Response {
 	return nil
 }
 
-func (m Minigame) Handle(r Response, g Game) Game {
+func (m MinigameEvent) ControllingPlayer() int {
+	return CPU_PLAYER
+}
+
+func (m MinigameEvent) Handle(r Response, g Game) Game {
 	g = ResetGameExtras(g)
 	awards := r.(MinigameAwards)
 	for i, player := range m.Players {
@@ -65,7 +69,7 @@ func (m Minigame) Handle(r Response, g Game) Game {
 	return g
 }
 
-func GetMinigame(g Game) Minigame {
+func GetMinigame(g Game) MinigameEvent {
 	var blueTeam []int
 	var redTeam []int
 	for i, p := range g.Players {
@@ -86,7 +90,7 @@ func GetMinigame(g Game) Minigame {
 		minigameType = Minigame2V2
 	}
 
-	minigame := Minigame{Type: minigameType}
+	minigame := MinigameEvent{Type: minigameType}
 	var players []int
 	if len(redTeam) == 1 { //Put 1 person team in front
 		players = append(redTeam, blueTeam...)
