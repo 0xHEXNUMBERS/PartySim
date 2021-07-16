@@ -37,8 +37,13 @@ const (
 )
 
 type MinigameEvent struct {
-	Type    MinigameType
-	Players [4]int //Player IDs (1V3 -> [Team1, Team2, Team2, Team2], 2V2 -> [Team1, Team1, Team2, Team2], 1P [Team1, nil, nil, nil])
+	//Player IDs
+	//FFA -> [Player0, Player1, Player2, Player3]
+	//1V3 -> [Team1, Team2, Team2, Team2]
+	//2V2 -> [Team1, Team1, Team2, Team2]
+	//1P  -> [Team1, nil, nil, nil]
+	PlayerIDs [4]int
+	Type      MinigameType
 }
 
 func (m MinigameEvent) Responses() []Response {
@@ -63,7 +68,7 @@ func (m MinigameEvent) ControllingPlayer() int {
 func (m MinigameEvent) Handle(r Response, g Game) Game {
 	g = ResetGameExtras(g)
 	awards := r.(MinigameAwards)
-	for i, player := range m.Players {
+	for i, player := range m.PlayerIDs {
 		g = AwardCoins(g, player, awards[i], true)
 	}
 	return g
@@ -98,7 +103,7 @@ func GetMinigame(g Game) MinigameEvent {
 		players = append(blueTeam, redTeam...)
 	}
 	for i := range blueTeam {
-		minigame.Players[i] = players[i]
+		minigame.PlayerIDs[i] = players[i]
 	}
 	return minigame
 }
