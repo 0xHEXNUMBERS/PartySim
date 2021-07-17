@@ -27,11 +27,6 @@ func AwardCoins(g Game, player, coins int, minigame bool) Game {
 }
 
 func MovePlayer(g Game, playerIdx, moves int) Game {
-	if g.Players[playerIdx].SkipTurn {
-		g.Players[playerIdx].SkipTurn = false
-		return g
-	}
-
 	chains := *g.Board.Chains
 	playerPos := g.Players[playerIdx].CurrentSpace
 	for moves > 0 {
@@ -76,13 +71,9 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		g = AwardCoins(g, playerIdx, -3, false)
 	case Mushroom:
 		g.ExtraEvent = MushroomEvent{playerIdx}
-		return g
 	case Happening:
 		g.Players[playerIdx].HappeningCount++
-		g := curSpace.StoppingEvent(g)
-		if g.ExtraEvent != nil {
-			return g
-		}
+		g = curSpace.StoppingEvent(g)
 	case Bowser:
 		//Special events when player has 0 coins
 		if g.Players[playerIdx].Coins == 0 {
@@ -98,7 +89,5 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 	case MinigameSpace:
 		g.ExtraEvent = MinigameEvent{[4]int{playerIdx, 0, 0, 0}, Minigame1P}
 	}
-	//Switch Active Player
-	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4
 	return g
 }
