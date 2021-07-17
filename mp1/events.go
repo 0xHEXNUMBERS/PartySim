@@ -8,6 +8,23 @@ type Event interface {
 	ControllingPlayer() int
 }
 
+type NormalDiceBlock struct {
+	Player int
+}
+
+func (m NormalDiceBlock) Responses() []Response {
+	return CPURangeEvent{1, 10}.Responses()
+}
+
+func (m NormalDiceBlock) ControllingPlayer() int {
+	return CPU_PLAYER
+}
+
+func (m NormalDiceBlock) Handle(r Response, g Game) Game {
+	moves := r.(int)
+	return MovePlayer(g, m.Player, moves)
+}
+
 type BranchEvent struct {
 	Player int
 	Chain  int
@@ -25,14 +42,14 @@ func (b BranchEvent) Responses() []Response {
 }
 
 func (b BranchEvent) Handle(r Response, g Game) Game {
-	g = ResetGameExtras(g)
+	g.ExtraEvent = nil
 	if r == nil {
-		g.ExtraMovement = Movement{b.Player, b.Moves, false}
+		g = MovePlayer(g, b.Player, b.Moves)
 		return g
 	}
 	newPlayerPos := r.(ChainSpace)
 	g.Players[b.Player].CurrentSpace = newPlayerPos
-	g.ExtraMovement = Movement{b.Player, b.Moves, false}
+	g = MovePlayer(g, b.Player, b.Moves)
 	return g
 }
 
@@ -44,7 +61,6 @@ type PayRangeEvent struct {
 	Player int
 	Min    int
 	Max    int
-	Moves  int
 }
 
 func (p PayRangeEvent) Responses() []Response {
@@ -56,10 +72,9 @@ func (p PayRangeEvent) Responses() []Response {
 }
 
 func (p PayRangeEvent) Handle(r Response, g Game) Game {
-	g = ResetGameExtras(g)
+	g.ExtraEvent = nil
 	cost := r.(int)
 	g = AwardCoins(g, p.Player, -cost, false)
-	g.ExtraMovement = Movement{p.Player, p.Moves, false}
 	return g
 }
 
@@ -76,14 +91,13 @@ func (m MushroomEvent) Responses() []Response {
 }
 
 func (m MushroomEvent) Handle(r Response, g Game) Game {
-	g = ResetGameExtras(g)
-	red := r.(bool)
-	if red {
-		g.ExtraMovement = Movement{Skip: true}
+	g.ExtraEvent = nil
+	redMushroom := r.(bool)
+	if redMushroom {
+		g.ExtraEvent = NormalDiceBlock{m.Player}
 		return g
 	}
 	g.Players[m.Player].SkipTurn = true
-	g.ExtraMovement = Movement{m.Player, 0, false}
 	return g
 }
 
@@ -94,6 +108,7 @@ func (m MushroomEvent) ControllingPlayer() int {
 type BooCoinsEvent struct {
 	PayRangeEvent
 	RecvPlayer int
+	Moves      int
 }
 
 func (b BooCoinsEvent) ControllingPlayer() int {
@@ -101,10 +116,10 @@ func (b BooCoinsEvent) ControllingPlayer() int {
 }
 
 func (b BooCoinsEvent) Handle(r Response, g Game) Game {
-	g = ResetGameExtras(g)
+	g.ExtraEvent = nil
 	g = b.PayRangeEvent.Handle(r, g)
 	g = AwardCoins(g, b.RecvPlayer, r.(int), false)
-	g.ExtraMovement = Movement{b.RecvPlayer, b.PayRangeEvent.Moves, false}
+	g = MovePlayer(g, b.RecvPlayer, b.Moves)
 	return g
 }
 
@@ -145,7 +160,7 @@ func (b BooEvent) Responses() []Response {
 }
 
 func (b BooEvent) Handle(r Response, g Game) Game {
-	g = ResetGameExtras(g)
+	g.ExtraEvent = nil
 	steal := r.(BooStealAction)
 	if steal.Star {
 		g = AwardCoins(g, steal.RecvPlayer, -50, false)
@@ -156,12 +171,13 @@ func (b BooEvent) Handle(r Response, g Game) Game {
 			maxCoins = b.Players[steal.GivingPlayer].Coins
 		}
 		g.ExtraEvent = BooCoinsEvent{
-			PayRangeEvent{steal.GivingPlayer, 1, maxCoins, b.Moves},
+			PayRangeEvent{steal.GivingPlayer, 1, maxCoins},
 			steal.RecvPlayer,
+			b.Moves,
 		}
 		return g
 	}
-	g.ExtraMovement = Movement{b.Player, b.Moves, false}
+	g = MovePlayer(g, b.Player, b.Moves)
 	return g
 }
 
@@ -178,7 +194,7 @@ func (d DeterminePlayerTeamEvent) Responses() []Response {
 }
 
 func (d DeterminePlayerTeamEvent) Handle(r Response, g Game) Game {
-	g = ResetGameExtras(g)
+	g.ExtraEvent = nil
 	isBlue := r.(bool)
 
 	if isBlue {

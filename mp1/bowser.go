@@ -40,7 +40,7 @@ func (b BowserEvent) Handle(r Response, g Game) Game {
 	case CoinsForBowser:
 		maxCoins := min(g.Players[b.Player].Coins, 30)
 		minCoins := min(g.Players[b.Player].Coins, 10)
-		g.ExtraEvent = PayRangeEvent{b.Player, minCoins, maxCoins, 0}
+		g.ExtraEvent = PayRangeEvent{b.Player, minCoins, maxCoins}
 	case BowserBalloonBurst:
 		g.ExtraEvent = BowserBalloonBurstEvent{}
 	case BowsersFaceLift:

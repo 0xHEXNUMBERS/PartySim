@@ -92,12 +92,8 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	g = MovePlayer(g, 0, 10)
 	//Move player to Chain 3 to pay thwomp 1
 	g = g.ExtraEvent.Handle(ChainSpace{3, 0}, g)
-	//Instantiate thwomp pay
-	g = MovePlayer(g, g.ExtraMovement.Player, g.ExtraMovement.Moves)
-	//Pay thwomp 3 coins
+	//Pay thwomp 3 coins, move and land on blue space
 	g = g.ExtraEvent.Handle(3, g)
-	//Move remaining spaces and gain 3 coins
-	g = MovePlayer(g, g.ExtraMovement.Player, g.ExtraMovement.Moves)
 
 	if g.ExtraEvent != nil {
 		t.Errorf("Recieved unexpected event: %#v", g.ExtraEvent)
@@ -129,7 +125,6 @@ func TestIgnoreThwomp(t *testing.T) {
 
 	g = MovePlayer(g, 0, 10)
 	g = g.ExtraEvent.Handle(nil, g)
-	g = MovePlayer(g, g.ExtraMovement.Player, g.ExtraMovement.Moves)
 
 	if g.ExtraEvent != nil {
 		t.Errorf("Recieved unexpected event: %#v", g.ExtraEvent)
@@ -210,28 +205,25 @@ func TestMushroomSpace(t *testing.T) {
 	}
 
 	//Received red mushroom
-	g = got.Handle(true, g)
-	expectedMvmnt := Movement{Skip: true}
-	gotMvmnt := g.ExtraMovement
-	if expectedMvmnt != gotMvmnt {
-		t.Errorf("Expected Red Movement: %#v, got: %#v",
-			expectedMvmnt,
-			gotMvmnt,
+	gRed := got.Handle(true, g)
+	expectedEvent := NormalDiceBlock{0}
+	gotEvent := gRed.ExtraEvent
+	if expectedEvent != gotEvent {
+		t.Errorf("Expected Red Mushroom Event: %#v, got: %#v",
+			expectedEvent,
+			gotEvent,
 		)
 	}
 
 	//Received poison mushroom
-	g = got.Handle(false, g)
-	expectedMvmnt = Movement{0, 0, false}
-	gotMvmnt = g.ExtraMovement
-	if expectedMvmnt != gotMvmnt {
-		t.Errorf("Expected Poison Movement: %#v, got: %#v",
-			expectedMvmnt,
-			gotMvmnt,
+	gPoison := got.Handle(false, g)
+	if gPoison.ExtraEvent != nil {
+		t.Errorf("Got unexpected event on poison mushroom: %#v",
+			expectedEvent,
 		)
 	}
 
-	if g.Players[0].SkipTurn != true {
+	if !gPoison.Players[0].SkipTurn {
 		t.Errorf("SkipTurn not set")
 	}
 }
@@ -246,16 +238,16 @@ func TestStealCoinsViaBoo(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 1)
+	g = MovePlayer(g, 0, 4) //Land on happening
 	g = g.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
 	expectedEvent := BooCoinsEvent{
 		PayRangeEvent: PayRangeEvent{
 			Player: 1,
 			Min:    1,
 			Max:    10, //Max of 10 coins
-			Moves:  1,
 		},
 		RecvPlayer: 0,
+		Moves:      4,
 	}
 	gotEvent := g.ExtraEvent
 	if expectedEvent != gotEvent {
@@ -296,20 +288,20 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 1)
+	g = MovePlayer(g, 0, 4) //Land on happening
 	g = g.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
 	expectedEvent := BooCoinsEvent{
 		PayRangeEvent: PayRangeEvent{
 			Player: 1,
 			Min:    1,
 			Max:    4, //Max of 4 coins
-			Moves:  1,
 		},
 		RecvPlayer: 0,
+		Moves:      4,
 	}
 	gotEvent := g.ExtraEvent
 	if expectedEvent != gotEvent {
-		t.Errorf("Expected movement: %#v, got: %#v",
+		t.Errorf("Expected event: %#v, got: %#v",
 			expectedEvent,
 			gotEvent,
 		)

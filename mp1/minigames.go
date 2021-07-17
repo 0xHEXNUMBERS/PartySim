@@ -66,7 +66,7 @@ func (m MinigameEvent) ControllingPlayer() int {
 }
 
 func (m MinigameEvent) Handle(r Response, g Game) Game {
-	g = ResetGameExtras(g)
+	g.ExtraEvent = nil
 	awards := r.(MinigameAwards)
 	for i, player := range m.PlayerIDs {
 		g = AwardCoins(g, player, awards[i], true)

@@ -34,10 +34,10 @@ func ytiPayThwomp(thwomp int) func(Game, int, int) Game {
 				player,
 				bd.Thwomps[thwomp],
 				maxCoins,
-				moves,
 			},
 			thwomp,
 			(*g.Board.Links[thwomp+2])[0],
+			moves,
 		}
 		return g
 	}

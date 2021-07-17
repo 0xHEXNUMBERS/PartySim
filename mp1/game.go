@@ -6,7 +6,6 @@ type Game struct {
 	Players       [4]Player
 	CurrentPlayer int
 	CoinsOnStart  bool
-	ExtraMovement Movement
 	ExtraEvent    Event
 }
 
@@ -24,12 +23,6 @@ func AwardCoins(g Game, player, coins int, minigame bool) Game {
 	if g.Players[player].Coins > g.Players[player].MaxCoins {
 		g.Players[player].MaxCoins = g.Players[player].Coins
 	}
-	return g
-}
-
-func ResetGameExtras(g Game) Game {
-	g.ExtraEvent = nil
-	g.ExtraMovement.Skip = false
 	return g
 }
 
