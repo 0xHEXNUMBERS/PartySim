@@ -97,7 +97,7 @@ func TestBowserBalloonBurst(t *testing.T) {
 	if expectedP1WinCoins != gotP1WinCoins {
 		t.Errorf("Win Coins expected: %#v, got: %#v", expectedP1WinCoins, gotP1WinCoins)
 	}
-	expectedLossCoins := 50 - BOWSER_MINIGAME_COIN_LOSS
+	expectedLossCoins := 40 //50 - 10 coins at turn 0
 	for _, p := range gP1Win.Players {
 		if p.Char == "Daisy" {
 			continue
@@ -129,7 +129,7 @@ func TestBowsersFaceList(t *testing.T) {
 	}
 
 	gP1Loss := g.ExtraEvent.Handle(0b1110, g) //All players except Daisy
-	expectedLossCoins := 50 - BOWSER_MINIGAME_COIN_LOSS
+	expectedLossCoins := 40                   //50 - 10 coins at turn 0
 	gotLossCoins := gP1Loss.Players[0].Coins
 	if expectedLossCoins != gotLossCoins {
 		t.Errorf("Loss Coins expected: %d, got: %d", expectedLossCoins, gotLossCoins)
@@ -158,7 +158,7 @@ func TestBowsersTugoWar(t *testing.T) {
 	}
 
 	g1TWin := g.ExtraEvent.Handle(BTW1TWin, g)
-	expected1TCoins := 50 - BOWSER_MINIGAME_COIN_LOSS
+	expected1TCoins := 40 //50 - 10 coins at turn 0
 	for i := 1; i < len(g1TWin.Players); i++ {
 		got1TCoins := g1TWin.Players[i].Coins
 		if expected1TCoins != got1TCoins {
@@ -167,7 +167,7 @@ func TestBowsersTugoWar(t *testing.T) {
 	}
 
 	g3TWin := g.ExtraEvent.Handle(BTW3TWin, g)
-	expected3TCoins := 50 - BOWSER_MINIGAME_COIN_LOSS
+	expected3TCoins := 40 //50 - 10 coins at turn 0
 	got3TCoins := g3TWin.Players[0].Coins
 	if expected3TCoins != got3TCoins {
 		t.Errorf("3T Coins expected: %d, got: %d", expected3TCoins, got3TCoins)

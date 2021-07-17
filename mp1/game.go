@@ -2,6 +2,7 @@ package mp1
 
 type Game struct {
 	Board
+	Turn          uint
 	Players       [4]Player
 	CurrentPlayer int
 	CoinsOnStart  bool

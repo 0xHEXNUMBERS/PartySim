@@ -75,7 +75,16 @@ const (
 	BBBP4Win
 )
 
-const BOWSER_MINIGAME_COIN_LOSS = 10
+func GetBowserMinigameCoinLoss(turn uint) int {
+	if turn <= 9 {
+		return 10
+	} else if turn <= 19 {
+		return 20
+	} else if turn <= 29 {
+		return 30
+	}
+	return 40
+}
 
 var BBBResults = []Response{
 	BBBDraw,
@@ -95,28 +104,28 @@ func (b BowserBalloonBurstEvent) ControllingPlayer() int {
 
 func (b BowserBalloonBurstEvent) Handle(r Response, g Game) Game {
 	results := r.(BowserBalloonBurstResult)
-	//TODO: Coins lost is based on game turn number, figure it out
+	coinLoss := -GetBowserMinigameCoinLoss(g.Turn)
 	switch results {
 	case BBBDraw:
 		for p := range g.Players {
 			g = AwardCoins(g, p, -20, true)
 		}
 	case BBBP1Win:
-		g = AwardCoins(g, 1, -BOWSER_MINIGAME_COIN_LOSS, true)
-		g = AwardCoins(g, 2, -BOWSER_MINIGAME_COIN_LOSS, true)
-		g = AwardCoins(g, 3, -BOWSER_MINIGAME_COIN_LOSS, true)
+		g = AwardCoins(g, 1, coinLoss, true)
+		g = AwardCoins(g, 2, coinLoss, true)
+		g = AwardCoins(g, 3, coinLoss, true)
 	case BBBP2Win:
-		g = AwardCoins(g, 0, -BOWSER_MINIGAME_COIN_LOSS, true)
-		g = AwardCoins(g, 2, -BOWSER_MINIGAME_COIN_LOSS, true)
-		g = AwardCoins(g, 3, -BOWSER_MINIGAME_COIN_LOSS, true)
+		g = AwardCoins(g, 0, coinLoss, true)
+		g = AwardCoins(g, 2, coinLoss, true)
+		g = AwardCoins(g, 3, coinLoss, true)
 	case BBBP3Win:
-		g = AwardCoins(g, 0, -BOWSER_MINIGAME_COIN_LOSS, true)
-		g = AwardCoins(g, 1, -BOWSER_MINIGAME_COIN_LOSS, true)
-		g = AwardCoins(g, 3, -BOWSER_MINIGAME_COIN_LOSS, true)
+		g = AwardCoins(g, 0, coinLoss, true)
+		g = AwardCoins(g, 1, coinLoss, true)
+		g = AwardCoins(g, 3, coinLoss, true)
 	case BBBP4Win:
-		g = AwardCoins(g, 0, -BOWSER_MINIGAME_COIN_LOSS, true)
-		g = AwardCoins(g, 1, -BOWSER_MINIGAME_COIN_LOSS, true)
-		g = AwardCoins(g, 2, -BOWSER_MINIGAME_COIN_LOSS, true)
+		g = AwardCoins(g, 0, coinLoss, true)
+		g = AwardCoins(g, 1, coinLoss, true)
+		g = AwardCoins(g, 2, coinLoss, true)
 	}
 	return g
 }
@@ -140,10 +149,10 @@ func (b BowsersFaceLiftEvent) Handle(r Response, g Game) Game {
 		return g
 	}
 
+	coinLoss := -GetBowserMinigameCoinLoss(g.Turn)
 	for p := range g.Players {
 		if results&(1<<p) == 0 {
-			//TODO: Coins lost is based on game turn number, figure it out
-			g = AwardCoins(g, p, -BOWSER_MINIGAME_COIN_LOSS, true)
+			g = AwardCoins(g, p, coinLoss, true)
 		}
 	}
 	return g
@@ -183,10 +192,10 @@ func (b BowsersTugoWarEvent) Handle(r Response, g Game) Game {
 			g = AwardCoins(g, p, -30, true)
 		}
 	case BTW1TWin:
+		coinLoss := -GetBowserMinigameCoinLoss(g.Turn)
 		for p := range g.Players {
 			if p != b.Player {
-				//TODO: Coins lost is based on game turn number, figure it out
-				g = AwardCoins(g, p, -BOWSER_MINIGAME_COIN_LOSS, true)
+				g = AwardCoins(g, p, coinLoss, true)
 			}
 		}
 	case BTW3TWin:
