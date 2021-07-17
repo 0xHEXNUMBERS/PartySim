@@ -36,7 +36,6 @@ func (b BowserEvent) ControllingPlayer() int {
 
 func (b BowserEvent) Handle(r Response, g Game) Game {
 	choice := r.(BowserResponse)
-	//TODO: BowserChanceTime
 	switch choice {
 	case CoinsForBowser:
 		maxCoins := min(g.Players[b.Player].Coins, 30)
@@ -59,6 +58,9 @@ func (b BowserEvent) Handle(r Response, g Game) Game {
 		for i := range g.Players {
 			g.Players[i].Coins = coins
 		}
+	case BowsersChanceTime:
+		g.ExtraEvent = BowsersChanceTimeEvent{}
+
 	}
 	return g
 }
@@ -230,5 +232,41 @@ func (b BashnCashEvent) Handle(r Response, g Game) Game {
 		coinsLost += timesHit * 5
 	}
 	g = AwardCoins(g, b.Player, -coinsLost, true)
+	return g
+}
+
+type BowsersChanceTimeEvent struct{}
+
+func (b BowsersChanceTimeEvent) Responses() []Response {
+	return CPURangeEvent{0, 3}.Responses()
+}
+
+func (b BowsersChanceTimeEvent) ControllingPlayer() int {
+	return CPU_PLAYER
+}
+
+func (b BowsersChanceTimeEvent) Handle(r Response, g Game) Game {
+	player := r.(int)
+	g.ExtraEvent = BowsersCTPlayerPicked{player}
+	return g
+}
+
+var BowsersChanceTimeCoins = []Response{10, 20, 30}
+
+type BowsersCTPlayerPicked struct {
+	Player int
+}
+
+func (b BowsersCTPlayerPicked) Responses() []Response {
+	return CPURangeEvent{0, 3}.Responses()
+}
+
+func (b BowsersCTPlayerPicked) ControllingPlayer() int {
+	return CPU_PLAYER
+}
+
+func (b BowsersCTPlayerPicked) Handle(r Response, g Game) Game {
+	coins := r.(int)
+	g = AwardCoins(g, b.Player, -coins, false)
 	return g
 }

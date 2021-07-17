@@ -229,3 +229,24 @@ func TestBowserRevolution(t *testing.T) {
 		}
 	}
 }
+
+func TestBowsersChanceTime(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 50, ChainSpace{1, 14}),
+			NewPlayer("Luigi", 0, 50, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 50, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 50, ChainSpace{0, 0}),
+		},
+	}
+	g = MovePlayer(g, 0, 1)
+	g = g.ExtraEvent.Handle(BowsersChanceTime, g)
+	g = g.ExtraEvent.Handle(0, g)  //Daisy
+	g = g.ExtraEvent.Handle(20, g) //Loses 20 coins
+	expectedCoins := 30
+	gotCoins := g.Players[0].Coins
+	if expectedCoins != gotCoins {
+		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
+	}
+}
