@@ -23,8 +23,18 @@ var MinigameRewards1V3 = []Response{
 }
 
 var MinigameRewards1P = []Response{
-	MinigameAwards{5, 0, 0, 0},
+	MinigameAwards{-5, 0, 0, 0},
 	MinigameAwards{0, 0, 0, 0},
+	MinigameAwards{1, 0, 0, 0},
+	MinigameAwards{2, 0, 0, 0},
+	MinigameAwards{3, 0, 0, 0},
+	MinigameAwards{4, 0, 0, 0},
+	MinigameAwards{5, 0, 0, 0},
+	MinigameAwards{6, 0, 0, 0},
+	MinigameAwards{8, 0, 0, 0},
+	MinigameAwards{10, 0, 0, 0},
+	MinigameAwards{20, 0, 0, 0},
+	MinigameAwards{36, 0, 0, 0}, //If they get whack-a-plant, they win
 }
 
 type MinigameType int

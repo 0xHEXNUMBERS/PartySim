@@ -95,6 +95,8 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		} else {
 			g.ExtraEvent = BowserEvent{playerIdx}
 		}
+	case MinigameSpace:
+		g.ExtraEvent = MinigameEvent{[4]int{playerIdx, 0, 0, 0}, Minigame1P}
 	}
 	//Switch Active Player
 	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4

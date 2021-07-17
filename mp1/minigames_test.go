@@ -167,3 +167,29 @@ func TestGreenToBlue(t *testing.T) {
 			expectedSpace, gotSpace)
 	}
 }
+
+func TestLandOnMinigameSpace(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 20}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
+		},
+	}
+	g = MovePlayer(g, 0, 1)
+	gLose := g.ExtraEvent.Handle(MinigameRewards1P[0], g) //lose 5 coins
+	expectedLoseCoins := 5
+	gotLoseCoins := gLose.Players[0].Coins
+	if expectedLoseCoins != gotLoseCoins {
+		t.Errorf("Expected lose coins: %d, got: %d", expectedLoseCoins, gotLoseCoins)
+	}
+
+	gWin := g.ExtraEvent.Handle(MinigameRewards1P[11], g) //won WAP
+	expectedWinCoins := 46
+	gotWinCoins := gWin.Players[0].Coins
+	if expectedWinCoins != gotWinCoins {
+		t.Errorf("Expected win coins: %d, got: %d", expectedWinCoins, gotWinCoins)
+	}
+}
