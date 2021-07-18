@@ -5,8 +5,14 @@ type Game struct {
 	Turn          uint
 	Players       [4]Player
 	CurrentPlayer int
-	CoinsOnStart  bool
 	ExtraEvent    Event
+
+	//Game configuration from Mushroom House
+	NoKoopa    bool
+	RedDice    bool
+	BlueDice   bool
+	WarpDice   bool
+	EventsDice bool
 }
 
 func AwardCoins(g Game, player, coins int, minigame bool) Game {
@@ -44,7 +50,7 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 				return g
 			}
 		case Start:
-			if g.CoinsOnStart {
+			if !g.NoKoopa {
 				g = AwardCoins(g, playerIdx, 10, false)
 			}
 		case Star:

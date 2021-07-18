@@ -175,7 +175,7 @@ func TestCoinsOnStart(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
-		CoinsOnStart: true,
+		NoKoopa: false,
 	}
 
 	g = MovePlayer(g, 0, 1)

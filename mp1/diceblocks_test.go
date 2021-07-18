@@ -1,6 +1,9 @@
 package mp1
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestRedDiceBlock(t *testing.T) {
 	g := Game{
@@ -113,5 +116,25 @@ func TestEventDiceBlock(t *testing.T) {
 	gKoopa := g.ExtraEvent.Handle(KoopaEventBlock, g)
 	if gKoopa.ExtraEvent != nil {
 		t.Errorf("Unexpected Koopa event: %#v", gKoopa.ExtraEvent)
+	}
+}
+
+func TestPickDiceBlock(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
+		},
+		RedDice:  true,
+		BlueDice: true,
+	}
+	g.ExtraEvent = GeneratePickDiceBlock(g, 0)
+	expected := []Response{NormalDiceBlock{0}, RedDiceBlock{0}, BlueDiceBlock{0}}
+	got := g.ExtraEvent.Responses()
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Expected Responses: %#v, got: %#v", expected, got)
 	}
 }
