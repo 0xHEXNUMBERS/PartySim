@@ -84,13 +84,32 @@ func (m MinigameEvent) Handle(r Response, g Game) Game {
 	return g
 }
 
+type MinigameTeam int
+
+const (
+	BlueTeam MinigameTeam = iota
+	RedTeam
+	GreenTeam
+)
+
+func SpaceToTeam(s SpaceType) MinigameTeam {
+	switch s {
+	case Blue, Mushroom:
+		return BlueTeam
+	case Red, Bowser:
+		return RedTeam
+	default:
+		return GreenTeam
+	}
+}
+
 func GetMinigame(g Game) MinigameEvent {
 	var blueTeam []int
 	var redTeam []int
 	for i, p := range g.Players {
-		if p.LastSpaceType == Blue {
+		if SpaceToTeam(p.LastSpaceType) == BlueTeam {
 			blueTeam = append(blueTeam, i)
-		} else if p.LastSpaceType == Red {
+		} else if SpaceToTeam(p.LastSpaceType) == RedTeam {
 			redTeam = append(redTeam, i)
 		}
 	}
@@ -120,7 +139,7 @@ func GetMinigame(g Game) MinigameEvent {
 
 func FindGreenPlayer(g Game) Event {
 	for i, p := range g.Players {
-		if p.LastSpaceType != Blue && p.LastSpaceType != Red {
+		if SpaceToTeam(p.LastSpaceType) == GreenTeam {
 			return DeterminePlayerTeamEvent{
 				Player: i,
 			}
