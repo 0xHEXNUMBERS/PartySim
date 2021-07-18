@@ -1,5 +1,20 @@
 package mp1
 
+func PreBowserCheck(g Game, player int) Game {
+	//Special events when player has 0 coins
+	if g.Players[player].Coins == 0 {
+		if g.Players[player].Stars > 0 {
+			g = AwardCoins(g, player, 10, false)
+			g.Players[player].Stars--
+		} else {
+			g = AwardCoins(g, player, 20, false)
+		}
+	} else {
+		g.ExtraEvent = BowserEvent{player}
+	}
+	return g
+}
+
 type BowserEvent struct {
 	Player int
 }

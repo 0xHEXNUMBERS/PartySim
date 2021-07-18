@@ -75,17 +75,7 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		g.Players[playerIdx].HappeningCount++
 		g = curSpace.StoppingEvent(g)
 	case Bowser:
-		//Special events when player has 0 coins
-		if g.Players[playerIdx].Coins == 0 {
-			if g.Players[playerIdx].Stars > 0 {
-				g = AwardCoins(g, playerIdx, 10, false)
-				g.Players[playerIdx].Stars--
-			} else {
-				g = AwardCoins(g, playerIdx, 20, false)
-			}
-		} else {
-			g.ExtraEvent = BowserEvent{playerIdx}
-		}
+		g = PreBowserCheck(g, playerIdx)
 	case MinigameSpace:
 		g.ExtraEvent = MinigameEvent{[4]int{playerIdx, 0, 0, 0}, Minigame1P}
 	}

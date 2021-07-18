@@ -8,23 +8,6 @@ type Event interface {
 	ControllingPlayer() int
 }
 
-type NormalDiceBlock struct {
-	Player int
-}
-
-func (m NormalDiceBlock) Responses() []Response {
-	return CPURangeEvent{1, 10}.Responses()
-}
-
-func (m NormalDiceBlock) ControllingPlayer() int {
-	return CPU_PLAYER
-}
-
-func (m NormalDiceBlock) Handle(r Response, g Game) Game {
-	moves := r.(int)
-	return MovePlayer(g, m.Player, moves)
-}
-
 type BranchEvent struct {
 	Player int
 	Chain  int
