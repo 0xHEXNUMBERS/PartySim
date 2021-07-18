@@ -95,6 +95,14 @@ func TestEventDiceBlock(t *testing.T) {
 		t.Errorf("Expected Boo event: %#v, got: %#v", expectedBooEvent, gotBooEvent)
 	}
 
+	gBoo = gBoo.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
+	gBoo = gBoo.ExtraEvent.Handle(10, g)
+	expectedSpace := ChainSpace{1, 23}
+	gotSpace := gBoo.Players[0].CurrentSpace
+	if expectedSpace != gotSpace {
+		t.Errorf("Expected space: %#v, got: %#v", expectedSpace, gotSpace)
+	}
+
 	gBowser := g.ExtraEvent.Handle(BowserEventBlock, g)
 	expectedBowserEvent := BowserEvent{0}
 	gotBowserEvent := gBowser.ExtraEvent

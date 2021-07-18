@@ -102,14 +102,17 @@ func (b BooCoinsEvent) Handle(r Response, g Game) Game {
 	g.ExtraEvent = nil
 	g = b.PayRangeEvent.Handle(r, g)
 	g = AwardCoins(g, b.RecvPlayer, r.(int), false)
-	g = MovePlayer(g, b.RecvPlayer, b.Moves)
+
+	if b.Moves != 0 {
+		g = MovePlayer(g, b.RecvPlayer, b.Moves)
+	}
 	return g
 }
 
 type BooEvent struct {
 	Player  int
 	Players [4]Player
-	Moves   int
+	Moves   int //No call to MovePlayer on 0
 	Coins   int
 }
 
@@ -160,7 +163,9 @@ func (b BooEvent) Handle(r Response, g Game) Game {
 		}
 		return g
 	}
-	g = MovePlayer(g, b.Player, b.Moves)
+	if b.Moves != 0 {
+		g = MovePlayer(g, b.Player, b.Moves)
+	}
 	return g
 }
 
