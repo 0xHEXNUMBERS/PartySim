@@ -288,7 +288,7 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 4) //Land on happening
+	g = MovePlayer(g, 0, 4) //Want to land on happening
 	g = g.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
 	expectedEvent := BooCoinsEvent{
 		PayRangeEvent: PayRangeEvent{
@@ -324,6 +324,32 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 		t.Errorf("Luigi expected: %d coins, got: %d coins",
 			expectedLuigiCoins,
 			gotLuigiCoins,
+		)
+	}
+}
+
+func TestPassEmptyBooSpace(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
+			NewPlayer("Luigi", 0, 4, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
+		},
+		NoBoo: true,
+	}
+	g = MovePlayer(g, 0, 4)
+	if g.ExtraEvent != nil {
+		t.Errorf("Unexpected event: %#v", g.ExtraEvent)
+	}
+
+	expectedSpace := ChainSpace{1, 26}
+	gotSpace := g.Players[0].CurrentSpace
+	if expectedSpace != gotSpace {
+		t.Errorf("Expected space: %#v, got: %#v",
+			expectedSpace,
+			gotSpace,
 		)
 	}
 }

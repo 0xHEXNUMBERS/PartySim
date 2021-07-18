@@ -9,6 +9,7 @@ type Game struct {
 
 	//Game configuration from Mushroom House
 	NoKoopa    bool
+	NoBoo      bool
 	RedDice    bool
 	BlueDice   bool
 	WarpDice   bool
@@ -59,8 +60,15 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 				return g
 			}
 		case Boo:
-			g.ExtraEvent = BooEvent{playerIdx, g.Players, moves, g.Players[playerIdx].Coins}
-			return g
+			if !g.NoBoo {
+				g.ExtraEvent = BooEvent{
+					playerIdx,
+					g.Players,
+					moves,
+					g.Players[playerIdx].Coins,
+				}
+				return g
+			}
 		default:
 			moves--
 		}
