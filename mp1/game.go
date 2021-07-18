@@ -92,6 +92,8 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		g = PreBowserCheck(g, playerIdx)
 	case MinigameSpace:
 		g.ExtraEvent = MinigameEvent{[4]int{playerIdx, 0, 0, 0}, Minigame1P}
+	case Chance:
+		g.ExtraEvent = ChanceTime{Player: playerIdx}
 	}
 	return g
 }
