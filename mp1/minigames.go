@@ -3,6 +3,7 @@ package mp1
 type MinigameAwards [4]int
 
 var MinigameRewardsFFA = []Response{
+	MinigameAwards{10, 10, 10, 10},
 	MinigameAwards{10, 0, 0, 0},
 	MinigameAwards{0, 10, 0, 0},
 	MinigameAwards{0, 0, 10, 0},
