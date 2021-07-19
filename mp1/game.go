@@ -76,7 +76,10 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 					moves,
 					g.Players[playerIdx].Coins,
 				}
-				return g
+				if len(g.ExtraEvent.Responses()) != 0 {
+					return g
+				}
+				g.ExtraEvent = nil
 			}
 		default:
 			moves--
