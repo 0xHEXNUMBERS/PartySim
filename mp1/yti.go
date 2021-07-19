@@ -14,7 +14,7 @@ func ytiCheckThwomp(thwomp int) func(Game, int, int) Game {
 				player,
 				playerPos.Chain,
 				moves,
-				g.Board.Links[playerPos.Chain],
+				(*g.Board.Links)[playerPos.Chain],
 			}
 			return g
 		}
@@ -36,7 +36,7 @@ func ytiPayThwomp(thwomp int) func(Game, int, int) Game {
 				maxCoins,
 			},
 			thwomp,
-			(*g.Board.Links[thwomp+2])[0],
+			(*(*g.Board.Links)[thwomp+2])[0],
 			moves,
 		}
 		return g
@@ -145,7 +145,7 @@ var YTI = Board{
 			{Type: Invisible, PassingEvent: ytiPayThwomp(1)},
 		},
 	},
-	Links: map[int]*[]ChainSpace{
+	Links: &map[int]*[]ChainSpace{
 		0: {{2, 0}},
 		1: {{3, 0}},
 		2: {{1, 6}}, //Thwomp payments only have 1 link

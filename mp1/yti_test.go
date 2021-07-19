@@ -34,7 +34,7 @@ func TestCanPayThwomp(t *testing.T) {
 		},
 	}
 	g = MovePlayer(g, 0, 10)
-	expected := BranchEvent{0, 1, 6, YTI.Links[1]}
+	expected := BranchEvent{0, 1, 6, (*YTI.Links)[1]}
 	got := g.ExtraEvent
 	if expected != got {
 		t.Errorf("Event expected: %#v, got: %#v", expected, got)

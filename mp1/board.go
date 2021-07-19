@@ -40,6 +40,6 @@ type Movement struct {
 
 type Board struct {
 	Chains *[]Chain
-	Links  map[int]*[]ChainSpace
+	Links  *map[int]*[]ChainSpace
 	Data   ExtraBoardData
 }
