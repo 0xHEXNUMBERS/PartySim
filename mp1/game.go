@@ -1,13 +1,14 @@
 package mp1
 
 type GameConfig struct {
-	MaxTurns   uint8
-	NoKoopa    bool
-	NoBoo      bool
-	RedDice    bool
-	BlueDice   bool
-	WarpDice   bool
-	EventsDice bool
+	MaxTurns     uint8
+	NoBonusStars bool
+	NoKoopa      bool
+	NoBoo        bool
+	RedDice      bool
+	BlueDice     bool
+	WarpDice     bool
+	EventsDice   bool
 }
 
 type Game struct {
@@ -107,6 +108,43 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		g.ExtraEvent = MinigameEvent{[4]int{playerIdx, 0, 0, 0}, Minigame1P}
 	case Chance:
 		g.ExtraEvent = ChanceTime{Player: playerIdx}
+	}
+	return g
+}
+
+func AwardBonusStars(g Game) Game {
+	if g.Config.NoBonusStars {
+		return g
+	}
+
+	maxCoins := g.Players[0].MaxCoins
+	for i := 1; i < 4; i++ {
+		maxCoins = max(maxCoins, g.Players[i].MaxCoins)
+	}
+	for i := 0; i < 4; i++ {
+		if g.Players[i].MaxCoins == maxCoins {
+			g.Players[i].Stars++
+		}
+	}
+
+	maxMinigameCoins := g.Players[0].MinigameCoins
+	for i := 1; i < 4; i++ {
+		maxMinigameCoins = max(maxMinigameCoins, g.Players[i].MinigameCoins)
+	}
+	for i := 0; i < 4; i++ {
+		if g.Players[i].MinigameCoins == maxMinigameCoins {
+			g.Players[i].Stars++
+		}
+	}
+
+	maxHappening := g.Players[0].HappeningCount
+	for i := 1; i < 4; i++ {
+		maxHappening = max(maxHappening, g.Players[i].HappeningCount)
+	}
+	for i := 0; i < 4; i++ {
+		if g.Players[i].HappeningCount == maxHappening {
+			g.Players[i].Stars++
+		}
 	}
 	return g
 }
