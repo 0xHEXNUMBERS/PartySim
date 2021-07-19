@@ -67,6 +67,9 @@ func TestGainCoins(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
+		Config: GameConfig{
+			MaxTurns: 25,
+		},
 	}
 
 	g = MovePlayer(g, 0, 1)
@@ -85,6 +88,9 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
+		},
+		Config: GameConfig{
+			MaxTurns: 25,
 		},
 	}
 
@@ -120,6 +126,9 @@ func TestIgnoreThwomp(t *testing.T) {
 			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
+		},
+		Config: GameConfig{
+			MaxTurns: 25,
 		},
 	}
 
@@ -363,6 +372,9 @@ func TestBuyStar(t *testing.T) {
 			NewPlayer("Luigi", 0, 4, ChainSpace{0, 0}),
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
+		},
+		Config: GameConfig{
+			MaxTurns: 25,
 		},
 	}
 

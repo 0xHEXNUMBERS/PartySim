@@ -92,7 +92,7 @@ const (
 	BBBP4Win
 )
 
-func GetBowserMinigameCoinLoss(turn uint) int {
+func GetBowserMinigameCoinLoss(turn uint8) int {
 	if turn <= 9 {
 		return 10
 	} else if turn <= 19 {

@@ -1,6 +1,7 @@
 package mp1
 
 type GameConfig struct {
+	MaxTurns   uint8
 	NoKoopa    bool
 	NoBoo      bool
 	RedDice    bool
@@ -12,10 +13,14 @@ type GameConfig struct {
 type Game struct {
 	Board
 	Players       [4]Player
-	Turn          uint
+	Turn          uint8
 	CurrentPlayer int
 	ExtraEvent    Event
 	Config        GameConfig
+}
+
+func LastFiveTurns(g Game) bool {
+	return g.Config.MaxTurns-g.Turn <= 5
 }
 
 func AwardCoins(g Game, player, coins int, minigame bool) Game {
@@ -83,8 +88,14 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 	switch curSpace.Type {
 	case Blue:
 		g = AwardCoins(g, playerIdx, 3, false)
+		if LastFiveTurns(g) {
+			g = AwardCoins(g, playerIdx, 3, false)
+		}
 	case Red:
 		g = AwardCoins(g, playerIdx, -3, false)
+		if LastFiveTurns(g) {
+			g = AwardCoins(g, playerIdx, -3, false)
+		}
 	case Mushroom:
 		g.ExtraEvent = MushroomEvent{playerIdx}
 	case Happening:
