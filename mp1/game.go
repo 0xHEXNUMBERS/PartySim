@@ -1,19 +1,21 @@
 package mp1
 
-type Game struct {
-	Board
-	Turn          uint
-	Players       [4]Player
-	CurrentPlayer int
-	ExtraEvent    Event
-
-	//Game configuration from Mushroom House
+type GameConfig struct {
 	NoKoopa    bool
 	NoBoo      bool
 	RedDice    bool
 	BlueDice   bool
 	WarpDice   bool
 	EventsDice bool
+}
+
+type Game struct {
+	Board
+	Players       [4]Player
+	Turn          uint
+	CurrentPlayer int
+	ExtraEvent    Event
+	Config        GameConfig
 }
 
 func AwardCoins(g Game, player, coins int, minigame bool) Game {
@@ -51,7 +53,7 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 				return g
 			}
 		case Start:
-			if !g.NoKoopa {
+			if !g.Config.NoKoopa {
 				g = AwardCoins(g, playerIdx, 10, false)
 			}
 		case Star:
@@ -60,7 +62,7 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 				return g
 			}
 		case Boo:
-			if !g.NoBoo {
+			if !g.Config.NoBoo {
 				g.ExtraEvent = BooEvent{
 					playerIdx,
 					g.Players,

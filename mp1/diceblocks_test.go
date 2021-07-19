@@ -128,10 +128,12 @@ func TestPickDiceBlock(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
-		RedDice:  true,
-		BlueDice: true,
+		Config: GameConfig{
+			RedDice:  true,
+			BlueDice: true,
+		},
 	}
-	g.ExtraEvent = GeneratePickDiceBlock(g, 0)
+	g.ExtraEvent = PickDiceBlock{0, g.Config}
 	expected := []Response{NormalDiceBlock{0}, RedDiceBlock{0}, BlueDiceBlock{0}}
 	got := g.ExtraEvent.Responses()
 	if !reflect.DeepEqual(expected, got) {

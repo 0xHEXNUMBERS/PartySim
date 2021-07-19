@@ -127,25 +127,22 @@ func (e EventDiceBlock) Handle(r Response, g Game) Game {
 }
 
 type PickDiceBlock struct {
-	Player     int
-	RedDice    bool
-	BlueDice   bool
-	WarpDice   bool
-	EventsDice bool
+	Player int
+	Config GameConfig
 }
 
 func (p PickDiceBlock) Responses() []Response {
 	res := []Response{NormalDiceBlock{p.Player}}
-	if p.RedDice {
+	if p.Config.RedDice {
 		res = append(res, RedDiceBlock{p.Player})
 	}
-	if p.BlueDice {
+	if p.Config.BlueDice {
 		res = append(res, BlueDiceBlock{p.Player})
 	}
-	if p.WarpDice {
+	if p.Config.WarpDice {
 		res = append(res, WarpDiceBlock{p.Player})
 	}
-	if p.EventsDice {
+	if p.Config.EventsDice {
 		res = append(res, EventDiceBlock{p.Player})
 	}
 	return res
@@ -159,14 +156,4 @@ func (p PickDiceBlock) Handle(r Response, g Game) Game {
 	evt := r.(Event)
 	g.ExtraEvent = evt
 	return g
-}
-
-func GeneratePickDiceBlock(g Game, player int) PickDiceBlock {
-	return PickDiceBlock{
-		player,
-		g.RedDice,
-		g.BlueDice,
-		g.WarpDice,
-		g.EventsDice,
-	}
 }

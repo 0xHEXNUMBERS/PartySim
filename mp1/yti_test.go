@@ -175,7 +175,6 @@ func TestCoinsOnStart(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
-		NoKoopa: false,
 	}
 
 	g = MovePlayer(g, 0, 1)
@@ -337,7 +336,9 @@ func TestPassEmptyBooSpace(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
-		NoBoo: true,
+		Config: GameConfig{
+			NoBoo: true,
+		},
 	}
 	g = MovePlayer(g, 0, 4)
 	if g.ExtraEvent != nil {
