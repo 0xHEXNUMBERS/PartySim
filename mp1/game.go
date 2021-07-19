@@ -148,3 +148,28 @@ func AwardBonusStars(g Game) Game {
 	}
 	return g
 }
+
+func Winners(g Game) []int {
+	maxStarHolders := []int{}
+	maxStars := g.Players[0].Stars
+	for i := 1; i < 4; i++ {
+		maxStars = max(maxStars, g.Players[i].Stars)
+	}
+	for i := 0; i < 4; i++ {
+		if g.Players[i].Stars == maxStars {
+			maxStarHolders = append(maxStarHolders, i)
+		}
+	}
+
+	winners := []int{}
+	maxCoins := g.Players[maxStarHolders[0]].Coins
+	for i := 1; i < len(maxStarHolders); i++ {
+		maxCoins = max(maxCoins, g.Players[maxStarHolders[i]].Coins)
+	}
+	for i := 0; i < len(maxStarHolders); i++ {
+		if g.Players[maxStarHolders[i]].Coins == maxCoins {
+			winners = append(winners, maxStarHolders[i])
+		}
+	}
+	return winners
+}
