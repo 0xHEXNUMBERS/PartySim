@@ -45,7 +45,7 @@ func (c ChanceTime) Responses() []Response {
 	}
 	if !c.MiddleHit {
 		for i := 0; i < int(CMBCount); i++ {
-			res = append(res, ChanceTimeResponse{CTBSide, i})
+			res = append(res, ChanceTimeResponse{CTBMiddle, i})
 		}
 	}
 	if !c.RightSideHit && c.LeftSideHit {
