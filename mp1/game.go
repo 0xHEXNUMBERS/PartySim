@@ -42,6 +42,7 @@ func AwardCoins(g Game, player, coins int, minigame bool) Game {
 }
 
 func MovePlayer(g Game, playerIdx, moves int) Game {
+	g.ExtraEvent = nil
 	chains := *g.Board.Chains
 	playerPos := g.Players[playerIdx].CurrentSpace
 	for moves > 0 {
