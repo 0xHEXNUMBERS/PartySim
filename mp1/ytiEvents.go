@@ -13,7 +13,7 @@ func (p PayThwompEvent) Handle(r Response, g Game) Game {
 
 	cost := r.(int)
 	bd := g.Board.Data.(ytiBoardData)
-	bd.Thwomps[p.Thwomp] = cost + 1
+	bd.Thwomps[p.Thwomp] = min(50, cost+1)
 	g.Board.Data = bd
 	g.Players[p.Player].CurrentSpace = p.Link
 	g = MovePlayer(g, p.Player, p.Moves-1)
