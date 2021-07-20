@@ -25,7 +25,6 @@ func (b BranchEvent) Responses() []Response {
 }
 
 func (b BranchEvent) Handle(r Response, g Game) Game {
-	g.ExtraEvent = nil
 	if r == nil {
 		g = MovePlayer(g, b.Player, b.Moves)
 		return g
@@ -55,7 +54,7 @@ func (p PayRangeEvent) Responses() []Response {
 }
 
 func (p PayRangeEvent) Handle(r Response, g Game) Game {
-	g.ExtraEvent = nil
+	//TODO: Figure out if we need to add EndCharacterTurn()
 	cost := r.(int)
 	g = AwardCoins(g, p.Player, -cost, false)
 	return g
@@ -74,13 +73,13 @@ func (m MushroomEvent) Responses() []Response {
 }
 
 func (m MushroomEvent) Handle(r Response, g Game) Game {
-	g.ExtraEvent = nil
 	redMushroom := r.(bool)
 	if redMushroom {
 		g.ExtraEvent = NormalDiceBlock{m.Player}
 		return g
 	}
 	g.Players[m.Player].SkipTurn = true
+	g = EndCharacterTurn(g)
 	return g
 }
 
@@ -99,12 +98,13 @@ func (b BooCoinsEvent) ControllingPlayer() int {
 }
 
 func (b BooCoinsEvent) Handle(r Response, g Game) Game {
-	g.ExtraEvent = nil
 	g = b.PayRangeEvent.Handle(r, g)
 	g = AwardCoins(g, b.RecvPlayer, r.(int), false)
 
 	if b.Moves != 0 {
 		g = MovePlayer(g, b.RecvPlayer, b.Moves)
+	} else {
+		g = EndCharacterTurn(g)
 	}
 	return g
 }
@@ -146,7 +146,6 @@ func (b BooEvent) Responses() []Response {
 }
 
 func (b BooEvent) Handle(r Response, g Game) Game {
-	g.ExtraEvent = nil
 	steal := r.(BooStealAction)
 	if steal.Star {
 		g = AwardCoins(g, steal.RecvPlayer, -50, false)
@@ -165,6 +164,8 @@ func (b BooEvent) Handle(r Response, g Game) Game {
 	}
 	if b.Moves != 0 {
 		g = MovePlayer(g, b.Player, b.Moves)
+	} else {
+		g = EndCharacterTurn(g)
 	}
 	return g
 }
@@ -182,7 +183,6 @@ func (d DeterminePlayerTeamEvent) Responses() []Response {
 }
 
 func (d DeterminePlayerTeamEvent) Handle(r Response, g Game) Game {
-	g.ExtraEvent = nil
 	isBlue := r.(bool)
 
 	if isBlue {
@@ -190,6 +190,7 @@ func (d DeterminePlayerTeamEvent) Handle(r Response, g Game) Game {
 	} else {
 		g.Players[d.Player].LastSpaceType = Red
 	}
+	g = FindGreenPlayer(g)
 	return g
 }
 

@@ -114,7 +114,9 @@ func TestChanceTime(t *testing.T) {
 		)
 	}
 
-	if gSwapStars.ExtraEvent != nil {
-		t.Errorf("Unexpected event: %#v", gSwapStars.ExtraEvent)
+	expectedEvt := PickDiceBlock{1, gSwapStars.Config}
+	gotEvt := gSwapStars.ExtraEvent
+	if expectedEvt != gotEvt {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
 	}
 }

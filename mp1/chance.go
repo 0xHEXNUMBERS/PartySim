@@ -121,7 +121,7 @@ func (c ChanceTime) Handle(r Response, g Game) Game {
 			g.Players[c.LeftSidePosition].Stars = g.Players[c.RightSidePosition].Stars
 			g.Players[c.RightSidePosition].Stars = tmp
 		}
-		g.ExtraEvent = nil
+		g = EndCharacterTurn(g)
 	} else {
 		g.ExtraEvent = c
 	}

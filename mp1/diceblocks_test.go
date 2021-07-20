@@ -114,8 +114,10 @@ func TestEventDiceBlock(t *testing.T) {
 	}
 
 	gKoopa := g.ExtraEvent.Handle(KoopaEventBlock, g)
-	if gKoopa.ExtraEvent != nil {
-		t.Errorf("Unexpected Koopa event: %#v", gKoopa.ExtraEvent)
+	expectedEvt := PickDiceBlock{1, gKoopa.Config}
+	gotEvt := gKoopa.ExtraEvent
+	if expectedEvt != gotEvt {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
 	}
 }
 

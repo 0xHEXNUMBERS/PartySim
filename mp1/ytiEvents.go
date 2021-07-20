@@ -9,8 +9,6 @@ type PayThwompEvent struct {
 
 func (p PayThwompEvent) Handle(r Response, g Game) Game {
 	g = p.PayRangeEvent.Handle(r, g)
-	g.ExtraEvent = nil
-
 	cost := r.(int)
 	bd := g.Board.Data.(ytiBoardData)
 	bd.Thwomps[p.Thwomp] = min(50, cost+1)

@@ -9,6 +9,7 @@ func PreBowserCheck(g Game, player int) Game {
 		} else {
 			g = AwardCoins(g, player, 20, false)
 		}
+		g = EndGameTurn(g)
 	} else {
 		g.ExtraEvent = BowserEvent{player}
 	}
@@ -55,7 +56,9 @@ func (b BowserEvent) Handle(r Response, g Game) Game {
 	case CoinsForBowser:
 		maxCoins := min(g.Players[b.Player].Coins, 30)
 		minCoins := min(g.Players[b.Player].Coins, 10)
-		g.ExtraEvent = PayRangeEvent{b.Player, minCoins, maxCoins}
+		g.ExtraEvent = CoinsForBowserEvent{
+			PayRangeEvent{b.Player, minCoins, maxCoins},
+		}
 	case BowserBalloonBurst:
 		g.ExtraEvent = BowserBalloonBurstEvent{}
 	case BowsersFaceLift:
@@ -73,10 +76,24 @@ func (b BowserEvent) Handle(r Response, g Game) Game {
 		for i := range g.Players {
 			g.Players[i].Coins = coins
 		}
-		g.ExtraEvent = nil
+		g = EndCharacterTurn(g)
 	case BowsersChanceTime:
 		g.ExtraEvent = BowsersChanceTimeEvent{}
 	}
+	return g
+}
+
+type CoinsForBowserEvent struct {
+	PayRangeEvent
+}
+
+func (c CoinsForBowserEvent) ControllingPlayer() int {
+	return CPU_PLAYER
+}
+
+func (c CoinsForBowserEvent) Handle(r Response, g Game) Game {
+	g = c.PayRangeEvent.Handle(r, g)
+	g = EndCharacterTurn(g)
 	return g
 }
 
@@ -144,7 +161,7 @@ func (b BowserBalloonBurstEvent) Handle(r Response, g Game) Game {
 		g = AwardCoins(g, 1, coinLoss, true)
 		g = AwardCoins(g, 2, coinLoss, true)
 	}
-	g.ExtraEvent = nil
+	g = EndCharacterTurn(g)
 	return g
 }
 
@@ -173,7 +190,7 @@ func (b BowsersFaceLiftEvent) Handle(r Response, g Game) Game {
 			g = AwardCoins(g, p, coinLoss, true)
 		}
 	}
-	g.ExtraEvent = nil
+	g = EndCharacterTurn(g)
 	return g
 }
 
@@ -220,7 +237,7 @@ func (b BowsersTugoWarEvent) Handle(r Response, g Game) Game {
 	case BTW3TWin:
 		g = AwardCoins(g, b.Player, -10, true)
 	}
-	g.ExtraEvent = nil
+	g = EndCharacterTurn(g)
 	return g
 }
 
@@ -250,7 +267,7 @@ func (b BashnCashEvent) Handle(r Response, g Game) Game {
 		coinsLost += timesHit * 5
 	}
 	g = AwardCoins(g, b.Player, -coinsLost, true)
-	g.ExtraEvent = nil
+	g = EndCharacterTurn(g)
 	return g
 }
 
@@ -287,6 +304,6 @@ func (b BowsersCTPlayerPicked) ControllingPlayer() int {
 func (b BowsersCTPlayerPicked) Handle(r Response, g Game) Game {
 	coins := r.(int)
 	g = AwardCoins(g, b.Player, -coins, false)
-	g.ExtraEvent = nil
+	g = EndCharacterTurn(g)
 	return g
 }

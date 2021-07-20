@@ -77,11 +77,11 @@ func (m MinigameEvent) ControllingPlayer() int {
 }
 
 func (m MinigameEvent) Handle(r Response, g Game) Game {
-	g.ExtraEvent = nil
 	awards := r.(MinigameAwards)
 	for i, player := range m.PlayerIDs {
 		g = AwardCoins(g, player, awards[i], true)
 	}
+	g = EndGameTurn(g)
 	return g
 }
 
@@ -104,7 +104,7 @@ func SpaceToTeam(s SpaceType) MinigameTeam {
 	}
 }
 
-func GetMinigame(g Game) MinigameEvent {
+func GetMinigame(g Game) Game {
 	var blueTeam []int
 	var redTeam []int
 	for i, p := range g.Players {
@@ -135,16 +135,19 @@ func GetMinigame(g Game) MinigameEvent {
 	for i := range blueTeam {
 		minigame.PlayerIDs[i] = players[i]
 	}
-	return minigame
+	g.ExtraEvent = minigame
+	return g
 }
 
-func FindGreenPlayer(g Game) Event {
+func FindGreenPlayer(g Game) Game {
 	for i, p := range g.Players {
 		if SpaceToTeam(p.LastSpaceType) == GreenTeam {
-			return DeterminePlayerTeamEvent{
+			g.ExtraEvent = DeterminePlayerTeamEvent{
 				Player: i,
 			}
+			return g
 		}
 	}
-	return nil
+	g = GetMinigame(g)
+	return g
 }

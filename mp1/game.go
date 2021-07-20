@@ -42,7 +42,6 @@ func AwardCoins(g Game, player, coins int, minigame bool) Game {
 }
 
 func MovePlayer(g Game, playerIdx, moves int) Game {
-	g.ExtraEvent = nil
 	chains := *g.Board.Chains
 	playerPos := g.Players[playerIdx].CurrentSpace
 	for moves > 0 {
@@ -54,6 +53,7 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		curSpace := chains[playerPos.Chain][playerPos.Space]
 		switch curSpace.Type {
 		case Invisible:
+			g.ExtraEvent = nil
 			g = curSpace.PassingEvent(g, playerIdx, moves)
 			if g.ExtraEvent != nil {
 				g.Players[playerIdx].CurrentSpace = playerPos
@@ -64,22 +64,23 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 				g = AwardCoins(g, playerIdx, 10, false)
 			}
 		case Star:
+			g.ExtraEvent = nil
 			g = curSpace.PassingEvent(g, playerIdx, moves)
 			if g.ExtraEvent != nil {
 				return g
 			}
 		case Boo:
 			if !g.Config.NoBoo {
-				g.ExtraEvent = BooEvent{
+				booEvt := BooEvent{
 					playerIdx,
 					g.Players,
 					moves,
 					g.Players[playerIdx].Coins,
 				}
-				if len(g.ExtraEvent.Responses()) != 0 {
+				if len(booEvt.Responses()) != 0 {
+					g.ExtraEvent = booEvt
 					return g
 				}
-				g.ExtraEvent = nil
 			}
 		default:
 			moves--
@@ -96,16 +97,22 @@ func MovePlayer(g Game, playerIdx, moves int) Game {
 		if LastFiveTurns(g) {
 			g = AwardCoins(g, playerIdx, 3, false)
 		}
+		g = EndCharacterTurn(g)
 	case Red:
 		g = AwardCoins(g, playerIdx, -3, false)
 		if LastFiveTurns(g) {
 			g = AwardCoins(g, playerIdx, -3, false)
 		}
+		g = EndCharacterTurn(g)
 	case Mushroom:
 		g.ExtraEvent = MushroomEvent{playerIdx}
 	case Happening:
 		g.Players[playerIdx].HappeningCount++
+		g.ExtraEvent = nil
 		g = curSpace.StoppingEvent(g)
+		if g.ExtraEvent == nil {
+			g = EndCharacterTurn(g)
+		}
 	case Bowser:
 		g = PreBowserCheck(g, playerIdx)
 	case MinigameSpace:
@@ -176,4 +183,30 @@ func Winners(g Game) []int {
 		}
 	}
 	return winners
+}
+
+func EndGameTurn(g Game) Game {
+	g.Turn++
+	if g.Turn == g.Config.MaxTurns {
+		g = AwardBonusStars(g)
+		//Game is over, no more events
+		g.ExtraEvent = nil
+		return g
+	}
+	g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
+	return g
+}
+
+func StartMinigamePrep(g Game) Game {
+	g = FindGreenPlayer(g)
+	return g
+}
+
+func EndCharacterTurn(g Game) Game {
+	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4
+	if g.CurrentPlayer == 0 {
+		return StartMinigamePrep(g)
+	}
+	g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
+	return g
 }

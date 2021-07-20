@@ -53,8 +53,10 @@ func TestCanNotPayThwomp(t *testing.T) {
 	}
 
 	g = MovePlayer(g, 0, 10)
-	if g.ExtraEvent != nil {
-		t.Error("Could not pay thwomp, yet recieved a branch event")
+	expectedEvt := PickDiceBlock{1, g.Config}
+	gotEvt := g.ExtraEvent
+	if expectedEvt != gotEvt {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
 	}
 }
 
@@ -101,8 +103,10 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	//Pay thwomp 3 coins, move and land on blue space
 	g = g.ExtraEvent.Handle(3, g)
 
-	if g.ExtraEvent != nil {
-		t.Errorf("Recieved unexpected event: %#v", g.ExtraEvent)
+	expectedEvt := PickDiceBlock{1, g.Config}
+	gotEvt := g.ExtraEvent
+	if expectedEvt != gotEvt {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
 	}
 
 	expectedSquare := ChainSpace{0, 12}
@@ -135,8 +139,10 @@ func TestIgnoreThwomp(t *testing.T) {
 	g = MovePlayer(g, 0, 10)
 	g = g.ExtraEvent.Handle(nil, g)
 
-	if g.ExtraEvent != nil {
-		t.Errorf("Recieved unexpected event: %#v", g.ExtraEvent)
+	expectedEvt := PickDiceBlock{1, g.Config}
+	gotEvt := g.ExtraEvent
+	if expectedEvt != gotEvt {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
 	}
 
 	expectedSquare := ChainSpace{1, 5}
@@ -165,8 +171,10 @@ func TestStarSwapViaHappening(t *testing.T) {
 	}
 
 	g = MovePlayer(g, 0, 3)
-	if g.ExtraEvent != nil {
-		t.Errorf("Unexpected event: %#v", g.ExtraEvent)
+	expectedEvt := PickDiceBlock{1, g.Config}
+	gotEvt := g.ExtraEvent
+	if expectedEvt != gotEvt {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
 	}
 
 	bd := g.Board.Data.(ytiBoardData)
@@ -213,7 +221,7 @@ func TestMushroomSpace(t *testing.T) {
 	}
 
 	//Received red mushroom
-	gRed := got.Handle(true, g)
+	gRed := g.ExtraEvent.Handle(true, g)
 	expectedEvent := NormalDiceBlock{0}
 	gotEvent := gRed.ExtraEvent
 	if expectedEvent != gotEvent {
@@ -224,11 +232,11 @@ func TestMushroomSpace(t *testing.T) {
 	}
 
 	//Received poison mushroom
-	gPoison := got.Handle(false, g)
-	if gPoison.ExtraEvent != nil {
-		t.Errorf("Got unexpected event on poison mushroom: %#v",
-			expectedEvent,
-		)
+	gPoison := g.ExtraEvent.Handle(false, g)
+	expectedEvt := PickDiceBlock{1, g.Config}
+	gotEvt := gPoison.ExtraEvent
+	if expectedEvt != gotEvt {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
 	}
 
 	if !gPoison.Players[0].SkipTurn {
@@ -350,8 +358,10 @@ func TestPassEmptyBooSpace(t *testing.T) {
 		},
 	}
 	g = MovePlayer(g, 0, 4)
-	if g.ExtraEvent != nil {
-		t.Errorf("Unexpected event: %#v", g.ExtraEvent)
+	expectedEvt := PickDiceBlock{1, g.Config}
+	gotEvt := g.ExtraEvent
+	if expectedEvt != gotEvt {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
 	}
 
 	expectedSpace := ChainSpace{1, 26}

@@ -20,7 +20,8 @@ func Test4V4Minigame(t *testing.T) {
 	g.Players[2].LastSpaceType = Blue
 	g.Players[3].LastSpaceType = Blue
 
-	minigame := GetMinigame(g)
+	g = GetMinigame(g)
+	minigame := g.ExtraEvent.(MinigameEvent)
 	if minigame.Type != MinigameFFA {
 		t.Fatalf("Expected Minigame Type: %d, got: %d",
 			MinigameFFA, minigame.Type)
@@ -60,7 +61,8 @@ func Test1V3Minigame(t *testing.T) {
 	g.Players[2].LastSpaceType = Blue
 	g.Players[3].LastSpaceType = Red
 
-	minigame := GetMinigame(g)
+	g = GetMinigame(g)
+	minigame := g.ExtraEvent.(MinigameEvent)
 	if minigame.Type != Minigame1V3 {
 		t.Fatalf("Expected Minigame Type: %d, got: %d",
 			MinigameFFA, minigame.Type)
@@ -100,7 +102,8 @@ func Test2V2Minigame(t *testing.T) {
 	g.Players[2].LastSpaceType = Blue
 	g.Players[3].LastSpaceType = Red
 
-	minigame := GetMinigame(g)
+	g = GetMinigame(g)
+	minigame := g.ExtraEvent.(MinigameEvent)
 	if minigame.Type != Minigame2V2 {
 		t.Fatalf("Expected Minigame Type: %d, got: %d",
 			MinigameFFA, minigame.Type)
@@ -152,14 +155,15 @@ func TestGreenToBlue(t *testing.T) {
 	g.Players[2].LastSpaceType = Happening
 	g.Players[3].LastSpaceType = Blue
 
+	g = FindGreenPlayer(g)
 	expectedEvt := DeterminePlayerTeamEvent{2}
-	gotEvt := FindGreenPlayer(g)
+	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v",
 			expectedEvt, gotEvt)
 	}
 
-	g = gotEvt.Handle(true, g)
+	g = g.ExtraEvent.Handle(true, g)
 	expectedSpace := Blue
 	gotSpace := g.Players[2].LastSpaceType
 	if expectedSpace != gotSpace {

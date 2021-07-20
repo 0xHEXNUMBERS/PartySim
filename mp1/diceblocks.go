@@ -121,7 +121,7 @@ func (e EventDiceBlock) Handle(r Response, g Game) Game {
 		g = PreBowserCheck(g, e.Player)
 	case KoopaEventBlock:
 		g = AwardCoins(g, e.Player, 10, false)
-		g.ExtraEvent = nil
+		g = EndCharacterTurn(g)
 	}
 	return g
 }
