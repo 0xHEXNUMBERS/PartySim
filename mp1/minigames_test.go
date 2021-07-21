@@ -31,7 +31,7 @@ func Test4V4Minigame(t *testing.T) {
 		t.Fatal("Recieved incorrect minigame awards")
 	}
 
-	g = minigame.Handle(rewards[0], g) //Daisy wins
+	g = minigame.Handle(rewards[8], g) //Daisy wins
 	expectedDaisyCoins := 20
 	gotDaisyCoins := g.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -65,7 +65,7 @@ func Test1V3Minigame(t *testing.T) {
 	minigame := g.ExtraEvent.(MinigameEvent)
 	if minigame.Type != Minigame1V3 {
 		t.Fatalf("Expected Minigame Type: %d, got: %d",
-			MinigameFFA, minigame.Type)
+			Minigame1V3, minigame.Type)
 	}
 	rewards := minigame.Responses()
 	if !reflect.DeepEqual(rewards, MinigameRewards1V3) {
@@ -106,7 +106,7 @@ func Test2V2Minigame(t *testing.T) {
 	minigame := g.ExtraEvent.(MinigameEvent)
 	if minigame.Type != Minigame2V2 {
 		t.Fatalf("Expected Minigame Type: %d, got: %d",
-			MinigameFFA, minigame.Type)
+			Minigame2V2, minigame.Type)
 	}
 	rewards := minigame.Responses()
 	if !reflect.DeepEqual(rewards, MinigameRewards2V2) {
@@ -190,7 +190,7 @@ func TestLandOnMinigameSpace(t *testing.T) {
 		t.Errorf("Expected lose coins: %d, got: %d", expectedLoseCoins, gotLoseCoins)
 	}
 
-	gWin := g.ExtraEvent.Handle(MinigameRewards1P[11], g) //won WAP
+	gWin := g.ExtraEvent.Handle(MinigameRewards1P[37], g) //won WAP
 	expectedWinCoins := 46
 	gotWinCoins := gWin.Players[0].Coins
 	if expectedWinCoins != gotWinCoins {
