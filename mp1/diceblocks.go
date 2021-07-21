@@ -118,7 +118,10 @@ func (e EventDiceBlock) Handle(r Response, g Game) Game {
 			g.Players[e.Player].Coins,
 		}
 	case BowserEventBlock:
-		g = PreBowserCheck(g, e.Player)
+		//TODO: Typically bowser just takes 20 coins
+		//Does anything happen if player has 0 coins?
+		g = AwardCoins(g, e.Player, -20, false)
+		g = EndCharacterTurn(g)
 	case KoopaEventBlock:
 		g = AwardCoins(g, e.Player, 10, false)
 		g = EndCharacterTurn(g)

@@ -95,7 +95,10 @@ func TestEventDiceBlock(t *testing.T) {
 	expectedBooEvent := BooEvent{0, gBoo.Players, 0, gBoo.Players[0].Coins}
 	gotBooEvent := gBoo.ExtraEvent
 	if expectedBooEvent != gotBooEvent {
-		t.Errorf("Expected Boo event: %#v, got: %#v", expectedBooEvent, gotBooEvent)
+		t.Errorf("Expected Boo event: %#v, got: %#v",
+			expectedBooEvent,
+			gotBooEvent,
+		)
 	}
 
 	gBoo = gBoo.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
@@ -103,14 +106,28 @@ func TestEventDiceBlock(t *testing.T) {
 	expectedSpace := ChainSpace{1, 23}
 	gotSpace := gBoo.Players[0].CurrentSpace
 	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v", expectedSpace, gotSpace)
+		t.Errorf("Expected space: %#v, got: %#v",
+			expectedSpace,
+			gotSpace,
+		)
 	}
 
 	gBowser := g.ExtraEvent.Handle(BowserEventBlock, g)
-	expectedBowserEvent := BowserEvent{0}
+	expectedBowserEvent := PickDiceBlock{1, g.Config}
 	gotBowserEvent := gBowser.ExtraEvent
 	if expectedBowserEvent != gotBowserEvent {
-		t.Errorf("Expected Bowser event: %#v, got: %#v", expectedBowserEvent, gotBowserEvent)
+		t.Errorf("Expected Bowser event: %#v, got: %#v",
+			expectedBowserEvent,
+			gotBowserEvent,
+		)
+	}
+	expectedBowserCoins := 0
+	gotBowserCoins := gBowser.Players[0].Coins
+	if expectedBowserCoins != gotBowserCoins {
+		t.Errorf("Expected Bowser coins: %d, got: %d",
+			expectedBowserCoins,
+			gotBowserCoins,
+		)
 	}
 
 	gKoopa := g.ExtraEvent.Handle(KoopaEventBlock, g)
@@ -118,6 +135,14 @@ func TestEventDiceBlock(t *testing.T) {
 	gotEvt := gKoopa.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
+	}
+	expectedKoopaCoins := 20
+	gotKoopaCoins := gKoopa.Players[0].Coins
+	if expectedKoopaCoins != gotKoopaCoins {
+		t.Errorf("Expected Bowser coins: %d, got: %d",
+			expectedKoopaCoins,
+			gotKoopaCoins,
+		)
 	}
 }
 
