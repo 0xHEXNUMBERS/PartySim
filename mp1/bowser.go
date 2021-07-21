@@ -273,8 +273,25 @@ func (b BashnCashEvent) Handle(r Response, g Game) Game {
 
 type BowsersChanceTimeEvent struct{}
 
+type BCTResponse struct {
+	Player int
+	Coins  int
+}
+
+var BCTResponses = []Response{
+	BCTResponse{0, 10},
+	BCTResponse{0, 20},
+	BCTResponse{0, 30},
+	BCTResponse{1, 10},
+	BCTResponse{1, 20},
+	BCTResponse{1, 30},
+	BCTResponse{2, 10},
+	BCTResponse{2, 20},
+	BCTResponse{2, 30},
+}
+
 func (b BowsersChanceTimeEvent) Responses() []Response {
-	return CPURangeEvent{0, 3}.Responses()
+	return BCTResponses
 }
 
 func (b BowsersChanceTimeEvent) ControllingPlayer() int {
@@ -282,28 +299,8 @@ func (b BowsersChanceTimeEvent) ControllingPlayer() int {
 }
 
 func (b BowsersChanceTimeEvent) Handle(r Response, g Game) Game {
-	player := r.(int)
-	g.ExtraEvent = BowsersCTPlayerPicked{player}
-	return g
-}
-
-var BowsersChanceTimeCoins = []Response{10, 20, 30}
-
-type BowsersCTPlayerPicked struct {
-	Player int
-}
-
-func (b BowsersCTPlayerPicked) Responses() []Response {
-	return CPURangeEvent{0, 3}.Responses()
-}
-
-func (b BowsersCTPlayerPicked) ControllingPlayer() int {
-	return CPU_PLAYER
-}
-
-func (b BowsersCTPlayerPicked) Handle(r Response, g Game) Game {
-	coins := r.(int)
-	g = AwardCoins(g, b.Player, -coins, false)
+	res := r.(BCTResponse)
+	g = AwardCoins(g, res.Player, -res.Coins, false)
 	g = EndCharacterTurn(g)
 	return g
 }

@@ -244,8 +244,7 @@ func TestBowsersChanceTime(t *testing.T) {
 	}
 	g = MovePlayer(g, 0, 1)
 	g = g.ExtraEvent.Handle(BowsersChanceTime, g)
-	g = g.ExtraEvent.Handle(0, g)  //Daisy
-	g = g.ExtraEvent.Handle(20, g) //Loses 20 coins
+	g = g.ExtraEvent.Handle(BCTResponse{0, 20}, g) //Daisy
 	expectedCoins := 30
 	gotCoins := g.Players[0].Coins
 	if expectedCoins != gotCoins {
