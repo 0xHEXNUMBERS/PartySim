@@ -9,7 +9,7 @@ func PreBowserCheck(g Game, player int) Game {
 		} else {
 			g = AwardCoins(g, player, 20, false)
 		}
-		g = EndGameTurn(g)
+		g = EndCharacterTurn(g)
 	} else {
 		g.ExtraEvent = BowserEvent{player}
 	}
