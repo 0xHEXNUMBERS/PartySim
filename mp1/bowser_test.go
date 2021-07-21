@@ -56,15 +56,12 @@ func TestCoinsForBowser(t *testing.T) {
 	}
 	g = MovePlayer(g, 0, 1)
 	g = g.ExtraEvent.Handle(CoinsForBowser, g)
-	expected := CoinsForBowserEvent{
-		PayRangeEvent{0, 10, 25},
-	}
+	expected := PickDiceBlock{1, g.Config}
 	got := g.ExtraEvent
 	if expected != got {
 		t.Errorf("Event expected: %#v, got: %#v", expected, got)
 	}
 
-	g = got.Handle(10, g)
 	expectedCoins := 15
 	gotCoins := g.Players[0].Coins
 	if expectedCoins != gotCoins {

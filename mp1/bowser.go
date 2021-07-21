@@ -54,11 +54,9 @@ func (b BowserEvent) Handle(r Response, g Game) Game {
 	choice := r.(BowserResponse)
 	switch choice {
 	case CoinsForBowser:
-		maxCoins := min(g.Players[b.Player].Coins, 30)
-		minCoins := min(g.Players[b.Player].Coins, 10)
-		g.ExtraEvent = CoinsForBowserEvent{
-			PayRangeEvent{b.Player, minCoins, maxCoins},
-		}
+		coinsLost := GetBowserMinigameCoinLoss(g.Turn)
+		g = AwardCoins(g, b.Player, -coinsLost, false)
+		g = EndCharacterTurn(g)
 	case BowserBalloonBurst:
 		g.ExtraEvent = BowserBalloonBurstEvent{}
 	case BowsersFaceLift:
@@ -80,20 +78,6 @@ func (b BowserEvent) Handle(r Response, g Game) Game {
 	case BowsersChanceTime:
 		g.ExtraEvent = BowsersChanceTimeEvent{}
 	}
-	return g
-}
-
-type CoinsForBowserEvent struct {
-	PayRangeEvent
-}
-
-func (c CoinsForBowserEvent) ControllingPlayer() int {
-	return CPU_PLAYER
-}
-
-func (c CoinsForBowserEvent) Handle(r Response, g Game) Game {
-	g = c.PayRangeEvent.Handle(r, g)
-	g = EndCharacterTurn(g)
 	return g
 }
 
