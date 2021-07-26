@@ -172,7 +172,7 @@ func (g *Game) GetMinigame() {
 	} else {
 		players = append(blueTeam, redTeam...)
 	}
-	for i := range blueTeam {
+	for i := range players {
 		minigame.PlayerIDs[i] = players[i]
 	}
 	g.ExtraEvent = minigame

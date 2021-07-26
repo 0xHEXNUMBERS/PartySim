@@ -71,6 +71,14 @@ func Test1V3Minigame(t *testing.T) {
 	if !reflect.DeepEqual(rewards, MinigameRewards1V3) {
 		t.Fatal("Recieved incorrect minigame awards")
 	}
+	expectedPlayerIDs := [4]int{3, 0, 1, 2}
+	gotPlayerIDs := g.ExtraEvent.(MinigameEvent).PlayerIDs
+	if expectedPlayerIDs != gotPlayerIDs {
+		t.Errorf("Expected IDs: %#v, got: %#v",
+			expectedPlayerIDs,
+			gotPlayerIDs,
+		)
+	}
 
 	minigame.Handle(rewards[0], &g) //Mario wins
 	expectedMarioCoins := 25
