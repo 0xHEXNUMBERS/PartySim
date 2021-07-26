@@ -25,12 +25,10 @@ func (b BranchEvent) Responses() []Response {
 }
 
 func (b BranchEvent) Handle(r Response, g Game) Game {
-	if r == nil {
-		g = MovePlayer(g, b.Player, b.Moves)
-		return g
+	if r != nil {
+		newPlayerPos := r.(ChainSpace)
+		g.Players[b.Player].CurrentSpace = newPlayerPos
 	}
-	newPlayerPos := r.(ChainSpace)
-	g.Players[b.Player].CurrentSpace = newPlayerPos
 	g = MovePlayer(g, b.Player, b.Moves)
 	return g
 }
