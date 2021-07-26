@@ -118,7 +118,11 @@ func (m MinigameEvent) Handle(r Response, g *Game) {
 	for i, player := range m.PlayerIDs {
 		g.AwardCoins(player, awards[i], true)
 	}
-	g.EndGameTurn()
+	if m.Type == Minigame1P {
+		g.EndCharacterTurn()
+	} else {
+		g.EndGameTurn()
+	}
 }
 
 type MinigameTeam int
@@ -131,7 +135,7 @@ const (
 
 func SpaceToTeam(s SpaceType) MinigameTeam {
 	switch s {
-	case Blue, Mushroom:
+	case Blue, Mushroom, MinigameSpace, Chance:
 		return BlueTeam
 	case Red, Bowser:
 		return RedTeam

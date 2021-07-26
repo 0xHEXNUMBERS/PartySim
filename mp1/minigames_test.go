@@ -199,3 +199,28 @@ func TestLandOnMinigameSpace(t *testing.T) {
 		t.Errorf("Expected win coins: %d, got: %d", expectedWinCoins, gotWinCoins)
 	}
 }
+
+func TestPlayer4MinigameSpace(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 10, ChainSpace{1, 20}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
+			NewPlayer("Mario", 0, 10, ChainSpace{1, 20}),
+		},
+	}
+	g.Players[0].LastSpaceType = Blue
+	g.Players[1].LastSpaceType = Blue
+	g.Players[2].LastSpaceType = Blue
+	g.Players[3].LastSpaceType = Blue
+	g.CurrentPlayer = 3
+
+	g.MovePlayer(3, 1)
+	g.ExtraEvent.Handle(MinigameRewards1P[0], &g)
+	expectedEvent := MinigameEvent{[4]int{0, 1, 2, 3}, MinigameFFA}
+	gotEvent := g.ExtraEvent
+	if expectedEvent != gotEvent {
+		t.Errorf("Expected event: %#v, got: %#v", expectedEvent, gotEvent)
+	}
+}
