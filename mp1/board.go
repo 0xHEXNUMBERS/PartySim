@@ -19,8 +19,8 @@ const (
 
 type Space struct {
 	Type          SpaceType
-	StoppingEvent func(game Game) Game
-	PassingEvent  func(game Game, player, moves int) Game
+	StoppingEvent func(game *Game)
+	PassingEvent  func(game *Game, player, moves int)
 }
 
 type Chain []Space

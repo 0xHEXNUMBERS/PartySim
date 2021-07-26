@@ -12,13 +12,14 @@ func TestChanceTime(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 1)
+	g.MovePlayer(0, 1)
 	//Steal from Luigi
-	g = g.ExtraEvent.Handle(ChanceTimeResponse{CTBSide, 1}, g)
+	g.ExtraEvent.Handle(ChanceTimeResponse{CTBSide, 1}, &g)
 	//Daisy will recieve
-	g = g.ExtraEvent.Handle(ChanceTimeResponse{CTBSide, 0}, g)
+	g.ExtraEvent.Handle(ChanceTimeResponse{CTBSide, 0}, &g)
 
-	g10Coins := g.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR10)}, g)
+	g10Coins := g
+	g10Coins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR10)}, &g10Coins)
 	expectedDaisyCoins := 20
 	gotDaisyCoins := g10Coins.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -34,7 +35,8 @@ func TestChanceTime(t *testing.T) {
 		)
 	}
 
-	g20Coins := g.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR20)}, g)
+	g20Coins := g
+	g20Coins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR20)}, &g20Coins)
 	expectedDaisyCoins = 30
 	gotDaisyCoins = g20Coins.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -50,7 +52,8 @@ func TestChanceTime(t *testing.T) {
 		)
 	}
 
-	g30Coins := g.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR30)}, g)
+	g30Coins := g
+	g30Coins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR30)}, &g30Coins)
 	expectedDaisyCoins = 35
 	gotDaisyCoins = g30Coins.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -66,7 +69,8 @@ func TestChanceTime(t *testing.T) {
 		)
 	}
 
-	gStar := g.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTRStar)}, g)
+	gStar := g
+	gStar.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTRStar)}, &gStar)
 	expectedDaisyStars := 5
 	gotDaisyStars := gStar.Players[0].Stars
 	if expectedDaisyStars != gotDaisyStars {
@@ -82,7 +86,8 @@ func TestChanceTime(t *testing.T) {
 		)
 	}
 
-	gSwapCoins := g.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(SwapCoins)}, g)
+	gSwapCoins := g
+	gSwapCoins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(SwapCoins)}, &gSwapCoins)
 	expectedDaisyCoins = 25
 	gotDaisyCoins = gSwapCoins.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -98,7 +103,8 @@ func TestChanceTime(t *testing.T) {
 		)
 	}
 
-	gSwapStars := g.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(SwapStars)}, g)
+	gSwapStars := g
+	gSwapStars.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(SwapStars)}, &gSwapStars)
 	expectedDaisyStars = 9
 	gotDaisyStars = gSwapStars.Players[0].Stars
 	if expectedDaisyStars != gotDaisyStars {

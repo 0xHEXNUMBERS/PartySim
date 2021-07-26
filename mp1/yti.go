@@ -5,8 +5,8 @@ type ytiBoardData struct {
 	StarPosition ChainSpace
 }
 
-func ytiCheckThwomp(thwomp int) func(Game, int, int) Game {
-	return func(g Game, player, moves int) Game {
+func ytiCheckThwomp(thwomp int) func(*Game, int, int) {
+	return func(g *Game, player, moves int) {
 		bd := g.Board.Data.(ytiBoardData)
 		playerPos := g.Players[player].CurrentSpace
 		if g.Players[player].Coins >= bd.Thwomps[thwomp] {
@@ -16,14 +16,12 @@ func ytiCheckThwomp(thwomp int) func(Game, int, int) Game {
 				moves,
 				(*g.Board.Links)[playerPos.Chain],
 			}
-			return g
 		}
-		return g
 	}
 }
 
-func ytiPayThwomp(thwomp int) func(Game, int, int) Game {
-	return func(g Game, player, moves int) Game {
+func ytiPayThwomp(thwomp int) func(*Game, int, int) {
+	return func(g *Game, player, moves int) {
 		bd := g.Board.Data.(ytiBoardData)
 		maxCoins := 50
 		if maxCoins > g.Players[player].Coins {
@@ -39,14 +37,13 @@ func ytiPayThwomp(thwomp int) func(Game, int, int) Game {
 			(*(*g.Board.Links)[thwomp+2])[0],
 			moves,
 		}
-		return g
 	}
 }
 
 var ytiLeftIslandStar = ChainSpace{0, 19}
 var ytiRightIslandStar = ChainSpace{1, 18}
 
-func ytiSwapStarPosition(g Game) Game {
+func ytiSwapStarPosition(g *Game) {
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition == ytiLeftIslandStar {
 		bd.StarPosition = ytiRightIslandStar
@@ -54,21 +51,19 @@ func ytiSwapStarPosition(g Game) Game {
 		bd.StarPosition = ytiLeftIslandStar
 	}
 	g.Board.Data = bd
-	return g
 }
 
-func ytiGainStar(g Game, player, moves int) Game {
+func ytiGainStar(g *Game, player, moves int) {
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition == g.Players[player].CurrentSpace {
 		if g.Players[player].Coins >= 20 {
-			g = AwardCoins(g, player, -20, false)
+			g.AwardCoins(player, -20, false)
 			g.Players[player].Stars++
-			g = ytiSwapStarPosition(g)
+			ytiSwapStarPosition(g)
 		}
 	} else { //Star at other island
-		g = AwardCoins(g, player, -30, false)
+		g.AwardCoins(player, -30, false)
 	}
-	return g
 }
 
 var YTI = Board{

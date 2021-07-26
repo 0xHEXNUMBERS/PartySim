@@ -14,7 +14,7 @@ func TestMove(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 4)
+	g.MovePlayer(0, 4)
 	expected := ChainSpace{1, 27}
 	got := g.Players[0].CurrentSpace
 	if expected != got {
@@ -33,7 +33,7 @@ func TestCanPayThwomp(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 10)
+	g.MovePlayer(0, 10)
 	expected := BranchEvent{0, 1, 6, (*YTI.Links)[1]}
 	got := g.ExtraEvent
 	if expected != got {
@@ -52,7 +52,7 @@ func TestCanNotPayThwomp(t *testing.T) {
 		},
 	}
 
-	g = MovePlayer(g, 0, 10)
+	g.MovePlayer(0, 10)
 	expectedEvt := PickDiceBlock{1, g.Config}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
@@ -74,7 +74,7 @@ func TestGainCoins(t *testing.T) {
 		},
 	}
 
-	g = MovePlayer(g, 0, 1)
+	g.MovePlayer(0, 1)
 	expected := 13
 	got := g.Players[0].Coins
 	if expected != got {
@@ -97,11 +97,11 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	}
 
 	//Move player to invisible space
-	g = MovePlayer(g, 0, 10)
+	g.MovePlayer(0, 10)
 	//Move player to Chain 3 to pay thwomp 1
-	g = g.ExtraEvent.Handle(ChainSpace{3, 0}, g)
+	g.ExtraEvent.Handle(ChainSpace{3, 0}, &g)
 	//Pay thwomp 3 coins, move and land on blue space
-	g = g.ExtraEvent.Handle(3, g)
+	g.ExtraEvent.Handle(3, &g)
 
 	expectedEvt := PickDiceBlock{1, g.Config}
 	gotEvt := g.ExtraEvent
@@ -136,8 +136,8 @@ func TestIgnoreThwomp(t *testing.T) {
 		},
 	}
 
-	g = MovePlayer(g, 0, 10)
-	g = g.ExtraEvent.Handle(nil, g)
+	g.MovePlayer(0, 10)
+	g.ExtraEvent.Handle(nil, &g)
 
 	expectedEvt := PickDiceBlock{1, g.Config}
 	gotEvt := g.ExtraEvent
@@ -170,7 +170,7 @@ func TestStarSwapViaHappening(t *testing.T) {
 		},
 	}
 
-	g = MovePlayer(g, 0, 3)
+	g.MovePlayer(0, 3)
 	expectedEvt := PickDiceBlock{1, g.Config}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
@@ -194,7 +194,7 @@ func TestCoinsOnStart(t *testing.T) {
 		},
 	}
 
-	g = MovePlayer(g, 0, 1)
+	g.MovePlayer(0, 1)
 	expectedCoins := 20
 	gotCoins := g.Players[0].Coins
 	if expectedCoins != gotCoins {
@@ -213,7 +213,7 @@ func TestMushroomSpace(t *testing.T) {
 		},
 	}
 
-	g = MovePlayer(g, 0, 4)
+	g.MovePlayer(0, 4)
 	expected := MushroomEvent{0}
 	got := g.ExtraEvent
 	if expected != got {
@@ -221,7 +221,8 @@ func TestMushroomSpace(t *testing.T) {
 	}
 
 	//Received red mushroom
-	gRed := g.ExtraEvent.Handle(true, g)
+	gRed := g
+	gRed.ExtraEvent.Handle(true, &gRed)
 	expectedEvent := NormalDiceBlock{0}
 	gotEvent := gRed.ExtraEvent
 	if expectedEvent != gotEvent {
@@ -232,7 +233,8 @@ func TestMushroomSpace(t *testing.T) {
 	}
 
 	//Received poison mushroom
-	gPoison := g.ExtraEvent.Handle(false, g)
+	gPoison := g
+	gPoison.ExtraEvent.Handle(false, &gPoison)
 	expectedEvt := PickDiceBlock{1, g.Config}
 	gotEvt := gPoison.ExtraEvent
 	if expectedEvt != gotEvt {
@@ -254,8 +256,8 @@ func TestStealCoinsViaBoo(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 4) //Land on happening
-	g = g.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
+	g.MovePlayer(0, 4) //Land on happening
+	g.ExtraEvent.Handle(BooStealAction{0, 1, false}, &g)
 	expectedEvent := BooCoinsEvent{
 		PayRangeEvent: PayRangeEvent{
 			Player: 1,
@@ -273,7 +275,7 @@ func TestStealCoinsViaBoo(t *testing.T) {
 		)
 	}
 
-	g = expectedEvent.Handle(5, g)
+	expectedEvent.Handle(5, &g)
 	expectedDaisyCoins := 15
 	gotDaisyCoins := g.Players[0].Coins
 
@@ -304,8 +306,8 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 4) //Want to land on happening
-	g = g.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
+	g.MovePlayer(0, 4) //Want to land on happening
+	g.ExtraEvent.Handle(BooStealAction{0, 1, false}, &g)
 	expectedEvent := BooCoinsEvent{
 		PayRangeEvent: PayRangeEvent{
 			Player: 1,
@@ -323,7 +325,7 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 		)
 	}
 
-	g = expectedEvent.Handle(4, g)
+	expectedEvent.Handle(4, &g)
 	expectedDaisyCoins := 14
 	gotDaisyCoins := g.Players[0].Coins
 
@@ -357,7 +359,7 @@ func TestPassEmptyBooSpace(t *testing.T) {
 			NoBoo: true,
 		},
 	}
-	g = MovePlayer(g, 0, 4)
+	g.MovePlayer(0, 4)
 	expectedEvt := PickDiceBlock{1, g.Config}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
@@ -388,7 +390,7 @@ func TestBuyStar(t *testing.T) {
 		},
 	}
 
-	g = MovePlayer(g, 0, 1) //Land on blue space
+	g.MovePlayer(0, 1) //Land on blue space
 
 	expectedSpace := ChainSpace{0, 20}
 	expectedCoins := 3

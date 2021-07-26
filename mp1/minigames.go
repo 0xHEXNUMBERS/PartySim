@@ -113,13 +113,12 @@ func (m MinigameEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (m MinigameEvent) Handle(r Response, g Game) Game {
+func (m MinigameEvent) Handle(r Response, g *Game) {
 	awards := r.(MinigameAwards)
 	for i, player := range m.PlayerIDs {
-		g = AwardCoins(g, player, awards[i], true)
+		g.AwardCoins(player, awards[i], true)
 	}
-	g = EndGameTurn(g)
-	return g
+	g.EndGameTurn()
 }
 
 type MinigameTeam int
@@ -141,7 +140,7 @@ func SpaceToTeam(s SpaceType) MinigameTeam {
 	}
 }
 
-func GetMinigame(g Game) Game {
+func (g *Game) GetMinigame() {
 	var blueTeam []int
 	var redTeam []int
 	for i, p := range g.Players {
@@ -173,18 +172,16 @@ func GetMinigame(g Game) Game {
 		minigame.PlayerIDs[i] = players[i]
 	}
 	g.ExtraEvent = minigame
-	return g
 }
 
-func FindGreenPlayer(g Game) Game {
+func (g *Game) FindGreenPlayer() {
 	for i, p := range g.Players {
 		if SpaceToTeam(p.LastSpaceType) == GreenTeam {
 			g.ExtraEvent = DeterminePlayerTeamEvent{
 				Player: i,
 			}
-			return g
+			return
 		}
 	}
-	g = GetMinigame(g)
-	return g
+	g.GetMinigame()
 }

@@ -12,9 +12,9 @@ func (m NormalDiceBlock) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (m NormalDiceBlock) Handle(r Response, g Game) Game {
+func (m NormalDiceBlock) Handle(r Response, g *Game) {
 	moves := r.(int)
-	return MovePlayer(g, m.Player, moves)
+	g.MovePlayer(m.Player, moves)
 }
 
 type RedDiceBlock struct {
@@ -29,10 +29,10 @@ func (r RedDiceBlock) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (r RedDiceBlock) Handle(res Response, g Game) Game {
+func (r RedDiceBlock) Handle(res Response, g *Game) {
 	coinsLost := res.(int)
-	g = AwardCoins(g, r.Player, -coinsLost, false)
-	return MovePlayer(g, r.Player, coinsLost)
+	g.AwardCoins(r.Player, -coinsLost, false)
+	g.MovePlayer(r.Player, coinsLost)
 }
 
 type BlueDiceBlock struct {
@@ -47,10 +47,10 @@ func (b BlueDiceBlock) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (b BlueDiceBlock) Handle(r Response, g Game) Game {
+func (b BlueDiceBlock) Handle(r Response, g *Game) {
 	coinsWon := r.(int)
-	g = AwardCoins(g, b.Player, coinsWon, false)
-	return MovePlayer(g, b.Player, coinsWon)
+	g.AwardCoins(b.Player, coinsWon, false)
+	g.MovePlayer(b.Player, coinsWon)
 }
 
 type WarpDiceBlock struct {
@@ -73,12 +73,11 @@ func (w WarpDiceBlock) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (w WarpDiceBlock) Handle(r Response, g Game) Game {
+func (w WarpDiceBlock) Handle(r Response, g *Game) {
 	selectedPlayer := r.(int)
 	tmpSpace := g.Players[w.Player].CurrentSpace
 	g.Players[w.Player].CurrentSpace = g.Players[selectedPlayer].CurrentSpace
 	g.Players[selectedPlayer].CurrentSpace = tmpSpace
-	return g
 }
 
 type EventDiceBlock struct {
@@ -107,7 +106,7 @@ func (e EventDiceBlock) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (e EventDiceBlock) Handle(r Response, g Game) Game {
+func (e EventDiceBlock) Handle(r Response, g *Game) {
 	event := r.(EventBlockEvent)
 	switch event {
 	case BooEventBlock:
@@ -120,13 +119,12 @@ func (e EventDiceBlock) Handle(r Response, g Game) Game {
 	case BowserEventBlock:
 		//TODO: Typically bowser just takes 20 coins
 		//Does anything happen if player has 0 coins?
-		g = AwardCoins(g, e.Player, -20, false)
-		g = EndCharacterTurn(g)
+		g.AwardCoins(e.Player, -20, false)
+		g.EndCharacterTurn()
 	case KoopaEventBlock:
-		g = AwardCoins(g, e.Player, 10, false)
-		g = EndCharacterTurn(g)
+		g.AwardCoins(e.Player, 10, false)
+		g.EndCharacterTurn()
 	}
-	return g
 }
 
 type PickDiceBlock struct {
@@ -155,8 +153,7 @@ func (p PickDiceBlock) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (p PickDiceBlock) Handle(r Response, g Game) Game {
+func (p PickDiceBlock) Handle(r Response, g *Game) {
 	evt := r.(Event)
 	g.ExtraEvent = evt
-	return g
 }

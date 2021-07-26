@@ -77,7 +77,7 @@ func (c ChanceTime) ControllingPlayer() int {
 	}
 }
 
-func (c ChanceTime) Handle(r Response, g Game) Game {
+func (c ChanceTime) Handle(r Response, g *Game) {
 	res := r.(ChanceTimeResponse)
 	if res.Block == CTBSide {
 		if c.LeftSideHit {
@@ -97,16 +97,16 @@ func (c ChanceTime) Handle(r Response, g Game) Game {
 		switch middlePos {
 		case LTR10:
 			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 10)
-			g = AwardCoins(g, c.LeftSidePosition, -coinsTaken, false)
-			g = AwardCoins(g, c.RightSidePosition, coinsTaken, false)
+			g.AwardCoins(c.LeftSidePosition, -coinsTaken, false)
+			g.AwardCoins(c.RightSidePosition, coinsTaken, false)
 		case LTR20:
 			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 20)
-			g = AwardCoins(g, c.LeftSidePosition, -coinsTaken, false)
-			g = AwardCoins(g, c.RightSidePosition, coinsTaken, false)
+			g.AwardCoins(c.LeftSidePosition, -coinsTaken, false)
+			g.AwardCoins(c.RightSidePosition, coinsTaken, false)
 		case LTR30:
 			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 30)
-			g = AwardCoins(g, c.LeftSidePosition, -coinsTaken, false)
-			g = AwardCoins(g, c.RightSidePosition, coinsTaken, false)
+			g.AwardCoins(c.LeftSidePosition, -coinsTaken, false)
+			g.AwardCoins(c.RightSidePosition, coinsTaken, false)
 		case LTRStar:
 			if g.Players[c.LeftSidePosition].Stars > 0 {
 				g.Players[c.LeftSidePosition].Stars--
@@ -121,9 +121,8 @@ func (c ChanceTime) Handle(r Response, g Game) Game {
 			g.Players[c.LeftSidePosition].Stars = g.Players[c.RightSidePosition].Stars
 			g.Players[c.RightSidePosition].Stars = tmp
 		}
-		g = EndCharacterTurn(g)
+		g.EndCharacterTurn()
 	} else {
 		g.ExtraEvent = c
 	}
-	return g
 }

@@ -16,7 +16,7 @@ func TestRedDiceBlock(t *testing.T) {
 		},
 		ExtraEvent: RedDiceBlock{0},
 	}
-	g = g.ExtraEvent.Handle(9, g) //Land on minigame space
+	g.ExtraEvent.Handle(9, &g) //Land on minigame space
 	expectedSpace := ChainSpace{0, 9}
 	gotSpace := g.Players[0].CurrentSpace
 	if expectedSpace != gotSpace {
@@ -41,7 +41,7 @@ func TestBlueDiceBlock(t *testing.T) {
 		},
 		ExtraEvent: BlueDiceBlock{0},
 	}
-	g = g.ExtraEvent.Handle(9, g) //Land on minigame space
+	g.ExtraEvent.Handle(9, &g) //Land on minigame space
 	expectedSpace := ChainSpace{0, 9}
 	gotSpace := g.Players[0].CurrentSpace
 	if expectedSpace != gotSpace {
@@ -66,7 +66,7 @@ func TestWarpDiceBlock(t *testing.T) {
 		},
 		ExtraEvent: WarpDiceBlock{0},
 	}
-	g = g.ExtraEvent.Handle(1, g) //Swap with Luigi
+	g.ExtraEvent.Handle(1, &g) //Swap with Luigi
 	expectedDaisySpace := ChainSpace{0, 0}
 	gotDaisySpace := g.Players[0].CurrentSpace
 	if expectedDaisySpace != gotDaisySpace {
@@ -91,7 +91,8 @@ func TestEventDiceBlock(t *testing.T) {
 		},
 		ExtraEvent: EventDiceBlock{0},
 	}
-	gBoo := g.ExtraEvent.Handle(BooEventBlock, g)
+	gBoo := g
+	gBoo.ExtraEvent.Handle(BooEventBlock, &gBoo)
 	expectedBooEvent := BooEvent{0, gBoo.Players, 0, gBoo.Players[0].Coins}
 	gotBooEvent := gBoo.ExtraEvent
 	if expectedBooEvent != gotBooEvent {
@@ -101,8 +102,8 @@ func TestEventDiceBlock(t *testing.T) {
 		)
 	}
 
-	gBoo = gBoo.ExtraEvent.Handle(BooStealAction{0, 1, false}, g)
-	gBoo = gBoo.ExtraEvent.Handle(10, g)
+	gBoo.ExtraEvent.Handle(BooStealAction{0, 1, false}, &gBoo)
+	gBoo.ExtraEvent.Handle(10, &gBoo)
 	expectedSpace := ChainSpace{1, 23}
 	gotSpace := gBoo.Players[0].CurrentSpace
 	if expectedSpace != gotSpace {
@@ -112,7 +113,8 @@ func TestEventDiceBlock(t *testing.T) {
 		)
 	}
 
-	gBowser := g.ExtraEvent.Handle(BowserEventBlock, g)
+	gBowser := g
+	gBowser.ExtraEvent.Handle(BowserEventBlock, &gBowser)
 	expectedBowserEvent := PickDiceBlock{1, g.Config}
 	gotBowserEvent := gBowser.ExtraEvent
 	if expectedBowserEvent != gotBowserEvent {
@@ -130,7 +132,8 @@ func TestEventDiceBlock(t *testing.T) {
 		)
 	}
 
-	gKoopa := g.ExtraEvent.Handle(KoopaEventBlock, g)
+	gKoopa := g
+	gKoopa.ExtraEvent.Handle(KoopaEventBlock, &gKoopa)
 	expectedEvt := PickDiceBlock{1, gKoopa.Config}
 	gotEvt := gKoopa.ExtraEvent
 	if expectedEvt != gotEvt {

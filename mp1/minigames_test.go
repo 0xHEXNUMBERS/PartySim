@@ -20,7 +20,7 @@ func Test4V4Minigame(t *testing.T) {
 	g.Players[2].LastSpaceType = Blue
 	g.Players[3].LastSpaceType = Blue
 
-	g = GetMinigame(g)
+	g.GetMinigame()
 	minigame := g.ExtraEvent.(MinigameEvent)
 	if minigame.Type != MinigameFFA {
 		t.Fatalf("Expected Minigame Type: %d, got: %d",
@@ -31,7 +31,7 @@ func Test4V4Minigame(t *testing.T) {
 		t.Fatal("Recieved incorrect minigame awards")
 	}
 
-	g = minigame.Handle(rewards[8], g) //Daisy wins
+	minigame.Handle(rewards[8], &g) //Daisy wins
 	expectedDaisyCoins := 20
 	gotDaisyCoins := g.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -61,7 +61,7 @@ func Test1V3Minigame(t *testing.T) {
 	g.Players[2].LastSpaceType = Blue
 	g.Players[3].LastSpaceType = Red
 
-	g = GetMinigame(g)
+	g.GetMinigame()
 	minigame := g.ExtraEvent.(MinigameEvent)
 	if minigame.Type != Minigame1V3 {
 		t.Fatalf("Expected Minigame Type: %d, got: %d",
@@ -72,7 +72,7 @@ func Test1V3Minigame(t *testing.T) {
 		t.Fatal("Recieved incorrect minigame awards")
 	}
 
-	g = minigame.Handle(rewards[0], g) //Mario wins
+	minigame.Handle(rewards[0], &g) //Mario wins
 	expectedMarioCoins := 25
 	gotDaisyCoins := g.Players[3].Coins
 	if expectedMarioCoins != gotDaisyCoins {
@@ -102,7 +102,7 @@ func Test2V2Minigame(t *testing.T) {
 	g.Players[2].LastSpaceType = Blue
 	g.Players[3].LastSpaceType = Red
 
-	g = GetMinigame(g)
+	g.GetMinigame()
 	minigame := g.ExtraEvent.(MinigameEvent)
 	if minigame.Type != Minigame2V2 {
 		t.Fatalf("Expected Minigame Type: %d, got: %d",
@@ -113,7 +113,7 @@ func Test2V2Minigame(t *testing.T) {
 		t.Fatal("Recieved incorrect minigame awards")
 	}
 
-	g = minigame.Handle(rewards[0], g) //Daisy and DonkeyKong win
+	minigame.Handle(rewards[0], &g) //Daisy and DonkeyKong win
 	expectedDaisyCoins := 20
 	gotDaisyCoins := g.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -155,7 +155,7 @@ func TestGreenToBlue(t *testing.T) {
 	g.Players[2].LastSpaceType = Happening
 	g.Players[3].LastSpaceType = Blue
 
-	g = FindGreenPlayer(g)
+	g.FindGreenPlayer()
 	expectedEvt := DeterminePlayerTeamEvent{2}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
@@ -163,7 +163,7 @@ func TestGreenToBlue(t *testing.T) {
 			expectedEvt, gotEvt)
 	}
 
-	g = g.ExtraEvent.Handle(true, g)
+	g.ExtraEvent.Handle(true, &g)
 	expectedSpace := Blue
 	gotSpace := g.Players[2].LastSpaceType
 	if expectedSpace != gotSpace {
@@ -182,15 +182,17 @@ func TestLandOnMinigameSpace(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
 	}
-	g = MovePlayer(g, 0, 1)
-	gLose := g.ExtraEvent.Handle(MinigameRewards1P[0], g) //lose 5 coins
+	g.MovePlayer(0, 1)
+	gLose := g
+	gLose.ExtraEvent.Handle(MinigameRewards1P[0], &gLose) //lose 5 coins
 	expectedLoseCoins := 5
 	gotLoseCoins := gLose.Players[0].Coins
 	if expectedLoseCoins != gotLoseCoins {
 		t.Errorf("Expected lose coins: %d, got: %d", expectedLoseCoins, gotLoseCoins)
 	}
 
-	gWin := g.ExtraEvent.Handle(MinigameRewards1P[37], g) //won WAP
+	gWin := g
+	gWin.ExtraEvent.Handle(MinigameRewards1P[37], &gWin) //won WAP
 	expectedWinCoins := 46
 	gotWinCoins := gWin.Players[0].Coins
 	if expectedWinCoins != gotWinCoins {

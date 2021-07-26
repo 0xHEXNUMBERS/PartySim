@@ -1,19 +1,18 @@
 package mp1
 
-func PreBowserCheck(g Game, player int) Game {
+func (g *Game) PreBowserCheck(player int) {
 	//Special events when player has 0 coins
 	if g.Players[player].Coins == 0 {
 		if g.Players[player].Stars > 0 {
-			g = AwardCoins(g, player, 10, false)
+			g.AwardCoins(player, 10, false)
 			g.Players[player].Stars--
 		} else {
-			g = AwardCoins(g, player, 20, false)
+			g.AwardCoins(player, 20, false)
 		}
-		g = EndCharacterTurn(g)
+		g.EndCharacterTurn()
 	} else {
 		g.ExtraEvent = BowserEvent{player}
 	}
-	return g
 }
 
 type BowserEvent struct {
@@ -50,13 +49,13 @@ func (b BowserEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (b BowserEvent) Handle(r Response, g Game) Game {
+func (b BowserEvent) Handle(r Response, g *Game) {
 	choice := r.(BowserResponse)
 	switch choice {
 	case CoinsForBowser:
 		coinsLost := GetBowserMinigameCoinLoss(g.Turn)
-		g = AwardCoins(g, b.Player, -coinsLost, false)
-		g = EndCharacterTurn(g)
+		g.AwardCoins(b.Player, -coinsLost, false)
+		g.EndCharacterTurn()
 	case BowserBalloonBurst:
 		g.ExtraEvent = BowserBalloonBurstEvent{}
 	case BowsersFaceLift:
@@ -74,11 +73,10 @@ func (b BowserEvent) Handle(r Response, g Game) Game {
 		for i := range g.Players {
 			g.Players[i].Coins = coins
 		}
-		g = EndCharacterTurn(g)
+		g.EndCharacterTurn()
 	case BowsersChanceTime:
 		g.ExtraEvent = BowsersChanceTimeEvent{}
 	}
-	return g
 }
 
 type BowserBalloonBurstEvent struct{}
@@ -120,33 +118,32 @@ func (b BowserBalloonBurstEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (b BowserBalloonBurstEvent) Handle(r Response, g Game) Game {
+func (b BowserBalloonBurstEvent) Handle(r Response, g *Game) {
 	results := r.(BowserBalloonBurstResult)
 	coinLoss := -GetBowserMinigameCoinLoss(g.Turn)
 	switch results {
 	case BBBDraw:
 		for p := range g.Players {
-			g = AwardCoins(g, p, -20, true)
+			g.AwardCoins(p, -20, true)
 		}
 	case BBBP1Win:
-		g = AwardCoins(g, 1, coinLoss, true)
-		g = AwardCoins(g, 2, coinLoss, true)
-		g = AwardCoins(g, 3, coinLoss, true)
+		g.AwardCoins(1, coinLoss, true)
+		g.AwardCoins(2, coinLoss, true)
+		g.AwardCoins(3, coinLoss, true)
 	case BBBP2Win:
-		g = AwardCoins(g, 0, coinLoss, true)
-		g = AwardCoins(g, 2, coinLoss, true)
-		g = AwardCoins(g, 3, coinLoss, true)
+		g.AwardCoins(0, coinLoss, true)
+		g.AwardCoins(2, coinLoss, true)
+		g.AwardCoins(3, coinLoss, true)
 	case BBBP3Win:
-		g = AwardCoins(g, 0, coinLoss, true)
-		g = AwardCoins(g, 1, coinLoss, true)
-		g = AwardCoins(g, 3, coinLoss, true)
+		g.AwardCoins(0, coinLoss, true)
+		g.AwardCoins(1, coinLoss, true)
+		g.AwardCoins(3, coinLoss, true)
 	case BBBP4Win:
-		g = AwardCoins(g, 0, coinLoss, true)
-		g = AwardCoins(g, 1, coinLoss, true)
-		g = AwardCoins(g, 2, coinLoss, true)
+		g.AwardCoins(0, coinLoss, true)
+		g.AwardCoins(1, coinLoss, true)
+		g.AwardCoins(2, coinLoss, true)
 	}
-	g = EndCharacterTurn(g)
-	return g
+	g.EndCharacterTurn()
 }
 
 type BowsersFaceLiftEvent struct {
@@ -161,21 +158,20 @@ func (b BowsersFaceLiftEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (b BowsersFaceLiftEvent) Handle(r Response, g Game) Game {
+func (b BowsersFaceLiftEvent) Handle(r Response, g *Game) {
 	results := r.(int)
 	if results == 15 { //All players won
-		g = AwardCoins(g, b.Player, -50, true)
-		return g
+		g.AwardCoins(b.Player, -50, true)
+		return
 	}
 
 	coinLoss := -GetBowserMinigameCoinLoss(g.Turn)
 	for p := range g.Players {
 		if results&(1<<p) == 0 {
-			g = AwardCoins(g, p, coinLoss, true)
+			g.AwardCoins(p, coinLoss, true)
 		}
 	}
-	g = EndCharacterTurn(g)
-	return g
+	g.EndCharacterTurn()
 }
 
 type BowsersTugoWarEvent struct {
@@ -204,25 +200,24 @@ func (b BowsersTugoWarEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (b BowsersTugoWarEvent) Handle(r Response, g Game) Game {
+func (b BowsersTugoWarEvent) Handle(r Response, g *Game) {
 	results := r.(BowsersTugoWarResult)
 	switch results {
 	case BTWDraw:
 		for p := range g.Players {
-			g = AwardCoins(g, p, -30, true)
+			g.AwardCoins(p, -30, true)
 		}
 	case BTW1TWin:
 		coinLoss := -GetBowserMinigameCoinLoss(g.Turn)
 		for p := range g.Players {
 			if p != b.Player {
-				g = AwardCoins(g, p, coinLoss, true)
+				g.AwardCoins(p, coinLoss, true)
 			}
 		}
 	case BTW3TWin:
-		g = AwardCoins(g, b.Player, -10, true)
+		g.AwardCoins(b.Player, -10, true)
 	}
-	g = EndCharacterTurn(g)
-	return g
+	g.EndCharacterTurn()
 }
 
 type BashnCashEvent struct {
@@ -240,7 +235,7 @@ func (b BashnCashEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (b BashnCashEvent) Handle(r Response, g Game) Game {
+func (b BashnCashEvent) Handle(r Response, g *Game) {
 	timesHit := r.(int)
 	coinsLost := 0
 	if b.Coins/5 < timesHit {
@@ -250,9 +245,8 @@ func (b BashnCashEvent) Handle(r Response, g Game) Game {
 	} else {
 		coinsLost += timesHit * 5
 	}
-	g = AwardCoins(g, b.Player, -coinsLost, true)
-	g = EndCharacterTurn(g)
-	return g
+	g.AwardCoins(b.Player, -coinsLost, true)
+	g.EndCharacterTurn()
 }
 
 type BowsersChanceTimeEvent struct{}
@@ -282,9 +276,8 @@ func (b BowsersChanceTimeEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (b BowsersChanceTimeEvent) Handle(r Response, g Game) Game {
+func (b BowsersChanceTimeEvent) Handle(r Response, g *Game) {
 	res := r.(BCTResponse)
-	g = AwardCoins(g, res.Player, -res.Coins, false)
-	g = EndCharacterTurn(g)
-	return g
+	g.AwardCoins(res.Player, -res.Coins, false)
+	g.EndCharacterTurn()
 }
