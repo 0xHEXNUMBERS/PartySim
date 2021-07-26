@@ -52,7 +52,6 @@ func (p PayRangeEvent) Responses() []Response {
 }
 
 func (p PayRangeEvent) Handle(r Response, g Game) Game {
-	//TODO: Figure out if we need to add EndCharacterTurn()
 	cost := r.(int)
 	g = AwardCoins(g, p.Player, -cost, false)
 	return g
