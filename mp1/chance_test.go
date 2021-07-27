@@ -14,9 +14,9 @@ func TestChanceTime(t *testing.T) {
 	}
 	g.MovePlayer(0, 1)
 	//Steal from Luigi
-	g.ExtraEvent.Handle(ChanceTimeResponse{CTBSide, 1}, &g)
+	g.ExtraEvent.Handle(ChanceTimeResponse{CTBLeft, 1}, &g)
 	//Daisy will recieve
-	g.ExtraEvent.Handle(ChanceTimeResponse{CTBSide, 0}, &g)
+	g.ExtraEvent.Handle(ChanceTimeResponse{CTBRight, 0}, &g)
 
 	g10Coins := g
 	g10Coins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR10)}, &g10Coins)

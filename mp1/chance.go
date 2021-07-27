@@ -7,6 +7,10 @@ const (
 	LTR10
 	LTR20
 	LTR30
+	RTLStar
+	RTL10
+	RTL20
+	RTL30
 	SwapCoins
 	SwapStars
 
@@ -16,8 +20,9 @@ const (
 type ChanceTimeBlock int
 
 const (
-	CTBSide ChanceTimeBlock = iota
+	CTBLeft ChanceTimeBlock = iota
 	CTBMiddle
+	CTBRight
 )
 
 type ChanceTime struct {
@@ -40,7 +45,10 @@ func (c ChanceTime) Responses() []Response {
 	res := []Response{}
 	if !c.LeftSideHit {
 		for i := 0; i < 4; i++ {
-			res = append(res, ChanceTimeResponse{CTBSide, i})
+			if c.RightSideHit && c.RightSidePosition == i {
+				continue
+			}
+			res = append(res, ChanceTimeResponse{CTBLeft, i})
 		}
 	}
 	if !c.MiddleHit {
@@ -48,11 +56,12 @@ func (c ChanceTime) Responses() []Response {
 			res = append(res, ChanceTimeResponse{CTBMiddle, i})
 		}
 	}
-	if !c.RightSideHit && c.LeftSideHit {
+	if !c.RightSideHit {
 		for i := 0; i < 4; i++ {
-			if c.LeftSidePosition != i {
-				res = append(res, ChanceTimeResponse{CTBSide, i})
+			if c.LeftSideHit && c.LeftSidePosition == i {
+				continue
 			}
+			res = append(res, ChanceTimeResponse{CTBRight, i})
 		}
 	}
 	return res
@@ -79,17 +88,16 @@ func (c ChanceTime) ControllingPlayer() int {
 
 func (c ChanceTime) Handle(r Response, g *Game) {
 	res := r.(ChanceTimeResponse)
-	if res.Block == CTBSide {
-		if c.LeftSideHit {
-			c.RightSideHit = true
-			c.RightSidePosition = res.Position
-		} else {
-			c.LeftSideHit = true
-			c.LeftSidePosition = res.Position
-		}
-	} else {
+	switch res.Block {
+	case CTBLeft:
+		c.LeftSideHit = true
+		c.LeftSidePosition = res.Position
+	case CTBMiddle:
 		c.MiddleHit = true
 		c.MiddlePosition = res.Position
+	case CTBRight:
+		c.RightSideHit = true
+		c.RightSidePosition = res.Position
 	}
 
 	if c.LeftSideHit && c.MiddleHit && c.RightSideHit {
@@ -111,6 +119,23 @@ func (c ChanceTime) Handle(r Response, g *Game) {
 			if g.Players[c.LeftSidePosition].Stars > 0 {
 				g.Players[c.LeftSidePosition].Stars--
 				g.Players[c.RightSidePosition].Stars++
+			}
+		case RTL10:
+			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 10)
+			g.AwardCoins(c.LeftSidePosition, coinsTaken, false)
+			g.AwardCoins(c.RightSidePosition, -coinsTaken, false)
+		case RTL20:
+			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 20)
+			g.AwardCoins(c.LeftSidePosition, coinsTaken, false)
+			g.AwardCoins(c.RightSidePosition, -coinsTaken, false)
+		case RTL30:
+			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 30)
+			g.AwardCoins(c.LeftSidePosition, coinsTaken, false)
+			g.AwardCoins(c.RightSidePosition, -coinsTaken, false)
+		case RTLStar:
+			if g.Players[c.LeftSidePosition].Stars > 0 {
+				g.Players[c.LeftSidePosition].Stars++
+				g.Players[c.RightSidePosition].Stars--
 			}
 		case SwapCoins:
 			tmp := g.Players[c.LeftSidePosition].Coins
