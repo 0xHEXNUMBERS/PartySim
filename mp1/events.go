@@ -74,6 +74,7 @@ func (m MushroomEvent) Handle(r Response, g *Game) {
 		return
 	}
 	g.Players[m.Player].SkipTurn = true
+	g.Players[m.Player].LastSpaceType = Mushroom
 	g.EndCharacterTurn()
 }
 

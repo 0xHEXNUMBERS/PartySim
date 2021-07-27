@@ -246,6 +246,111 @@ func TestMushroomSpace(t *testing.T) {
 	}
 }
 
+func TestSkipTurnViaMinigame(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 10, ChainSpace{0, 7}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 7}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 7}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 7}),
+		},
+		ExtraEvent: PickDiceBlock{0, GameConfig{MaxTurns: 20}},
+		Config:     GameConfig{MaxTurns: 20},
+	}
+
+	//All players recieve poison mushroom
+	g.ExtraEvent.Handle(NormalDiceBlock{0}, &g)
+	g.ExtraEvent.Handle(4, &g)
+	g.ExtraEvent.Handle(false, &g)
+	g.ExtraEvent.Handle(NormalDiceBlock{1}, &g)
+	g.ExtraEvent.Handle(4, &g)
+	g.ExtraEvent.Handle(false, &g)
+	g.ExtraEvent.Handle(NormalDiceBlock{2}, &g)
+	g.ExtraEvent.Handle(4, &g)
+	g.ExtraEvent.Handle(false, &g)
+	g.ExtraEvent.Handle(NormalDiceBlock{3}, &g)
+	g.ExtraEvent.Handle(4, &g)
+	g.ExtraEvent.Handle(false, &g)
+
+	//Perform FFA Minigame
+	g.ExtraEvent.Handle(MinigameRewardsFFA[16], &g)
+
+	//Should recieve 2nd minigame as all players were poisoned
+	expectedEvent := MinigameEvent{
+		[4]int{0, 1, 2, 3},
+		MinigameFFA,
+	}
+	gotEvent := g.ExtraEvent
+	if expectedEvent != gotEvent {
+		t.Errorf("Expected Minigame event: %#v, got: %#v",
+			expectedEvent, gotEvent,
+		)
+	}
+
+	//Perform 2nd minigame
+	g.ExtraEvent.Handle(MinigameRewardsFFA[16], &g)
+
+	var expectedTurn uint8 = 2
+	gotTurn := g.Turn
+	if expectedTurn != gotTurn {
+		t.Errorf("Expected turn #%d, got turn #%d",
+			expectedTurn, gotTurn,
+		)
+	}
+
+	expectedDiceEvent := PickDiceBlock{0, g.Config}
+	gotDiceEvent := g.ExtraEvent
+	if expectedDiceEvent != gotDiceEvent {
+		t.Errorf("Expected Dice event: %#v, got: %#v",
+			expectedDiceEvent, gotDiceEvent,
+		)
+	}
+}
+
+func TestSkipTurnViaCharacterTurn(t *testing.T) {
+	g := Game{
+		Board: YTI,
+		Players: [4]Player{
+			NewPlayer("Daisy", 0, 10, ChainSpace{0, 7}),
+			NewPlayer("Luigi", 0, 10, ChainSpace{0, 7}),
+			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 7}),
+			NewPlayer("Mario", 0, 10, ChainSpace{0, 7}),
+		},
+		CurrentPlayer: 2,
+		ExtraEvent:    PickDiceBlock{2, GameConfig{MaxTurns: 20}},
+		Config:        GameConfig{MaxTurns: 20},
+	}
+	g.Players[0].LastSpaceType = Blue
+	g.Players[1].LastSpaceType = Blue
+
+	//Player 2 fails mushroom check
+	g.ExtraEvent.Handle(NormalDiceBlock{2}, &g)
+	g.ExtraEvent.Handle(4, &g)
+	g.ExtraEvent.Handle(false, &g)
+
+	//Player 3 moves to blue space
+	g.ExtraEvent.Handle(NormalDiceBlock{3}, &g)
+	g.ExtraEvent.Handle(1, &g)
+
+	//Handle Minigame
+	g.ExtraEvent.Handle(MinigameRewardsFFA[16], &g)
+
+	//Players 0 & 1 move to blue space
+	g.ExtraEvent.Handle(NormalDiceBlock{0}, &g)
+	g.ExtraEvent.Handle(1, &g)
+	g.ExtraEvent.Handle(NormalDiceBlock{1}, &g)
+	g.ExtraEvent.Handle(1, &g)
+
+	expectedEvent := PickDiceBlock{3, g.Config}
+	gotEvent := g.ExtraEvent
+	if expectedEvent != gotEvent {
+		t.Errorf("Expected event: %#v, got: %#v",
+			expectedEvent, gotEvent,
+		)
+	}
+}
+
 func TestStealCoinsViaBoo(t *testing.T) {
 	g := Game{
 		Board: YTI,

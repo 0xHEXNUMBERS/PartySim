@@ -189,6 +189,11 @@ func (g *Game) EndGameTurn() {
 		//Game is over, no more events
 		g.ExtraEvent = nil
 	} else {
+		if g.Players[g.CurrentPlayer].SkipTurn {
+			g.Players[g.CurrentPlayer].SkipTurn = false
+			g.EndCharacterTurn()
+			return
+		}
 		g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
 	}
 }
@@ -201,7 +206,12 @@ func (g *Game) EndCharacterTurn() {
 	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4
 	if g.CurrentPlayer == 0 {
 		g.StartMinigamePrep()
-	} else {
-		g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
+		return
 	}
+	if g.Players[g.CurrentPlayer].SkipTurn {
+		g.Players[g.CurrentPlayer].SkipTurn = false
+		g.EndCharacterTurn()
+		return
+	}
+	g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
 }
