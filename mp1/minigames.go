@@ -20,6 +20,7 @@ var MinigameRewardsFFA = []Response{
 	MinigameAwards{0, 0, 10, 0},
 	MinigameAwards{0, 0, 0, 10},
 	MinigameAwards{0, 0, 0, 0},
+	MinigameAwards{-5, -5, -5, -5},
 }
 
 var MinigameRewards2V2 = []Response{
