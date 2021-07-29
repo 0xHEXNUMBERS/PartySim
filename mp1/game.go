@@ -13,11 +13,55 @@ type GameConfig struct {
 
 type Game struct {
 	Board
+	StarSpaces    StarData
 	Players       [4]Player
 	Turn          uint8
 	CurrentPlayer int
 	ExtraEvent    Event
 	Config        GameConfig
+}
+
+func InitializeGame(b Board, config GameConfig) *Game {
+	g := &Game{
+		Board: b,
+	}
+	var chainSpaces []ChainSpace
+	var count uint8
+	var startSpace ChainSpace
+	for ci, chain := range *b.Chains {
+		for si, space := range chain {
+			if space.Type == Star {
+				chainSpaces = append(
+					chainSpaces,
+					ChainSpace{ci, si},
+				)
+				count++
+			} else if space.Type == Start {
+				startSpace = ChainSpace{ci, si}
+			}
+		}
+	}
+	if count > 0 {
+		g.StarSpaces.IndexToPosition = &chainSpaces
+		g.StarSpaces.StarSpaceCount = count
+	}
+	g.Config = config
+
+	for i := 0; i < len(g.Players); i++ {
+		g.Players[i].CurrentSpace = startSpace
+		g.Players[i].LastSpaceType = Start
+		g.Players[i].Coins = 10
+	}
+
+	if g.StarSpaces.StarSpaceCount == 1 { //Go ahead and set star pos
+		g.StarSpaces.CurrentStarSpace = (*g.StarSpaces.IndexToPosition)[0]
+	}
+	if g.StarSpaces.StarSpaceCount <= 1 {
+		g.ExtraEvent = PickDiceBlock{0, g.Config}
+	} else {
+		g.ExtraEvent = StarLocationEvent{g.StarSpaces, 0, 0}
+	}
+	return g
 }
 
 func (g *Game) LastFiveTurns() bool {
@@ -63,11 +107,20 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 				g.AwardCoins(playerIdx, 10, false)
 			}
 		case Star:
-			g.ExtraEvent = nil
-			curSpace.PassingEvent(g, playerIdx, moves)
-			if g.ExtraEvent != nil {
-				return
+			if playerPos == g.StarSpaces.CurrentStarSpace &&
+				g.Players[playerIdx].Coins >= 20 {
+				g.Players[playerIdx].Stars++
+				g.AwardCoins(playerIdx, -20, false)
+				if g.StarSpaces.StarSpaceCount > 1 {
+					g.ExtraEvent = StarLocationEvent{
+						g.StarSpaces,
+						playerIdx,
+						moves,
+					}
+					return
+				}
 			}
+			moves--
 		case Boo:
 			if !g.Config.NoBoo {
 				booEvt := BooEvent{
@@ -90,7 +143,17 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	//Activate Space
 	curSpace := chains[playerPos.Chain][playerPos.Space]
 	g.Players[playerIdx].LastSpaceType = curSpace.Type
-	switch curSpace.Type {
+	//Star space requires preprocessing
+	if curSpace.Type == Star {
+		starIndex := g.StarSpaces.GetIndex(playerPos)
+		if g.StarSpaces.AbsoluteVisited&(1<<starIndex) > 0 {
+			g.Players[playerIdx].LastSpaceType = Chance
+		} else {
+			g.Players[playerIdx].LastSpaceType = Blue
+		}
+	}
+	//Perform space action
+	switch g.Players[playerIdx].LastSpaceType {
 	case Blue:
 		g.AwardCoins(playerIdx, 3, false)
 		if g.LastFiveTurns() {

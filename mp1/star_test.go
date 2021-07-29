@@ -1,0 +1,108 @@
+package mp1
+
+import (
+	"testing"
+)
+
+var multipleStarBoard = Board{
+	Chains: &[]Chain{
+		{
+			{Type: Start},
+			{Type: Star},
+			{Type: Star},
+			{Type: Star},
+			{Type: Star},
+			{Type: Star},
+		},
+	},
+	Links: nil,
+	Data:  nil,
+}
+
+var singleStarBoard = Board{
+	Chains: &[]Chain{
+		{
+			{Type: Start},
+			{Type: Star},
+			{Type: Blue},
+			{Type: Blue},
+			{Type: Blue},
+			{Type: Blue},
+		},
+	},
+	Links: nil,
+	Data:  nil,
+}
+
+func TestMultipleStarSpaces(t *testing.T) {
+	g := InitializeGame(multipleStarBoard, GameConfig{MaxTurns: 20})
+	g.Players[0].Char = "Daisy"
+	g.Players[1].Char = "Luigi"
+	g.Players[2].Char = "Donkey Kong"
+	g.Players[3].Char = "Mario"
+	g.Players[0].Coins = 20
+	g.Players[1].Coins = 20
+	g.Players[2].Coins = 20
+	g.Players[3].Coins = 20
+
+	g.ExtraEvent.Handle(uint8(1), g) //Set {0, 2} as current star space
+	g.ExtraEvent.Handle(NormalDiceBlock{0}, g)
+	g.ExtraEvent.Handle(2, g)        //Move player to {0, 3}, gaining star
+	g.ExtraEvent.Handle(uint8(3), g) //Set {0, 4} as current star space
+	//Player 0 should have 1 star, and 3 coins
+	expectedStars := 1
+	gotStars := g.Players[0].Stars
+	expectedCoins := 3
+	gotCoins := g.Players[0].Coins
+	if expectedStars != gotStars || expectedCoins != gotCoins {
+		t.Errorf("Expected {star:coin} count: {%d:%d}, got: {%d:%d}",
+			expectedStars, expectedCoins, gotStars, gotCoins,
+		)
+	}
+
+	g.ExtraEvent.Handle(NormalDiceBlock{1}, g)
+	g.ExtraEvent.Handle(2, g) //Move player to {0, 2} landing on chance time
+	//Chance time should be happening
+	expectedEvent := ChanceTime{Player: 1}
+	gotEvent := g.ExtraEvent
+	if expectedEvent != gotEvent {
+		t.Errorf("Expected event: %#v, got: %#v",
+			expectedEvent, gotEvent,
+		)
+	}
+}
+
+func TestSingleStarSpace(t *testing.T) {
+	g := InitializeGame(singleStarBoard, GameConfig{MaxTurns: 20})
+	g.Players[0].Char = "Daisy"
+	g.Players[1].Char = "Luigi"
+	g.Players[2].Char = "Donkey Kong"
+	g.Players[3].Char = "Mario"
+	g.Players[0].Coins = 20
+	g.Players[1].Coins = 20
+	g.Players[2].Coins = 20
+	g.Players[3].Coins = 20
+
+	g.ExtraEvent.Handle(NormalDiceBlock{0}, g)
+	g.ExtraEvent.Handle(2, g) //Move player to {0, 3}, gaining star
+	//Player 0 should have 1 star, and 3 coins
+	expectedStars := 1
+	gotStars := g.Players[0].Stars
+	expectedCoins := 3
+	gotCoins := g.Players[0].Coins
+	if expectedStars != gotStars || expectedCoins != gotCoins {
+		t.Errorf("Expected Daisy {star:coin} count: {%d:%d}, got: {%d:%d}",
+			expectedStars, expectedCoins, gotStars, gotCoins,
+		)
+	}
+
+	g.ExtraEvent.Handle(NormalDiceBlock{1}, g)
+	g.ExtraEvent.Handle(2, g) //Move player to {0, 3}, gaining star
+	gotStars = g.Players[1].Stars
+	gotCoins = g.Players[1].Coins
+	if expectedStars != gotStars || expectedCoins != gotCoins {
+		t.Errorf("Expected Luigi {star:coin} count: {%d:%d}, got: {%d:%d}",
+			expectedStars, expectedCoins, gotStars, gotCoins,
+		)
+	}
+}
