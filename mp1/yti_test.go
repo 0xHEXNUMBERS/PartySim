@@ -223,7 +223,7 @@ func TestMushroomSpace(t *testing.T) {
 	//Received red mushroom
 	gRed := g
 	gRed.ExtraEvent.Handle(true, &gRed)
-	expectedEvent := NormalDiceBlock{0}
+	expectedEvent := PickDiceBlock{0, g.Config}
 	gotEvent := gRed.ExtraEvent
 	if expectedEvent != gotEvent {
 		t.Errorf("Expected Red Mushroom Event: %#v, got: %#v",

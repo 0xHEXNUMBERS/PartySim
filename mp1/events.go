@@ -70,7 +70,7 @@ func (m MushroomEvent) Responses() []Response {
 func (m MushroomEvent) Handle(r Response, g *Game) {
 	redMushroom := r.(bool)
 	if redMushroom {
-		g.ExtraEvent = NormalDiceBlock{m.Player}
+		g.ExtraEvent = PickDiceBlock{m.Player, g.Config}
 		return
 	}
 	g.Players[m.Player].SkipTurn = true
