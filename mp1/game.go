@@ -137,6 +137,12 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 		default:
 			moves--
 		}
+
+		if g.Config.EventsDice && moves == 0 &&
+			(curSpace.Type == Blue || curSpace.Type == Red) {
+			g.ExtraEvent = HiddenBlockEvent{playerIdx}
+			return
+		}
 	}
 	//Stop on Space
 	g.Players[playerIdx].CurrentSpace = playerPos
