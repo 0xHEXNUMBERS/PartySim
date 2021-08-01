@@ -155,14 +155,16 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	//Perform space action
 	switch g.Players[playerIdx].LastSpaceType {
 	case Blue:
-		g.AwardCoins(playerIdx, 3, false)
 		if g.LastFiveTurns() {
+			g.AwardCoins(playerIdx, 6, false)
+		} else {
 			g.AwardCoins(playerIdx, 3, false)
 		}
 		g.EndCharacterTurn()
 	case Red:
-		g.AwardCoins(playerIdx, -3, false)
 		if g.LastFiveTurns() {
+			g.AwardCoins(playerIdx, -6, false)
+		} else {
 			g.AwardCoins(playerIdx, -3, false)
 		}
 		g.EndCharacterTurn()
