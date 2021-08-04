@@ -17,6 +17,7 @@ type Game struct {
 	Players       [4]Player
 	Turn          uint8
 	CurrentPlayer int
+	KoopaPasses   int
 	ExtraEvent    Event
 	Config        GameConfig
 }
@@ -104,7 +105,12 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 			}
 		case Start:
 			if !g.Config.NoKoopa {
-				g.AwardCoins(playerIdx, 10, false)
+				g.KoopaPasses++
+				if g.KoopaPasses%10 == 0 {
+					g.AwardCoins(playerIdx, 20, false)
+				} else {
+					g.AwardCoins(playerIdx, 10, false)
+				}
 			}
 		case Star:
 			if playerPos == g.StarSpaces.CurrentStarSpace &&
