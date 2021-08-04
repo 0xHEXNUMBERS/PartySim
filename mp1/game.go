@@ -71,18 +71,17 @@ func (g *Game) LastFiveTurns() bool {
 
 func (g *Game) AwardCoins(player, coins int, minigame bool) {
 	g.Players[player].Coins += coins
-	if g.Players[player].Coins < 0 {
-		g.Players[player].Coins = 0
-	}
+	g.Players[player].Coins = max(g.Players[player].Coins, 0)
 	if minigame {
 		g.Players[player].MinigameCoins += coins
-		if g.Players[player].MinigameCoins < 0 {
-			g.Players[player].MinigameCoins = 0
-		}
+		g.Players[player].MinigameCoins = max(
+			g.Players[player].MinigameCoins, 0,
+		)
 	}
-	if g.Players[player].Coins > g.Players[player].MaxCoins {
-		g.Players[player].MaxCoins = g.Players[player].Coins
-	}
+	g.Players[player].MaxCoins = max(
+		g.Players[player].MaxCoins,
+		g.Players[player].Coins,
+	)
 }
 
 func (g *Game) MovePlayer(playerIdx, moves int) {
