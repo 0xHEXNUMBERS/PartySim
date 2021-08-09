@@ -63,7 +63,7 @@ func (b BowserEvent) Handle(r Response, g *Game) {
 	case BowsersTugoWar:
 		g.ExtraEvent = BowsersTugoWarEvent{b.Player}
 	case BashnCash:
-		g.ExtraEvent = BashnCashEvent{b.Player, g.Players[b.Player].Coins}
+		g.ExtraEvent = BowsersBashnCash{b.Player, g.Players[b.Player].Coins}
 	case BowserRevolution:
 		coins := 0
 		for i := range g.Players {
@@ -220,22 +220,22 @@ func (b BowsersTugoWarEvent) Handle(r Response, g *Game) {
 	g.EndCharacterTurn()
 }
 
-type BashnCashEvent struct {
+type BowsersBashnCash struct {
 	Player int
 	Coins  int
 }
 
-func (b BashnCashEvent) Responses() []Response {
+func (b BowsersBashnCash) Responses() []Response {
 	max := b.Coins / 5
 	max += b.Coins % 5
 	return CPURangeEvent{1, max}.Responses()
 }
 
-func (b BashnCashEvent) ControllingPlayer() int {
+func (b BowsersBashnCash) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-func (b BashnCashEvent) Handle(r Response, g *Game) {
+func (b BowsersBashnCash) Handle(r Response, g *Game) {
 	timesHit := r.(int)
 	coinsLost := 0
 	if b.Coins/5 < timesHit {

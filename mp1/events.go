@@ -4,8 +4,8 @@ type Response interface{}
 
 type Event interface {
 	Responses() []Response
-	Handle(Response, *Game)
 	ControllingPlayer() int
+	Handle(Response, *Game)
 }
 
 type BranchEvent struct {

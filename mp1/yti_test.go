@@ -274,13 +274,11 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 	g.ExtraEvent.Handle(false, &g)
 
 	//Perform FFA Minigame
-	g.ExtraEvent.Handle(MinigameRewardsFFA[16], &g)
+	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
+	g.ExtraEvent.Handle(0, &g)
 
 	//Should recieve 2nd minigame as all players were poisoned
-	expectedEvent := MinigameEvent{
-		[4]int{0, 1, 2, 3},
-		MinigameFFA,
-	}
+	expectedEvent := MinigameFFASelector{}
 	gotEvent := g.ExtraEvent
 	if expectedEvent != gotEvent {
 		t.Errorf("Expected Minigame event: %#v, got: %#v",
@@ -289,7 +287,8 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 	}
 
 	//Perform 2nd minigame
-	g.ExtraEvent.Handle(MinigameRewardsFFA[16], &g)
+	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
+	g.ExtraEvent.Handle(0, &g)
 
 	var expectedTurn uint8 = 2
 	gotTurn := g.Turn
@@ -334,7 +333,8 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 	g.ExtraEvent.Handle(1, &g)
 
 	//Handle Minigame
-	g.ExtraEvent.Handle(MinigameRewardsFFA[16], &g)
+	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
+	g.ExtraEvent.Handle(0, &g)
 
 	//Players 0 & 1 move to blue space
 	g.ExtraEvent.Handle(NormalDiceBlock{0}, &g)

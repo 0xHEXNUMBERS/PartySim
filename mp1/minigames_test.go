@@ -1,7 +1,6 @@
 package mp1
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -21,17 +20,14 @@ func Test4V4Minigame(t *testing.T) {
 	g.Players[3].LastSpaceType = Blue
 
 	g.GetMinigame()
-	minigame := g.ExtraEvent.(MinigameEvent)
-	if minigame.Type != MinigameFFA {
-		t.Fatalf("Expected Minigame Type: %d, got: %d",
-			MinigameFFA, minigame.Type)
-	}
-	rewards := minigame.Responses()
-	if !reflect.DeepEqual(rewards, MinigameRewardsFFA) {
-		t.Fatal("Recieved incorrect minigame awards")
+	_, ok := g.ExtraEvent.(MinigameFFASelector)
+	if !ok {
+		t.Fatalf("Expected Minigame Type: MinigameFFASelector, got: %T",
+			MinigameFFASelector{})
 	}
 
-	minigame.Handle(rewards[8], &g) //Daisy wins
+	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
+	g.ExtraEvent.Handle(0, &g) //Daisy wins
 	expectedDaisyCoins := 20
 	gotDaisyCoins := g.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -62,25 +58,22 @@ func Test1V3Minigame(t *testing.T) {
 	g.Players[3].LastSpaceType = Red
 
 	g.GetMinigame()
-	minigame := g.ExtraEvent.(MinigameEvent)
-	if minigame.Type != Minigame1V3 {
-		t.Fatalf("Expected Minigame Type: %d, got: %d",
-			Minigame1V3, minigame.Type)
+	minigame, ok := g.ExtraEvent.(Minigame1V3Selector)
+	if !ok {
+		t.Fatalf("Expected Minigame Type: Minigame1V3Selector, got: %T",
+			Minigame1V3Selector{})
 	}
-	rewards := minigame.Responses()
-	if !reflect.DeepEqual(rewards, MinigameRewards1V3) {
-		t.Fatal("Recieved incorrect minigame awards")
-	}
-	expectedPlayerIDs := [4]int{3, 0, 1, 2}
-	gotPlayerIDs := g.ExtraEvent.(MinigameEvent).PlayerIDs
-	if expectedPlayerIDs != gotPlayerIDs {
-		t.Errorf("Expected IDs: %#v, got: %#v",
-			expectedPlayerIDs,
-			gotPlayerIDs,
+	expectedSoloPlayer := 3
+	gotSoloPlayer := minigame.Player
+	if expectedSoloPlayer != gotSoloPlayer {
+		t.Errorf("Expected solo player: %d, got: %d",
+			expectedSoloPlayer,
+			gotSoloPlayer,
 		)
 	}
 
-	minigame.Handle(rewards[0], &g) //Mario wins
+	g.ExtraEvent.Handle(Minigame1V3TightropeTreachery, &g)
+	g.ExtraEvent.Handle(0, &g) //Mario wins
 	expectedMarioCoins := 25
 	gotDaisyCoins := g.Players[3].Coins
 	if expectedMarioCoins != gotDaisyCoins {
@@ -111,17 +104,14 @@ func Test2V2Minigame(t *testing.T) {
 	g.Players[3].LastSpaceType = Red
 
 	g.GetMinigame()
-	minigame := g.ExtraEvent.(MinigameEvent)
-	if minigame.Type != Minigame2V2 {
-		t.Fatalf("Expected Minigame Type: %d, got: %d",
-			Minigame2V2, minigame.Type)
-	}
-	rewards := minigame.Responses()
-	if !reflect.DeepEqual(rewards, MinigameRewards2V2) {
-		t.Fatal("Recieved incorrect minigame awards")
+	_, ok := g.ExtraEvent.(Minigame2V2Selector)
+	if !ok {
+		t.Fatalf("Expected Minigame Type: Minigame2V2Selector, got: %T",
+			Minigame2V2Selector{})
 	}
 
-	minigame.Handle(rewards[0], &g) //Daisy and DonkeyKong win
+	g.ExtraEvent.Handle(Minigame2V2HandcarHavoc, &g)
+	g.ExtraEvent.Handle(0, &g) //Daisy and DonkeyKong win
 	expectedDaisyCoins := 20
 	gotDaisyCoins := g.Players[0].Coins
 	if expectedDaisyCoins != gotDaisyCoins {
@@ -191,8 +181,9 @@ func TestLandOnMinigameSpace(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 1)
+	g.ExtraEvent.Handle(Minigame1PShellGame, &g)
 	gLose := g
-	gLose.ExtraEvent.Handle(MinigameRewards1P[0], &gLose) //lose 5 coins
+	gLose.ExtraEvent.Handle(-5, &gLose) //lose 5 coins
 	expectedLoseCoins := 5
 	gotLoseCoins := gLose.Players[0].Coins
 	if expectedLoseCoins != gotLoseCoins {
@@ -200,8 +191,8 @@ func TestLandOnMinigameSpace(t *testing.T) {
 	}
 
 	gWin := g
-	gWin.ExtraEvent.Handle(MinigameRewards1P[37], &gWin) //won WAP
-	expectedWinCoins := 46
+	gWin.ExtraEvent.Handle(10, &gWin) //won WAP
+	expectedWinCoins := 20
 	gotWinCoins := gWin.Players[0].Coins
 	if expectedWinCoins != gotWinCoins {
 		t.Errorf("Expected win coins: %d, got: %d", expectedWinCoins, gotWinCoins)
@@ -225,8 +216,9 @@ func TestPlayer4MinigameSpace(t *testing.T) {
 	g.CurrentPlayer = 3
 
 	g.MovePlayer(3, 1)
-	g.ExtraEvent.Handle(MinigameRewards1P[0], &g)
-	expectedEvent := MinigameEvent{[4]int{0, 1, 2, 3}, MinigameFFA}
+	g.ExtraEvent.Handle(Minigame1PShellGame, &g)
+	g.ExtraEvent.Handle(-5, &g)
+	expectedEvent := MinigameFFASelector{}
 	gotEvent := g.ExtraEvent
 	if expectedEvent != gotEvent {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvent, gotEvent)

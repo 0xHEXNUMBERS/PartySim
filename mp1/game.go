@@ -69,9 +69,11 @@ func (g *Game) LastFiveTurns() bool {
 	return g.Config.MaxTurns-g.Turn <= 5
 }
 
-func (g *Game) AwardCoins(player, coins int, minigame bool) {
+func (g *Game) AwardCoins(player, coins int, minigame bool) int {
+	coins0 := g.Players[player].Coins
 	g.Players[player].Coins += coins
 	g.Players[player].Coins = max(g.Players[player].Coins, 0)
+	coinsGiven := g.Players[player].Coins - coins0
 	if minigame {
 		g.Players[player].MinigameCoins += coins
 		g.Players[player].MinigameCoins = max(
@@ -82,6 +84,12 @@ func (g *Game) AwardCoins(player, coins int, minigame bool) {
 		g.Players[player].MaxCoins,
 		g.Players[player].Coins,
 	)
+	return coinsGiven
+}
+
+func (g *Game) GiveCoins(givingPlayer, takingPlayer, coins int, minigame bool) {
+	coinsTaken := -g.AwardCoins(givingPlayer, -coins, minigame)
+	g.AwardCoins(takingPlayer, coinsTaken, minigame)
 }
 
 func (g *Game) MovePlayer(playerIdx, moves int) {
@@ -191,7 +199,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	case Bowser:
 		g.PreBowserCheck(playerIdx)
 	case MinigameSpace:
-		g.ExtraEvent = MinigameEvent{[4]int{playerIdx, 0, 0, 0}, Minigame1P}
+		g.ExtraEvent = Minigame1PSelector{playerIdx}
 	case Chance:
 		g.ExtraEvent = ChanceTime{Player: playerIdx}
 	}
