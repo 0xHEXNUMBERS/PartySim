@@ -1,6 +1,7 @@
 package mp1
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -44,6 +45,13 @@ func TestMultipleStarSpaces(t *testing.T) {
 	g.Players[1].Coins = 20
 	g.Players[2].Coins = 20
 	g.Players[3].Coins = 20
+
+	expectedRes := []Response{uint8(0), uint8(1), uint8(2), uint8(3), uint8(4)}
+	gotRes := g.ExtraEvent.Responses()
+	if !reflect.DeepEqual(expectedRes, gotRes) {
+		t.Errorf("Expected responses: %#v, got: %#v",
+			expectedRes, gotRes)
+	}
 
 	g.ExtraEvent.Handle(uint8(1), g) //Set {0, 2} as current star space
 	g.ExtraEvent.Handle(NormalDiceBlock{0}, g)

@@ -30,7 +30,7 @@ func (s StarLocationEvent) Responses() []Response {
 	var i uint8
 	res := []Response{}
 	for i = 0; i < s.StarSpaceCount; i++ {
-		if s.RelativeVisited|(1<<i) == 0 && i != s.StarSpaceCount {
+		if s.RelativeVisited&(1<<i) == 0 && i != s.StarSpaceCount {
 			res = append(res, i)
 		}
 	}
