@@ -1,41 +1,24 @@
 package mp1
 
 type ytiBoardData struct {
-	Thwomps      [2]int
-	StarPosition ChainSpace
+	Thwomps         [2]int
+	AcceptThwompPos [2]ChainSpace
+	RejectThwompPos [2]ChainSpace
+	StarPosition    ChainSpace
 }
 
 func ytiCheckThwomp(thwomp int) func(*Game, int, int) {
 	return func(g *Game, player, moves int) {
 		bd := g.Board.Data.(ytiBoardData)
-		playerPos := g.Players[player].CurrentSpace
 		if g.Players[player].Coins >= bd.Thwomps[thwomp] {
-			g.ExtraEvent = BranchEvent{
+			g.ExtraEvent = ytiThwompBranchEvent{
 				player,
-				playerPos.Chain,
 				moves,
-				(*g.Board.Links)[playerPos.Chain],
+				thwomp,
 			}
-		}
-	}
-}
-
-func ytiPayThwomp(thwomp int) func(*Game, int, int) {
-	return func(g *Game, player, moves int) {
-		bd := g.Board.Data.(ytiBoardData)
-		maxCoins := 50
-		if maxCoins > g.Players[player].Coins {
-			maxCoins = g.Players[player].Coins
-		}
-		g.ExtraEvent = PayThwompEvent{
-			PayRangeEvent{
-				player,
-				bd.Thwomps[thwomp],
-				maxCoins,
-			},
-			thwomp,
-			(*(*g.Board.Links)[thwomp+2])[0],
-			moves,
+		} else {
+			pos := bd.RejectThwompPos[thwomp]
+			g.Players[player].CurrentSpace = pos
 		}
 	}
 }
@@ -64,6 +47,7 @@ func ytiGainStar(g *Game, player, moves int) {
 	} else { //Star at other island
 		g.AwardCoins(player, -30, false)
 	}
+	g.Players[player].CurrentSpace.Space++
 }
 
 var YTI = Board{
@@ -133,18 +117,12 @@ var YTI = Board{
 			{Type: Blue},
 			{Type: Invisible, PassingEvent: ytiCheckThwomp(1)},
 		},
-		{ //Temporary place for thwomp payment
-			{Type: Invisible, PassingEvent: ytiPayThwomp(0)},
-		},
-		{ //Temporary place for thwomp payment
-			{Type: Invisible, PassingEvent: ytiPayThwomp(1)},
-		},
 	},
-	Links: &map[int]*[]ChainSpace{
-		0: {{2, 0}},
-		1: {{3, 0}},
-		2: {{1, 6}}, //Thwomp payments only have 1 link
-		3: {{0, 7}}, //Thwomp payments only have 1 link
+	Links: nil,
+	Data: ytiBoardData{
+		[2]int{1, 1},
+		[2]ChainSpace{{1, 6}, {0, 7}},
+		[2]ChainSpace{{0, 0}, {1, 0}},
+		ytiLeftIslandStar,
 	},
-	Data: ytiBoardData{[2]int{1, 1}, ytiLeftIslandStar},
 }

@@ -34,7 +34,7 @@ func TestCanPayThwomp(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 10)
-	expected := BranchEvent{0, 1, 6, (*YTI.Links)[1]}
+	expected := ytiThwompBranchEvent{0, 6, 1}
 	got := g.ExtraEvent
 	if expected != got {
 		t.Errorf("Event expected: %#v, got: %#v", expected, got)
@@ -98,8 +98,8 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 
 	//Move player to invisible space
 	g.MovePlayer(0, 10)
-	//Move player to Chain 3 to pay thwomp 1
-	g.ExtraEvent.Handle(ChainSpace{3, 0}, &g)
+	//Accept payment to thwomp 1
+	g.ExtraEvent.Handle(true, &g)
 	//Pay thwomp 3 coins, move and land on blue space
 	g.ExtraEvent.Handle(3, &g)
 
@@ -137,7 +137,7 @@ func TestIgnoreThwomp(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 10)
-	g.ExtraEvent.Handle(nil, &g)
+	g.ExtraEvent.Handle(false, &g)
 
 	expectedEvt := PickDiceBlock{1, g.Config}
 	gotEvt := g.ExtraEvent

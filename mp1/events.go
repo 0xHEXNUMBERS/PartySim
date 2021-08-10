@@ -10,13 +10,12 @@ type Event interface {
 
 type BranchEvent struct {
 	Player int
-	Chain  int
 	Moves  int
 	Links  *[]ChainSpace
 }
 
 func (b BranchEvent) Responses() []Response {
-	ret := []Response{nil}
+	ret := []Response{}
 	links := *b.Links
 	for _, l := range links {
 		ret = append(ret, l)
@@ -25,10 +24,8 @@ func (b BranchEvent) Responses() []Response {
 }
 
 func (b BranchEvent) Handle(r Response, g *Game) {
-	if r != nil {
-		newPlayerPos := r.(ChainSpace)
-		g.Players[b.Player].CurrentSpace = newPlayerPos
-	}
+	newPlayerPos := r.(ChainSpace)
+	g.Players[b.Player].CurrentSpace = newPlayerPos
 	g.MovePlayer(b.Player, b.Moves)
 }
 

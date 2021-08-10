@@ -92,24 +92,57 @@ func (g *Game) GiveCoins(givingPlayer, takingPlayer, coins int, minigame bool) {
 	g.AwardCoins(takingPlayer, coinsTaken, minigame)
 }
 
+func (g *Game) CheckLinks(player, chain, moves int) (branch bool) {
+	//Check for links
+	if g.Board.Links != nil {
+		chainLinks := *(g.Board.Links)
+		linksPtr, ok := chainLinks[chain]
+		if !ok {
+			g.Players[player].CurrentSpace.Space = 0
+			return
+		}
+		links := *linksPtr
+		switch len(links) {
+		case 1:
+			g.Players[player].CurrentSpace = links[0]
+		default:
+			g.ExtraEvent = BranchEvent{
+				player,
+				moves - 1,
+				linksPtr,
+			}
+			return true
+		}
+	}
+	return false
+}
+
 func (g *Game) MovePlayer(playerIdx, moves int) {
 	chains := *g.Board.Chains
 	playerPos := g.Players[playerIdx].CurrentSpace
 	for moves > 0 {
 		playerPos.Space++
-		g.Players[playerIdx].CurrentSpace = playerPos
 		if playerPos.Space >= len(chains[playerPos.Chain]) {
-			playerPos.Space = 0
+			branch := g.CheckLinks(playerIdx, playerPos.Chain, moves)
+			if branch {
+				return
+			}
+			playerPos = g.Players[playerIdx].CurrentSpace
 		}
+		g.Players[playerIdx].CurrentSpace = playerPos
 		curSpace := chains[playerPos.Chain][playerPos.Space]
 		switch curSpace.Type {
 		case Invisible:
 			g.ExtraEvent = nil
 			curSpace.PassingEvent(g, playerIdx, moves)
 			if g.ExtraEvent != nil {
-				g.Players[playerIdx].CurrentSpace = playerPos
 				return
 			}
+			//The PassingEvent() sets the new player position.
+			//As such, we must update our understanding of where
+			//the player is at
+			moves--
+			playerPos = g.Players[playerIdx].CurrentSpace
 		case Start:
 			if !g.Config.NoKoopa {
 				g.KoopaPasses++
@@ -157,8 +190,6 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 			return
 		}
 	}
-	//Stop on Space
-	g.Players[playerIdx].CurrentSpace = playerPos
 	//Activate Space
 	curSpace := chains[playerPos.Chain][playerPos.Space]
 	g.Players[playerIdx].LastSpaceType = curSpace.Type
