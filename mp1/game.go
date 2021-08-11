@@ -84,9 +84,6 @@ func (g *Game) AwardCoins(player, coins int, minigame bool) int {
 	coinsGiven := g.Players[player].Coins - coins0
 	if minigame {
 		g.Players[player].MinigameCoins += coins
-		g.Players[player].MinigameCoins = max(
-			g.Players[player].MinigameCoins, 0,
-		)
 	}
 	g.Players[player].MaxCoins = max(
 		g.Players[player].MaxCoins,
