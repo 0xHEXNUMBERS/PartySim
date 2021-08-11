@@ -324,9 +324,13 @@ func (m Minigame2V2Reward) Handle(r Response, g *Game) {
 	if team == 0 {
 		g.AwardCoins(m.BlueTeam[0], 10, true)
 		g.AwardCoins(m.BlueTeam[1], 10, true)
+		g.AwardCoins(m.RedTeam[0], -10, true)
+		g.AwardCoins(m.RedTeam[1], -10, true)
 	} else if team == 1 {
 		g.AwardCoins(m.RedTeam[0], 10, true)
 		g.AwardCoins(m.RedTeam[1], 10, true)
+		g.AwardCoins(m.BlueTeam[0], -10, true)
+		g.AwardCoins(m.BlueTeam[1], -10, true)
 	}
 	g.EndGameTurn()
 }
