@@ -296,10 +296,8 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 }
 
 type Minigame2V2Reward struct {
-	BlueTeam       [2]int
-	RedTeam        [2]int
-	IsCoinMinigame bool
-	Coin           CoinMinigame2V2Reward
+	BlueTeam [2]int
+	RedTeam  [2]int
 }
 
 type DrawableMinigame2V2Reward Minigame2V2Reward
@@ -400,19 +398,19 @@ func (m Minigame2V2Selector) Handle(r Response, g *Game) {
 	switch game {
 	case Minigame2V2BobsledRun:
 		g.ExtraEvent = Minigame2V2Reward{
-			m.Team1, m.Team2, false, CoinMinigame2V2Reward{},
+			m.Team1, m.Team2,
 		}
 	case Minigame2V2DesertDash:
 		g.ExtraEvent = Minigame2V2Reward{
-			m.Team1, m.Team2, false, CoinMinigame2V2Reward{},
+			m.Team1, m.Team2,
 		}
 	case Minigame2V2Bombsketball:
 		g.ExtraEvent = Minigame2V2Reward{
-			m.Team1, m.Team2, false, CoinMinigame2V2Reward{},
+			m.Team1, m.Team2,
 		}
 	case Minigame2V2HandcarHavoc:
 		g.ExtraEvent = Minigame2V2Reward{
-			m.Team1, m.Team2, false, CoinMinigame2V2Reward{},
+			m.Team1, m.Team2,
 		}
 	case Minigame2V2DeepSeaDivers:
 		g.ExtraEvent = CoinMinigame2V2Reward{
