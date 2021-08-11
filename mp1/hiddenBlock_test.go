@@ -35,7 +35,7 @@ func TestHiddenBlock(t *testing.T) {
 	gBlue := g
 	gBlue.ExtraEvent.Handle(false, &gBlue)
 
-	expectedPlayerEvent := PickDiceBlock{1, g.Config}
+	expectedPlayerEvent := PickDiceBlock{1, gBlue.Config}
 	gotPlayerEvent := gBlue.ExtraEvent
 	if expectedPlayerEvent != gotPlayerEvent {
 		t.Errorf("Expected Player event: %#v, got: %#v",

@@ -115,7 +115,7 @@ func TestEventDiceBlock(t *testing.T) {
 
 	gBowser := g
 	gBowser.ExtraEvent.Handle(BowserEventBlock, &gBowser)
-	expectedBowserEvent := PickDiceBlock{1, g.Config}
+	expectedBowserEvent := NormalDiceBlock{1}
 	gotBowserEvent := gBowser.ExtraEvent
 	if expectedBowserEvent != gotBowserEvent {
 		t.Errorf("Expected Bowser event: %#v, got: %#v",
@@ -134,7 +134,7 @@ func TestEventDiceBlock(t *testing.T) {
 
 	gKoopa := g
 	gKoopa.ExtraEvent.Handle(KoopaEventBlock, &gKoopa)
-	expectedEvt := PickDiceBlock{1, gKoopa.Config}
+	expectedEvt := NormalDiceBlock{1}
 	gotEvt := gKoopa.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)

@@ -53,7 +53,7 @@ func TestCanNotPayThwomp(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 10)
-	expectedEvt := PickDiceBlock{1, g.Config}
+	expectedEvt := NormalDiceBlock{1}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
@@ -103,7 +103,7 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	//Pay thwomp 3 coins, move and land on blue space
 	g.ExtraEvent.Handle(3, &g)
 
-	expectedEvt := PickDiceBlock{1, g.Config}
+	expectedEvt := NormalDiceBlock{1}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
@@ -139,7 +139,7 @@ func TestIgnoreThwomp(t *testing.T) {
 	g.MovePlayer(0, 10)
 	g.ExtraEvent.Handle(false, &g)
 
-	expectedEvt := PickDiceBlock{1, g.Config}
+	expectedEvt := NormalDiceBlock{1}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
@@ -171,7 +171,7 @@ func TestStarSwapViaHappening(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 3)
-	expectedEvt := PickDiceBlock{1, g.Config}
+	expectedEvt := NormalDiceBlock{1}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
@@ -223,7 +223,7 @@ func TestMushroomSpace(t *testing.T) {
 	//Received red mushroom
 	gRed := g
 	gRed.ExtraEvent.Handle(true, &gRed)
-	expectedEvent := PickDiceBlock{0, g.Config}
+	expectedEvent := NormalDiceBlock{0}
 	gotEvent := gRed.ExtraEvent
 	if expectedEvent != gotEvent {
 		t.Errorf("Expected Red Mushroom Event: %#v, got: %#v",
@@ -235,7 +235,7 @@ func TestMushroomSpace(t *testing.T) {
 	//Received poison mushroom
 	gPoison := g
 	gPoison.ExtraEvent.Handle(false, &gPoison)
-	expectedEvt := PickDiceBlock{1, g.Config}
+	expectedEvt := NormalDiceBlock{1}
 	gotEvt := gPoison.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
@@ -255,21 +255,17 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 7}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 7}),
 		},
-		ExtraEvent: PickDiceBlock{0, GameConfig{MaxTurns: 20}},
+		ExtraEvent: NormalDiceBlock{0},
 		Config:     GameConfig{MaxTurns: 20},
 	}
 
 	//All players recieve poison mushroom
-	g.ExtraEvent.Handle(NormalDiceBlock{0}, &g)
 	g.ExtraEvent.Handle(4, &g)
 	g.ExtraEvent.Handle(false, &g)
-	g.ExtraEvent.Handle(NormalDiceBlock{1}, &g)
 	g.ExtraEvent.Handle(4, &g)
 	g.ExtraEvent.Handle(false, &g)
-	g.ExtraEvent.Handle(NormalDiceBlock{2}, &g)
 	g.ExtraEvent.Handle(4, &g)
 	g.ExtraEvent.Handle(false, &g)
-	g.ExtraEvent.Handle(NormalDiceBlock{3}, &g)
 	g.ExtraEvent.Handle(4, &g)
 	g.ExtraEvent.Handle(false, &g)
 
@@ -298,7 +294,7 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 		)
 	}
 
-	expectedDiceEvent := PickDiceBlock{0, g.Config}
+	expectedDiceEvent := NormalDiceBlock{0}
 	gotDiceEvent := g.ExtraEvent
 	if expectedDiceEvent != gotDiceEvent {
 		t.Errorf("Expected Dice event: %#v, got: %#v",
@@ -317,19 +313,17 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 7}),
 		},
 		CurrentPlayer: 2,
-		ExtraEvent:    PickDiceBlock{2, GameConfig{MaxTurns: 20}},
+		ExtraEvent:    NormalDiceBlock{2},
 		Config:        GameConfig{MaxTurns: 20},
 	}
 	g.Players[0].LastSpaceType = Blue
 	g.Players[1].LastSpaceType = Blue
 
 	//Player 2 fails mushroom check
-	g.ExtraEvent.Handle(NormalDiceBlock{2}, &g)
 	g.ExtraEvent.Handle(4, &g)
 	g.ExtraEvent.Handle(false, &g)
 
 	//Player 3 moves to blue space
-	g.ExtraEvent.Handle(NormalDiceBlock{3}, &g)
 	g.ExtraEvent.Handle(1, &g)
 
 	//Handle Minigame
@@ -337,12 +331,10 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 	g.ExtraEvent.Handle(0, &g)
 
 	//Players 0 & 1 move to blue space
-	g.ExtraEvent.Handle(NormalDiceBlock{0}, &g)
 	g.ExtraEvent.Handle(1, &g)
-	g.ExtraEvent.Handle(NormalDiceBlock{1}, &g)
 	g.ExtraEvent.Handle(1, &g)
 
-	expectedEvent := PickDiceBlock{3, g.Config}
+	expectedEvent := NormalDiceBlock{3}
 	gotEvent := g.ExtraEvent
 	if expectedEvent != gotEvent {
 		t.Errorf("Expected event: %#v, got: %#v",
@@ -465,7 +457,7 @@ func TestPassEmptyBooSpace(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 4)
-	expectedEvt := PickDiceBlock{1, g.Config}
+	expectedEvt := NormalDiceBlock{1}
 	gotEvt := g.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)

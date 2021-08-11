@@ -22,6 +22,14 @@ type Game struct {
 	Config        GameConfig
 }
 
+func (g *Game) SetDiceBlock() {
+	if g.Config.RedDice || g.Config.BlueDice || g.Config.WarpDice || g.Config.EventsDice {
+		g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
+	} else {
+		g.ExtraEvent = NormalDiceBlock{g.CurrentPlayer}
+	}
+}
+
 func InitializeGame(b Board, config GameConfig) *Game {
 	g := &Game{
 		Board: b,
@@ -58,7 +66,7 @@ func InitializeGame(b Board, config GameConfig) *Game {
 		g.StarSpaces.CurrentStarSpace = (*g.StarSpaces.IndexToPosition)[0]
 	}
 	if g.StarSpaces.StarSpaceCount <= 1 {
-		g.ExtraEvent = PickDiceBlock{0, g.Config}
+		g.SetDiceBlock()
 	} else {
 		g.ExtraEvent = StarLocationEvent{g.StarSpaces, 0, 0}
 	}
@@ -309,7 +317,7 @@ func (g *Game) EndGameTurn() {
 			g.EndCharacterTurn()
 			return
 		}
-		g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
+		g.SetDiceBlock()
 	}
 }
 
@@ -328,5 +336,5 @@ func (g *Game) EndCharacterTurn() {
 		g.EndCharacterTurn()
 		return
 	}
-	g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
+	g.SetDiceBlock()
 }

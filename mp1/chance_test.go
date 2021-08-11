@@ -120,7 +120,7 @@ func TestChanceTime(t *testing.T) {
 		)
 	}
 
-	expectedEvt := PickDiceBlock{1, gSwapStars.Config}
+	expectedEvt := NormalDiceBlock{1}
 	gotEvt := gSwapStars.ExtraEvent
 	if expectedEvt != gotEvt {
 		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)

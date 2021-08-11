@@ -55,6 +55,6 @@ func (s StarLocationEvent) Handle(r Response, g *Game) {
 	if s.Moves != 0 {
 		g.MovePlayer(s.Player, s.Moves)
 	} else {
-		g.ExtraEvent = PickDiceBlock{s.Player, g.Config}
+		g.SetDiceBlock()
 	}
 }
