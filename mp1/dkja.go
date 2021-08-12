@@ -45,7 +45,7 @@ func dkjaCanPassCoinBlockade(blockade int) func(*Game, int, int) {
 	}
 }
 
-func dkjaBoulder(g *Game) {
+func dkjaBoulder(g *Game, player int) {
 	for i := 0; i < 4; i++ {
 		pos := g.Players[i].CurrentSpace
 		if pos.Chain == 7 || (pos.Chain == 5 && pos.Space != 0) {

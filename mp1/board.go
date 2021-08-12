@@ -19,7 +19,7 @@ const (
 
 type Space struct {
 	Type          SpaceType
-	StoppingEvent func(game *Game)
+	StoppingEvent func(game *Game, player int)
 	PassingEvent  func(game *Game, player, moves int)
 }
 

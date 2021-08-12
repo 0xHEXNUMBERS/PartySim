@@ -228,7 +228,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	case Happening:
 		g.Players[playerIdx].HappeningCount++
 		g.ExtraEvent = nil
-		curSpace.StoppingEvent(g)
+		curSpace.StoppingEvent(g, playerIdx)
 		if g.ExtraEvent == nil {
 			g.EndCharacterTurn()
 		}

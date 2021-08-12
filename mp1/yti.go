@@ -26,7 +26,7 @@ func ytiCheckThwomp(thwomp int) func(*Game, int, int) {
 var ytiLeftIslandStar = ChainSpace{0, 19}
 var ytiRightIslandStar = ChainSpace{1, 18}
 
-func ytiSwapStarPosition(g *Game) {
+func ytiSwapStarPosition(g *Game, player int) {
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition == ytiLeftIslandStar {
 		bd.StarPosition = ytiRightIslandStar
@@ -42,7 +42,7 @@ func ytiGainStar(g *Game, player, moves int) {
 		if g.Players[player].Coins >= 20 {
 			g.AwardCoins(player, -20, false)
 			g.Players[player].Stars++
-			ytiSwapStarPosition(g)
+			ytiSwapStarPosition(g, 0)
 		}
 	} else { //Star at other island
 		g.AwardCoins(player, -30, false)
