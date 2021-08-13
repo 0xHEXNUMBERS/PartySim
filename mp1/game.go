@@ -185,6 +185,8 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 					return
 				}
 			}
+		case BogusItem:
+			g.AwardCoins(playerIdx, -g.Board.BowserCoins, false)
 		default:
 			moves--
 		}

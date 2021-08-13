@@ -13,7 +13,7 @@ const (
 	Start
 	Mushroom
 	Bowser
-	BlackStar
+	BogusItem
 	Boo
 )
 
@@ -39,7 +39,8 @@ type Movement struct {
 }
 
 type Board struct {
-	Chains *[]Chain
-	Links  *map[int]*[]ChainSpace
-	Data   ExtraBoardData
+	Chains      *[]Chain
+	Links       *map[int]*[]ChainSpace
+	BowserCoins int
+	Data        ExtraBoardData
 }

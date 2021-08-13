@@ -142,7 +142,7 @@ var DKJA = Board{
 		{ //Through second coin blockade
 			{Type: MinigameSpace},
 			{Type: Red},
-			{Type: Bowser},
+			{Type: BogusItem},
 			{Type: Red},
 			{Type: Blue},
 			{Type: Happening, StoppingEvent: dkjaBoulder},
@@ -179,6 +179,7 @@ var DKJA = Board{
 		7: {{0, 15}},
 		9: {{0, 13}},
 	},
+	BowserCoins: 10,
 	Data: dkjaBoardData{
 		WhompPos: [3]bool{false, false, false},
 		WhompMainDestination: [3]ChainSpace{
