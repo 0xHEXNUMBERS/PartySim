@@ -122,6 +122,58 @@ func (g *Game) CheckLinks(player, chain, moves int) (branch bool) {
 	return false
 }
 
+func (g *Game) ActivateSpace(player int) {
+	//Activate Space
+	chains := *g.Board.Chains
+	playerPos := g.Players[player].CurrentSpace
+	curSpace := chains[playerPos.Chain][playerPos.Space]
+	//Star space requires preprocessing
+	if curSpace.Type == Star {
+		starIndex := g.StarSpaces.GetIndex(playerPos)
+		if g.StarSpaces.AbsoluteVisited&(1<<starIndex) > 0 {
+			g.Players[player].LastSpaceType = Chance
+		} else {
+			g.Players[player].LastSpaceType = Blue
+		}
+	}
+	//Perform space action
+	switch g.Players[player].LastSpaceType {
+	case Invisible:
+		//Stopping Event should set LastSpaceType
+		curSpace.StoppingEvent(g, player)
+		g.ActivateSpace(player)
+	case Blue:
+		if g.LastFiveTurns() {
+			g.AwardCoins(player, 6, false)
+		} else {
+			g.AwardCoins(player, 3, false)
+		}
+		g.EndCharacterTurn()
+	case Red:
+		if g.LastFiveTurns() {
+			g.AwardCoins(player, -6, false)
+		} else {
+			g.AwardCoins(player, -3, false)
+		}
+		g.EndCharacterTurn()
+	case Mushroom:
+		g.ExtraEvent = MushroomEvent{player}
+	case Happening:
+		g.Players[player].HappeningCount++
+		g.ExtraEvent = nil
+		curSpace.StoppingEvent(g, player)
+		if g.ExtraEvent == nil {
+			g.EndCharacterTurn()
+		}
+	case Bowser:
+		g.PreBowserCheck(player)
+	case MinigameSpace:
+		g.ExtraEvent = Minigame1PSelector{player}
+	case Chance:
+		g.ExtraEvent = ChanceTime{Player: player}
+	}
+}
+
 func (g *Game) MovePlayer(playerIdx, moves int) {
 	chains := *g.Board.Chains
 	playerPos := g.Players[playerIdx].CurrentSpace
@@ -137,16 +189,19 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 		curSpace := chains[playerPos.Chain][playerPos.Space]
 		switch curSpace.Type {
 		case Invisible:
-			g.ExtraEvent = nil
-			curSpace.PassingEvent(g, playerIdx, moves)
-			if g.ExtraEvent != nil {
-				return
+			if curSpace.PassingEvent != nil {
+				g.ExtraEvent = nil
+				curSpace.PassingEvent(g, playerIdx, moves)
+				if g.ExtraEvent != nil {
+					return
+				}
+				//The PassingEvent() sets the new player position.
+				//As such, we must update our understanding of where
+				//the player is at
+				playerPos = g.Players[playerIdx].CurrentSpace
+				curSpace = chains[playerPos.Chain][playerPos.Space]
 			}
-			//The PassingEvent() sets the new player position.
-			//As such, we must update our understanding of where
-			//the player is at
 			moves--
-			playerPos = g.Players[playerIdx].CurrentSpace
 		case Start:
 			if !g.Config.NoKoopa {
 				g.KoopaPasses++
@@ -189,57 +244,15 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 		default:
 			moves--
 		}
-
-		if g.Config.EventsDice && moves == 0 &&
-			(curSpace.Type == Blue || curSpace.Type == Red) {
-			g.ExtraEvent = HiddenBlockEvent{playerIdx}
-			return
-		}
 	}
-	//Activate Space
 	curSpace := chains[playerPos.Chain][playerPos.Space]
 	g.Players[playerIdx].LastSpaceType = curSpace.Type
-	//Star space requires preprocessing
-	if curSpace.Type == Star {
-		starIndex := g.StarSpaces.GetIndex(playerPos)
-		if g.StarSpaces.AbsoluteVisited&(1<<starIndex) > 0 {
-			g.Players[playerIdx].LastSpaceType = Chance
-		} else {
-			g.Players[playerIdx].LastSpaceType = Blue
-		}
+	if g.Config.EventsDice &&
+		(curSpace.Type == Blue || curSpace.HiddenBlock) {
+		g.ExtraEvent = HiddenBlockEvent{playerIdx}
+		return
 	}
-	//Perform space action
-	switch g.Players[playerIdx].LastSpaceType {
-	case Blue:
-		if g.LastFiveTurns() {
-			g.AwardCoins(playerIdx, 6, false)
-		} else {
-			g.AwardCoins(playerIdx, 3, false)
-		}
-		g.EndCharacterTurn()
-	case Red:
-		if g.LastFiveTurns() {
-			g.AwardCoins(playerIdx, -6, false)
-		} else {
-			g.AwardCoins(playerIdx, -3, false)
-		}
-		g.EndCharacterTurn()
-	case Mushroom:
-		g.ExtraEvent = MushroomEvent{playerIdx}
-	case Happening:
-		g.Players[playerIdx].HappeningCount++
-		g.ExtraEvent = nil
-		curSpace.StoppingEvent(g, playerIdx)
-		if g.ExtraEvent == nil {
-			g.EndCharacterTurn()
-		}
-	case Bowser:
-		g.PreBowserCheck(playerIdx)
-	case MinigameSpace:
-		g.ExtraEvent = Minigame1PSelector{playerIdx}
-	case Chance:
-		g.ExtraEvent = ChanceTime{Player: playerIdx}
-	}
+	g.ActivateSpace(playerIdx)
 }
 
 func (g *Game) AwardBonusStars() {

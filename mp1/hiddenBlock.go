@@ -17,6 +17,6 @@ func (h HiddenBlockEvent) Handle(r Response, g *Game) {
 	if isHiddenBlock {
 		g.ExtraEvent = EventDiceBlock{h.Player}
 	} else {
-		g.MovePlayer(h.Player, 0)
+		g.ActivateSpace(h.Player)
 	}
 }
