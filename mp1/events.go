@@ -26,7 +26,7 @@ func (b BranchEvent) Responses() []Response {
 func (b BranchEvent) Handle(r Response, g *Game) {
 	newPlayerPos := r.(ChainSpace)
 	g.Players[b.Player].CurrentSpace = newPlayerPos
-	g.MovePlayer(b.Player, b.Moves)
+	g.MovePlayer(b.Player, b.Moves-1)
 }
 
 func (b BranchEvent) ControllingPlayer() int {

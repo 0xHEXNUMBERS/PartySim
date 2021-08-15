@@ -64,6 +64,10 @@ func lerGotoIsland(space int) func(*Game, int) {
 func lerVisitRobot(g *Game, player, moves int) {
 	if g.Players[player].Coins >= 20 {
 		g.ExtraEvent = lerRobot{player, moves}
+	} else {
+		//Robots are confirmed to not be the last
+		//space of a chain: we can safely increment
+		g.Players[player].CurrentSpace.Space++
 	}
 }
 

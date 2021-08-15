@@ -137,7 +137,7 @@ func TestBRFork3(t *testing.T) {
 	}
 }
 
-func TestSwapGates(t *testing.T) {
+func TestSwapGatesViaHappening(t *testing.T) {
 	g := *InitializeGame(LER, GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = ChainSpace{3, 7}
 	g.Players[0].Coins = 20
@@ -161,5 +161,37 @@ func TestSwapGatesTwice(t *testing.T) {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
 		t.Errorf("Gates did not swap twice")
+	}
+}
+
+func TestSwapGatesInsufficientCoins(t *testing.T) {
+	g := *InitializeGame(LER, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{2, 3}
+	g.Players[0].Coins = 0
+	g.ExtraEvent.Handle(uint8(0), &g) //Star
+
+	g.ExtraEvent.Handle(1, &g)
+
+	expectedSpace := ChainSpace{2, 5}
+	gotSpace := g.Players[0].CurrentSpace
+	if expectedSpace != gotSpace {
+		t.Errorf("Expected space: %#v, got: %#v",
+			expectedSpace, gotSpace)
+	}
+}
+
+func TestNormalBranch(t *testing.T) {
+	g := *InitializeGame(LER, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 10}
+	g.ExtraEvent.Handle(uint8(0), &g)
+
+	g.ExtraEvent.Handle(1, &g)                //Move
+	g.ExtraEvent.Handle(ChainSpace{1, 0}, &g) //Branch
+
+	expectedSpace := ChainSpace{1, 0}
+	gotSpace := g.Players[0].CurrentSpace
+	if expectedSpace != gotSpace {
+		t.Errorf("Expected space: %#v, got: %#v",
+			expectedSpace, gotSpace)
 	}
 }
