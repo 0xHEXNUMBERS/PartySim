@@ -39,8 +39,9 @@ type Movement struct {
 }
 
 type Board struct {
-	Chains      *[]Chain
-	Links       *map[int]*[]ChainSpace
-	BowserCoins int
-	Data        ExtraBoardData
+	Chains                *[]Chain
+	Links                 *map[int]*[]ChainSpace
+	BowserCoins           int
+	Data                  ExtraBoardData
+	EndCharacterTurnEvent func(game *Game, player int)
 }

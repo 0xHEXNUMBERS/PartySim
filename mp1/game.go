@@ -128,8 +128,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	for moves > 0 {
 		playerPos.Space++
 		if playerPos.Space >= len(chains[playerPos.Chain]) {
-			branch := g.CheckLinks(playerIdx, playerPos.Chain, moves)
-			if branch {
+			if g.CheckLinks(playerIdx, playerPos.Chain, moves) {
 				return
 			}
 			playerPos = g.Players[playerIdx].CurrentSpace
@@ -325,6 +324,9 @@ func (g *Game) StartMinigamePrep() {
 }
 
 func (g *Game) EndCharacterTurn() {
+	if g.Board.EndCharacterTurnEvent != nil {
+		g.Board.EndCharacterTurnEvent(g, g.CurrentPlayer)
+	}
 	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4
 	if g.CurrentPlayer == 0 {
 		g.StartMinigamePrep()
