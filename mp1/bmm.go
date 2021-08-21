@@ -34,29 +34,31 @@ func bmmLandOnRegularSpace(g *Game, player int) {
 	}
 }
 
-func bmmReachFork(bowserPath, starPath ChainSpace) func(*Game, int, int) {
-	return func(g *Game, player, moves int) {
+func bmmReachFork(bowserPath, starPath ChainSpace) func(*Game, int, int) int {
+	return func(g *Game, player, moves int) int {
 		if g.Players[player].Coins >= 10 {
 			g.ExtraEvent = bmmBranchPay{player, moves, bowserPath, starPath}
 		} else {
 			g.Players[player].CurrentSpace = bowserPath
 		}
+		return moves - 1
 	}
 }
 
-func bmmFinalFork(g *Game, player, moves int) {
+func bmmFinalFork(g *Game, player, moves int) int {
 	g.ExtraEvent = bmmBranchDecision{
 		player, moves, ChainSpace{4, 0}, ChainSpace{5, 0},
 	}
+	return moves
 }
 
-func bmmVisitBowser(g *Game, player, moves int) {
+func bmmVisitBowser(g *Game, player, moves int) int {
 	if g.Players[player].Stars > 0 {
 		g.ExtraEvent = bmmBowserRoulette{player, moves}
 	} else {
 		g.AwardCoins(player, -20, false)
-		g.Players[player].CurrentSpace.Space++
 	}
+	return moves
 }
 
 var BMM = Board{

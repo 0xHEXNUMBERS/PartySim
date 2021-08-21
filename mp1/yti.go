@@ -7,8 +7,8 @@ type ytiBoardData struct {
 	StarPosition    ChainSpace
 }
 
-func ytiCheckThwomp(thwomp int) func(*Game, int, int) {
-	return func(g *Game, player, moves int) {
+func ytiCheckThwomp(thwomp int) func(*Game, int, int) int {
+	return func(g *Game, player, moves int) int {
 		bd := g.Board.Data.(ytiBoardData)
 		if g.Players[player].Coins >= bd.Thwomps[thwomp] {
 			g.ExtraEvent = ytiThwompBranchEvent{
@@ -20,6 +20,7 @@ func ytiCheckThwomp(thwomp int) func(*Game, int, int) {
 			pos := bd.RejectThwompPos[thwomp]
 			g.Players[player].CurrentSpace = pos
 		}
+		return moves - 1
 	}
 }
 
@@ -36,7 +37,7 @@ func ytiSwapStarPosition(g *Game, player int) {
 	g.Board.Data = bd
 }
 
-func ytiGainStar(g *Game, player, moves int) {
+func ytiGainStar(g *Game, player, moves int) int {
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition == g.Players[player].CurrentSpace {
 		if g.Players[player].Coins >= 20 {
@@ -47,7 +48,7 @@ func ytiGainStar(g *Game, player, moves int) {
 	} else { //Star at other island
 		g.AwardCoins(player, -30, false)
 	}
-	g.Players[player].CurrentSpace.Space++
+	return moves
 }
 
 var YTI = Board{

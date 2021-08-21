@@ -7,7 +7,7 @@ type pbcBoardData struct {
 	PiranhaPlant      [14]int
 }
 
-func pbcVisitSeed(g *Game, player, moves int) {
+func pbcVisitSeed(g *Game, player, moves int) int {
 	g.AwardCoins(player, -10, false)
 	data := g.Board.Data.(pbcBoardData)
 	data.SeedCount++
@@ -25,6 +25,7 @@ func pbcVisitSeed(g *Game, player, moves int) {
 			g.ExtraEvent = pbcSeedCheck{player, moves}
 		}
 	}
+	return moves - 1
 }
 
 func pbcVisitPiranha(piranha int) func(*Game, int) {

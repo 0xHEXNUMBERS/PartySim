@@ -4,49 +4,54 @@ type lerBoardData struct {
 	BlueUp bool
 }
 
-func lerRBRFork(g *Game, player, moves int) {
+func lerRBRFork(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
 		g.ExtraEvent = lerRedFork{player, moves}
 	} else {
 		g.Players[player].CurrentSpace = ChainSpace{5, 0}
 	}
+	return moves - 1
 }
 
-func lerRBFork(g *Game, player, moves int) {
+func lerRBFork(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
 		g.Players[player].CurrentSpace = ChainSpace{4, 4}
 	} else {
 		g.Players[player].CurrentSpace = ChainSpace{4, 0}
 	}
+	return moves - 1
 }
 
-func lerBRFork1(g *Game, player, moves int) {
+func lerBRFork1(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
 		g.Players[player].CurrentSpace = ChainSpace{9, 0}
 	} else {
 		g.Players[player].CurrentSpace = ChainSpace{6, 10}
 	}
+	return moves - 1
 }
 
-func lerBRFork2(g *Game, player, moves int) {
+func lerBRFork2(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
 		g.Players[player].CurrentSpace = ChainSpace{7, 0}
 	} else {
 		g.Players[player].CurrentSpace = ChainSpace{6, 0}
 	}
+	return moves - 1
 }
 
-func lerBRFork3(g *Game, player, moves int) {
+func lerBRFork3(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
 		g.Players[player].CurrentSpace = ChainSpace{0, 0}
 	} else {
 		g.Players[player].CurrentSpace = ChainSpace{10, 0}
 	}
+	return moves - 1
 }
 
 func lerSwapGates(g *Game, player int) {
@@ -61,14 +66,11 @@ func lerGotoIsland(space int) func(*Game, int) {
 	}
 }
 
-func lerVisitRobot(g *Game, player, moves int) {
+func lerVisitRobot(g *Game, player, moves int) int {
 	if g.Players[player].Coins >= 20 {
 		g.ExtraEvent = lerRobot{player, moves}
-	} else {
-		//Robots are confirmed to not be the last
-		//space of a chain: we can safely increment
-		g.Players[player].CurrentSpace.Space++
 	}
+	return moves
 }
 
 var LER = Board{

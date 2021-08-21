@@ -10,7 +10,7 @@ func mrcSwapCastleDir(g *Game, player int) {
 	g.Board.Data = bd
 }
 
-func mrcVisitCastle(g *Game, player int, moves int) {
+func mrcVisitCastle(g *Game, player int, moves int) int {
 	bd := g.Board.Data.(mrcBoardData)
 	if bd.IsBowser {
 		g.AwardCoins(player, -40, false)
@@ -22,7 +22,7 @@ func mrcVisitCastle(g *Game, player int, moves int) {
 	}
 	g.Players[player].CurrentSpace = ChainSpace{0, 0}
 	mrcSwapCastleDir(g, player)
-	g.MovePlayer(player, moves)
+	return moves
 }
 
 var MRC = Board{

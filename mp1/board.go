@@ -21,7 +21,7 @@ type Space struct {
 	Type          SpaceType
 	HiddenBlock   bool
 	StoppingEvent func(game *Game, player int)
-	PassingEvent  func(game *Game, player, moves int)
+	PassingEvent  func(game *Game, player, moves int) int
 }
 
 type Chain []Space

@@ -4,7 +4,7 @@ type wbcBoardData struct {
 	Direction bool
 }
 
-func wbcCannonShot(g *Game, player, moves int) {
+func wbcCannonShot(g *Game, player, moves int) int {
 	newChain := g.Players[player].CurrentSpace.Chain
 	data := g.Board.Data.(wbcBoardData)
 	if data.Direction {
@@ -15,6 +15,7 @@ func wbcCannonShot(g *Game, player, moves int) {
 	g.ExtraEvent = wbcCannon{
 		player, moves, newChain,
 	}
+	return moves
 }
 
 func wbcReverseCannons(g *Game, player int) {
@@ -23,16 +24,16 @@ func wbcReverseCannons(g *Game, player int) {
 	g.Board.Data = data
 }
 
-func wbcLoadPlayerInBowserCannon(g *Game, player, moves int) {
+func wbcLoadPlayerInBowserCannon(g *Game, player, moves int) int {
 	g.ExtraEvent = wbcBowserCannon{player, moves}
+	return moves
 }
 
-func wbcShyGuy(g *Game, player, moves int) {
-	if g.Players[player].Coins < 10 {
-		g.Players[player].CurrentSpace.Space++
-		return
+func wbcShyGuy(g *Game, player, moves int) int {
+	if g.Players[player].Coins >= 10 {
+		g.ExtraEvent = wbcShyGuyEvent{player, moves}
 	}
-	g.ExtraEvent = wbcShyGuyEvent{player, moves}
+	return moves
 }
 
 var WBC = Board{

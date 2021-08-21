@@ -191,7 +191,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 		case Invisible:
 			if curSpace.PassingEvent != nil {
 				g.ExtraEvent = nil
-				curSpace.PassingEvent(g, playerIdx, moves)
+				moves = curSpace.PassingEvent(g, playerIdx, moves)
 				if g.ExtraEvent != nil {
 					return
 				}
@@ -200,8 +200,9 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 				//the player is at
 				playerPos = g.Players[playerIdx].CurrentSpace
 				curSpace = chains[playerPos.Chain][playerPos.Space]
+			} else {
+				moves--
 			}
-			moves--
 		case Start:
 			if !g.Config.NoKoopa {
 				g.KoopaPasses++
