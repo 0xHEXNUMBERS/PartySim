@@ -40,11 +40,7 @@ type PayRangeEvent struct {
 }
 
 func (p PayRangeEvent) Responses() []Response {
-	ret := make([]Response, (p.Max-p.Min)+1)
-	for i := p.Min; i <= p.Max; i++ {
-		ret[i-p.Min] = i
-	}
-	return ret
+	return CPURangeEvent{p.Min, p.Max}.Responses()
 }
 
 func (p PayRangeEvent) Handle(r Response, g *Game) {
