@@ -28,18 +28,8 @@ func Test4V4Minigame(t *testing.T) {
 
 	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
 	g.ExtraEvent.Handle(0, &g) //Daisy wins
-	expectedDaisyCoins := 20
-	gotDaisyCoins := g.Players[0].Coins
-	if expectedDaisyCoins != gotDaisyCoins {
-		t.Errorf("Expected Daisy coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins)
-	}
-	expectedDaisyMinigameCoins := 10
-	gotDaisyMinigameCoins := g.Players[0].MinigameCoins
-	if expectedDaisyMinigameCoins != gotDaisyMinigameCoins {
-		t.Errorf("Expected Daisy coins: %d, got: %d",
-			expectedDaisyMinigameCoins, gotDaisyMinigameCoins)
-	}
+	CoinsIs(20, 0, g, "", t)
+	MinigameCoinsIs(10, 0, g, "", t)
 }
 
 func Test1V3Minigame(t *testing.T) {
@@ -63,29 +53,12 @@ func Test1V3Minigame(t *testing.T) {
 		t.Fatalf("Expected Minigame Type: Minigame1V3Selector, got: %T",
 			Minigame1V3Selector{})
 	}
-	expectedSoloPlayer := 3
-	gotSoloPlayer := minigame.Player
-	if expectedSoloPlayer != gotSoloPlayer {
-		t.Errorf("Expected solo player: %d, got: %d",
-			expectedSoloPlayer,
-			gotSoloPlayer,
-		)
-	}
+	IntIs(3, minigame.Player, "Solo Player", t)
 
 	g.ExtraEvent.Handle(Minigame1V3TightropeTreachery, &g)
 	g.ExtraEvent.Handle(0, &g) //Mario wins
-	expectedMarioCoins := 25
-	gotDaisyCoins := g.Players[3].Coins
-	if expectedMarioCoins != gotDaisyCoins {
-		t.Errorf("Expected Mario coins: %d, got: %d",
-			expectedMarioCoins, gotDaisyCoins)
-	}
-	expectedMarioMinigameCoins := 15
-	gotMarioMinigameCoins := g.Players[3].MinigameCoins
-	if expectedMarioMinigameCoins != gotMarioMinigameCoins {
-		t.Errorf("Expected Mario coins: %d, got: %d",
-			expectedMarioMinigameCoins, gotMarioMinigameCoins)
-	}
+	CoinsIs(25, 3, g, "", t)
+	MinigameCoinsIs(15, 3, g, "", t)
 }
 
 func Test2V2Minigame(t *testing.T) {
@@ -112,30 +85,10 @@ func Test2V2Minigame(t *testing.T) {
 
 	g.ExtraEvent.Handle(Minigame2V2HandcarHavoc, &g)
 	g.ExtraEvent.Handle(0, &g) //Daisy and DonkeyKong win
-	expectedDaisyCoins := 20
-	gotDaisyCoins := g.Players[0].Coins
-	if expectedDaisyCoins != gotDaisyCoins {
-		t.Errorf("Expected Daisy coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins)
-	}
-	expectedDaisyMinigameCoins := 10
-	gotDaisyMinigameCoins := g.Players[0].MinigameCoins
-	if expectedDaisyMinigameCoins != gotDaisyMinigameCoins {
-		t.Errorf("Expected Daisy coins: %d, got: %d",
-			expectedDaisyMinigameCoins, gotDaisyMinigameCoins)
-	}
-	expectedDKCoins := 20
-	gotDKCoins := g.Players[2].Coins
-	if expectedDKCoins != gotDKCoins {
-		t.Errorf("Expected DK coins: %d, got: %d",
-			expectedDKCoins, gotDKCoins)
-	}
-	expectedDKMinigameCoins := 10
-	gotDKMinigameCoins := g.Players[2].MinigameCoins
-	if expectedDKMinigameCoins != gotDKMinigameCoins {
-		t.Errorf("Expected DK coins: %d, got: %d",
-			expectedDKMinigameCoins, gotDKMinigameCoins)
-	}
+	CoinsIs(20, 0, g, "", t)
+	MinigameCoinsIs(10, 0, g, "", t)
+	CoinsIs(20, 2, g, "", t)
+	MinigameCoinsIs(10, 2, g, "", t)
 }
 
 func TestGreenToBlue(t *testing.T) {
@@ -154,20 +107,10 @@ func TestGreenToBlue(t *testing.T) {
 	g.Players[3].LastSpaceType = Blue
 
 	g.FindGreenPlayer()
-	expectedEvt := DeterminePlayerTeamEvent{2}
-	gotEvt := g.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v",
-			expectedEvt, gotEvt)
-	}
+	EventIs(DeterminePlayerTeamEvent{2}, g.ExtraEvent, "", t)
 
 	g.ExtraEvent.Handle(true, &g)
-	expectedSpace := Blue
-	gotSpace := g.Players[2].LastSpaceType
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected Space Type: %d, got: %d",
-			expectedSpace, gotSpace)
-	}
+	SpaceTypeIs(Blue, g.Players[2].LastSpaceType, "", t)
 }
 
 func TestLandOnMinigameSpace(t *testing.T) {
@@ -184,19 +127,11 @@ func TestLandOnMinigameSpace(t *testing.T) {
 	g.ExtraEvent.Handle(Minigame1PShellGame, &g)
 	gLose := g
 	gLose.ExtraEvent.Handle(-5, &gLose) //lose 5 coins
-	expectedLoseCoins := 5
-	gotLoseCoins := gLose.Players[0].Coins
-	if expectedLoseCoins != gotLoseCoins {
-		t.Errorf("Expected lose coins: %d, got: %d", expectedLoseCoins, gotLoseCoins)
-	}
+	CoinsIs(5, 0, gLose, "Lose", t)
 
 	gWin := g
 	gWin.ExtraEvent.Handle(10, &gWin) //won WAP
-	expectedWinCoins := 20
-	gotWinCoins := gWin.Players[0].Coins
-	if expectedWinCoins != gotWinCoins {
-		t.Errorf("Expected win coins: %d, got: %d", expectedWinCoins, gotWinCoins)
-	}
+	CoinsIs(20, 0, gWin, "Win", t)
 }
 
 func TestPlayer4MinigameSpace(t *testing.T) {
@@ -218,9 +153,5 @@ func TestPlayer4MinigameSpace(t *testing.T) {
 	g.MovePlayer(3, 1)
 	g.ExtraEvent.Handle(Minigame1PShellGame, &g)
 	g.ExtraEvent.Handle(-5, &g)
-	expectedEvent := MinigameFFASelector{}
-	gotEvent := g.ExtraEvent
-	if expectedEvent != gotEvent {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvent, gotEvent)
-	}
+	EventIs(MinigameFFASelector{}, g.ExtraEvent, "", t)
 }

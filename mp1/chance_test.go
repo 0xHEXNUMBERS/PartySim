@@ -20,109 +20,32 @@ func TestChanceTime(t *testing.T) {
 
 	g10Coins := g
 	g10Coins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR10)}, &g10Coins)
-	expectedDaisyCoins := 20
-	gotDaisyCoins := g10Coins.Players[0].Coins
-	if expectedDaisyCoins != gotDaisyCoins {
-		t.Errorf("Expected LTR10 Daisy Coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
-	expectedLuigiCoins := 15
-	gotLuigiCoins := g10Coins.Players[1].Coins
-	if expectedLuigiCoins != gotLuigiCoins {
-		t.Errorf("Expected LTR10 Luigi Coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
+	CoinsIs(20, 0, g10Coins, "LTR10", t)
+	CoinsIs(15, 1, g10Coins, "LTR10", t)
 
 	g20Coins := g
 	g20Coins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR20)}, &g20Coins)
-	expectedDaisyCoins = 30
-	gotDaisyCoins = g20Coins.Players[0].Coins
-	if expectedDaisyCoins != gotDaisyCoins {
-		t.Errorf("Expected LTR20 Daisy Coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
-	expectedLuigiCoins = 5
-	gotLuigiCoins = g20Coins.Players[1].Coins
-	if expectedLuigiCoins != gotLuigiCoins {
-		t.Errorf("Expected LTR20 Luigi Coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
+	CoinsIs(30, 0, g20Coins, "LTR20", t)
+	CoinsIs(5, 1, g20Coins, "LTR20", t)
 
 	g30Coins := g
 	g30Coins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTR30)}, &g30Coins)
-	expectedDaisyCoins = 35
-	gotDaisyCoins = g30Coins.Players[0].Coins
-	if expectedDaisyCoins != gotDaisyCoins {
-		t.Errorf("Expected LTR30 Daisy Coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
-	expectedLuigiCoins = 0
-	gotLuigiCoins = g30Coins.Players[1].Coins
-	if expectedLuigiCoins != gotLuigiCoins {
-		t.Errorf("Expected LTR30 Luigi Coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
+	CoinsIs(35, 0, g30Coins, "LTR30", t)
+	CoinsIs(0, 1, g30Coins, "LTR30", t)
 
 	gStar := g
 	gStar.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(LTRStar)}, &gStar)
-	expectedDaisyStars := 5
-	gotDaisyStars := gStar.Players[0].Stars
-	if expectedDaisyStars != gotDaisyStars {
-		t.Errorf("Expected LTRStar Daisy Stars: %d, got: %d",
-			expectedDaisyStars, gotDaisyStars,
-		)
-	}
-	expectedLuigiStars := 8
-	gotLuigiStars := gStar.Players[1].Stars
-	if expectedLuigiStars != gotLuigiStars {
-		t.Errorf("Expected LTRStar Luigi Stars: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
+	StarsIs(5, 0, gStar, "LTR", t)
+	StarsIs(8, 1, gStar, "LTR", t)
 
 	gSwapCoins := g
 	gSwapCoins.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(SwapCoins)}, &gSwapCoins)
-	expectedDaisyCoins = 25
-	gotDaisyCoins = gSwapCoins.Players[0].Coins
-	if expectedDaisyCoins != gotDaisyCoins {
-		t.Errorf("Expected SwapCoins Daisy Coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
-	expectedLuigiCoins = 10
-	gotLuigiCoins = gSwapCoins.Players[1].Coins
-	if expectedLuigiCoins != gotLuigiCoins {
-		t.Errorf("Expected SwapCoins Luigi Coins: %d, got: %d",
-			expectedDaisyCoins, gotDaisyCoins,
-		)
-	}
+	CoinsIs(25, 0, gSwapCoins, "Swap", t)
+	CoinsIs(10, 1, gSwapCoins, "Swap", t)
 
 	gSwapStars := g
 	gSwapStars.ExtraEvent.Handle(ChanceTimeResponse{CTBMiddle, int(SwapStars)}, &gSwapStars)
-	expectedDaisyStars = 9
-	gotDaisyStars = gSwapStars.Players[0].Stars
-	if expectedDaisyStars != gotDaisyStars {
-		t.Errorf("Expected SwapStars Daisy Stars: %d, got: %d",
-			expectedDaisyStars, gotDaisyStars,
-		)
-	}
-	expectedLuigiStars = 4
-	gotLuigiStars = gSwapStars.Players[1].Stars
-	if expectedLuigiStars != gotLuigiStars {
-		t.Errorf("Expected SwapStars Luigi Stars: %d, got: %d",
-			expectedDaisyStars, gotDaisyStars,
-		)
-	}
-
-	expectedEvt := NormalDiceBlock{1}
-	gotEvt := gSwapStars.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
-	}
+	StarsIs(9, 0, gSwapStars, "Swap", t)
+	StarsIs(4, 1, gSwapStars, "Swap", t)
+	EventIs(NormalDiceBlock{1}, gSwapStars.ExtraEvent, "", t)
 }

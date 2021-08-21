@@ -1,7 +1,6 @@
 package mp1
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -10,18 +9,8 @@ func TestBMMMovement(t *testing.T) {
 	g.ExtraEvent.Handle(uint8(0), &g) //Star
 	g.ExtraEvent.Handle(3, &g)        //Move
 
-	expectedSpace := ChainSpace{0, 15}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected Space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
-	expectedCoins := 13
-	gotCoins := g.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected Coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	SpaceIs(ChainSpace{0, 15}, 0, g, "", t)
+	CoinsIs(13, 0, g, "", t)
 }
 
 func TestBMMFork(t *testing.T) {
@@ -33,66 +22,27 @@ func TestBMMFork(t *testing.T) {
 
 	gIgnore := g
 	gIgnore.ExtraEvent.Handle(false, &gIgnore) //Do not pay
-	expectedSpace := ChainSpace{1, 0}
-	gotSpace := gIgnore.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected Ignore Space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
-	expectedCoins := 13
-	gotCoins := gIgnore.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected Ignore Coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	SpaceIs(ChainSpace{1, 0}, 0, gIgnore, "Ignore", t)
+	CoinsIs(13, 0, gIgnore, "Ignore", t)
 
 	gPay := g
 	gPay.ExtraEvent.Handle(true, &gPay)
 
-	expectedCoins = 0
-	gotCoins = gPay.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected Pay Coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	CoinsIs(0, 0, gPay, "Pay", t)
 	expectedRes := []Response{ChainSpace{1, 0}, ChainSpace{2, 2}}
-	gotRes := gPay.ExtraEvent.Responses()
-	if !reflect.DeepEqual(expectedRes, gotRes) {
-		t.Errorf("Expected Pay Responses: %#v, got: %#v",
-			expectedRes, gotRes)
-	}
+	ResIs(expectedRes, gPay, "Pay", t)
 
 	gBowser := gPay
 	gBowser.ExtraEvent.Handle(ChainSpace{1, 0}, &gBowser)
 
-	expectedSpace = ChainSpace{1, 0}
-	gotSpace = gBowser.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected Bowser Space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
-	expectedCoins = 3
-	gotCoins = gBowser.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected Bowser Coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	SpaceIs(ChainSpace{1, 0}, 0, gBowser, "Bowser", t)
+	CoinsIs(3, 0, gBowser, "Bowser", t)
 
 	gStar := gPay
 	gStar.ExtraEvent.Handle(ChainSpace{2, 2}, &gStar)
 
-	expectedSpace = ChainSpace{2, 2}
-	gotSpace = gStar.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected Star Space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
-	expectedCoins = 3
-	gotCoins = gStar.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected Star Coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	SpaceIs(ChainSpace{2, 2}, 0, gStar, "Star", t)
+	CoinsIs(3, 0, gStar, "Star", t)
 }
 
 func TestBMMVolcano(t *testing.T) {
@@ -109,12 +59,7 @@ func TestBMMVolcano(t *testing.T) {
 
 	g.ExtraEvent.Handle(1, &g) //Move P1 to Red
 
-	expectedCoins := 7
-	gotCoins := g.Players[1].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected Coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	CoinsIs(7, 1, g, "", t)
 
 	g.ExtraEvent.Handle(1, &g) //Move P2
 	g.ExtraEvent.Handle(1, &g) //Move P3
@@ -128,12 +73,7 @@ func TestBMMVolcano(t *testing.T) {
 	g.ExtraEvent.Handle(1, &g) //Move P2
 
 	bd = g.Board.Data.(bmmBoardData)
-	expectedTurnCount := 1
-	gotTurnCount := bd.MagmaTurnCount
-	if bd.MagmaTurnCount != 1 {
-		t.Errorf("Expected Turn Count: %d, got: %d",
-			expectedTurnCount, gotTurnCount)
-	}
+	IntIs(1, bd.MagmaTurnCount, "Turn Count", t)
 
 	g.ExtraEvent.Handle(1, &g) //Move P3
 
@@ -154,10 +94,5 @@ func TestHiddenBlockOnInvisibleSpace(t *testing.T) {
 	g.ExtraEvent.Handle(1, &g)     //Move
 	g.ExtraEvent.Handle(false, &g) //No hidden block here
 
-	expectedCoins := 13
-	gotCoins := g.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected Coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	CoinsIs(13, 0, g, "Coins", t)
 }

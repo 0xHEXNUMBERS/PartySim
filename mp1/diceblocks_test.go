@@ -1,7 +1,6 @@
 package mp1
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -17,17 +16,8 @@ func TestRedDiceBlock(t *testing.T) {
 		ExtraEvent: RedDiceBlock{0},
 	}
 	g.ExtraEvent.Handle(9, &g) //Land on minigame space
-	expectedSpace := ChainSpace{0, 9}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v", expectedSpace, gotSpace)
-	}
-
-	expectedCoins := 1
-	gotCoins := g.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected coins: %d, got: %d", expectedCoins, gotCoins)
-	}
+	SpaceIs(ChainSpace{0, 9}, 0, g, "", t)
+	CoinsIs(1, 0, g, "", t)
 }
 
 func TestBlueDiceBlock(t *testing.T) {
@@ -42,17 +32,8 @@ func TestBlueDiceBlock(t *testing.T) {
 		ExtraEvent: BlueDiceBlock{0},
 	}
 	g.ExtraEvent.Handle(9, &g) //Land on minigame space
-	expectedSpace := ChainSpace{0, 9}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v", expectedSpace, gotSpace)
-	}
-
-	expectedCoins := 19
-	gotCoins := g.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected coins: %d, got: %d", expectedCoins, gotCoins)
-	}
+	SpaceIs(ChainSpace{0, 9}, 0, g, "", t)
+	CoinsIs(19, 0, g, "", t)
 }
 
 func TestWarpDiceBlock(t *testing.T) {
@@ -67,17 +48,8 @@ func TestWarpDiceBlock(t *testing.T) {
 		ExtraEvent: WarpDiceBlock{0},
 	}
 	g.ExtraEvent.Handle(1, &g) //Swap with Luigi
-	expectedDaisySpace := ChainSpace{0, 0}
-	gotDaisySpace := g.Players[0].CurrentSpace
-	if expectedDaisySpace != gotDaisySpace {
-		t.Errorf("Expected Daisy space: %#v, got: %#v", expectedDaisySpace, gotDaisySpace)
-	}
-
-	expectedLuigiSpace := ChainSpace{1, 23}
-	gotLuigiSpace := g.Players[1].CurrentSpace
-	if expectedLuigiSpace != gotLuigiSpace {
-		t.Errorf("Expected Luigi space: %#v, got: %#v", expectedLuigiSpace, gotLuigiSpace)
-	}
+	SpaceIs(ChainSpace{0, 0}, 0, g, "", t)
+	SpaceIs(ChainSpace{1, 23}, 1, g, "", t)
 }
 
 func TestEventDiceBlock(t *testing.T) {
@@ -94,59 +66,21 @@ func TestEventDiceBlock(t *testing.T) {
 	gBoo := g
 	gBoo.ExtraEvent.Handle(BooEventBlock, &gBoo)
 	expectedBooEvent := BooEvent{0, gBoo.Players, 0, gBoo.Players[0].Coins}
-	gotBooEvent := gBoo.ExtraEvent
-	if expectedBooEvent != gotBooEvent {
-		t.Errorf("Expected Boo event: %#v, got: %#v",
-			expectedBooEvent,
-			gotBooEvent,
-		)
-	}
+	EventIs(expectedBooEvent, gBoo.ExtraEvent, "Boo", t)
 
 	gBoo.ExtraEvent.Handle(BooStealAction{0, 1, false}, &gBoo)
 	gBoo.ExtraEvent.Handle(10, &gBoo)
-	expectedSpace := ChainSpace{1, 23}
-	gotSpace := gBoo.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace,
-			gotSpace,
-		)
-	}
+	SpaceIs(ChainSpace{1, 23}, 0, gBoo, "Boo", t)
 
 	gBowser := g
 	gBowser.ExtraEvent.Handle(BowserEventBlock, &gBowser)
-	expectedBowserEvent := NormalDiceBlock{1}
-	gotBowserEvent := gBowser.ExtraEvent
-	if expectedBowserEvent != gotBowserEvent {
-		t.Errorf("Expected Bowser event: %#v, got: %#v",
-			expectedBowserEvent,
-			gotBowserEvent,
-		)
-	}
-	expectedBowserCoins := 0
-	gotBowserCoins := gBowser.Players[0].Coins
-	if expectedBowserCoins != gotBowserCoins {
-		t.Errorf("Expected Bowser coins: %d, got: %d",
-			expectedBowserCoins,
-			gotBowserCoins,
-		)
-	}
+	EventIs(NormalDiceBlock{1}, gBowser.ExtraEvent, "Bowser", t)
+	CoinsIs(0, 0, gBowser, "Bowser", t)
 
 	gKoopa := g
 	gKoopa.ExtraEvent.Handle(KoopaEventBlock, &gKoopa)
-	expectedEvt := NormalDiceBlock{1}
-	gotEvt := gKoopa.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
-	}
-	expectedKoopaCoins := 20
-	gotKoopaCoins := gKoopa.Players[0].Coins
-	if expectedKoopaCoins != gotKoopaCoins {
-		t.Errorf("Expected Bowser coins: %d, got: %d",
-			expectedKoopaCoins,
-			gotKoopaCoins,
-		)
-	}
+	EventIs(NormalDiceBlock{1}, gKoopa.ExtraEvent, "Koopa", t)
+	CoinsIs(20, 0, gKoopa, "Koopa", t)
 }
 
 func TestPickDiceBlock(t *testing.T) {
@@ -165,8 +99,5 @@ func TestPickDiceBlock(t *testing.T) {
 	}
 	g.ExtraEvent = PickDiceBlock{0, g.Config}
 	expected := []Response{NormalDiceBlock{0}, RedDiceBlock{0}, BlueDiceBlock{0}}
-	got := g.ExtraEvent.Responses()
-	if !reflect.DeepEqual(expected, got) {
-		t.Errorf("Expected Responses: %#v, got: %#v", expected, got)
-	}
+	ResIs(expected, g, "", t)
 }

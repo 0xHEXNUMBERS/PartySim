@@ -11,34 +11,19 @@ func TestRBRFork(t *testing.T) {
 	gBlueUpRight := gBlueUpLeft
 
 	g.ExtraEvent.Handle(1, &g)
-	expectedSpace := ChainSpace{5, 0}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{5, 0}, 0, g, "", t)
 
 	gBlueUpLeft.ExtraEvent.Handle(1, &gBlueUpLeft)
 	gBlueUpLeft.ExtraEvent.Handle(
 		ChainSpace{3, 0}, &gBlueUpLeft,
 	)
-	expectedSpace = ChainSpace{3, 0}
-	gotSpace = gBlueUpLeft.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{3, 0}, 0, gBlueUpLeft, "BlueUpLeft", t)
 
 	gBlueUpRight.ExtraEvent.Handle(1, &gBlueUpRight)
 	gBlueUpRight.ExtraEvent.Handle(
 		ChainSpace{11, 0}, &gBlueUpRight,
 	)
-	expectedSpace = ChainSpace{11, 0}
-	gotSpace = gBlueUpRight.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{11, 0}, 0, gBlueUpRight, "BlueUpRight", t)
 }
 
 func TestRBFork(t *testing.T) {
@@ -49,20 +34,10 @@ func TestRBFork(t *testing.T) {
 	gBlueUp.Board.Data = lerBoardData{true}
 
 	g.ExtraEvent.Handle(1, &g)
-	expectedSpace := ChainSpace{4, 0}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{4, 0}, 0, g, "", t)
 
 	gBlueUp.ExtraEvent.Handle(1, &gBlueUp)
-	expectedSpace = ChainSpace{4, 4}
-	gotSpace = gBlueUp.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{4, 4}, 0, gBlueUp, "BlueUp", t)
 }
 
 func TestBRFork1(t *testing.T) {
@@ -73,20 +48,10 @@ func TestBRFork1(t *testing.T) {
 	gBlueUp.Board.Data = lerBoardData{true}
 
 	g.ExtraEvent.Handle(1, &g)
-	expectedSpace := ChainSpace{6, 10}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{6, 10}, 0, g, "", t)
 
 	gBlueUp.ExtraEvent.Handle(1, &gBlueUp)
-	expectedSpace = ChainSpace{9, 0}
-	gotSpace = gBlueUp.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{9, 0}, 0, gBlueUp, "BlueUp", t)
 }
 
 func TestBRFork2(t *testing.T) {
@@ -97,20 +62,10 @@ func TestBRFork2(t *testing.T) {
 	gBlueUp.Board.Data = lerBoardData{true}
 
 	g.ExtraEvent.Handle(1, &g)
-	expectedSpace := ChainSpace{6, 0}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{6, 0}, 0, g, "", t)
 
 	gBlueUp.ExtraEvent.Handle(1, &gBlueUp)
-	expectedSpace = ChainSpace{7, 0}
-	gotSpace = gBlueUp.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{7, 0}, 0, gBlueUp, "BlueUp", t)
 }
 
 func TestBRFork3(t *testing.T) {
@@ -121,20 +76,10 @@ func TestBRFork3(t *testing.T) {
 	gBlueUp.Board.Data = lerBoardData{true}
 
 	g.ExtraEvent.Handle(1, &g)
-	expectedSpace := ChainSpace{10, 0}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{10, 0}, 0, g, "", t)
 
 	gBlueUp.ExtraEvent.Handle(1, &gBlueUp)
-	expectedSpace = ChainSpace{0, 0}
-	gotSpace = gBlueUp.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{0, 0}, 0, gBlueUp, "BlueUp", t)
 }
 
 func TestSwapGatesViaHappening(t *testing.T) {
@@ -172,12 +117,7 @@ func TestSwapGatesInsufficientCoins(t *testing.T) {
 
 	g.ExtraEvent.Handle(1, &g)
 
-	expectedSpace := ChainSpace{2, 5}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{2, 5}, 0, g, "", t)
 }
 
 func TestNormalBranch(t *testing.T) {
@@ -188,10 +128,5 @@ func TestNormalBranch(t *testing.T) {
 	g.ExtraEvent.Handle(1, &g)                //Move
 	g.ExtraEvent.Handle(ChainSpace{1, 0}, &g) //Branch
 
-	expectedSpace := ChainSpace{1, 0}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace, gotSpace)
-	}
+	SpaceIs(ChainSpace{1, 0}, 0, g, "", t)
 }

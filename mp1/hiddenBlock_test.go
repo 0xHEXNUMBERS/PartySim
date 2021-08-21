@@ -14,38 +14,14 @@ func TestHiddenBlock(t *testing.T) {
 		Config: GameConfig{MaxTurns: 20, EventsDice: true},
 	}
 	g.MovePlayer(0, 1) //Blue Space
-
-	expectedEvent := HiddenBlockEvent{0}
-	gotEvent := g.ExtraEvent
-	if expectedEvent != gotEvent {
-		t.Errorf("Expected event: %#v, got: %#v",
-			expectedEvent, gotEvent)
-	}
+	EventIs(HiddenBlockEvent{0}, g.ExtraEvent, "", t)
 
 	gHidden := g
 	gHidden.ExtraEvent.Handle(true, &gHidden)
-
-	expectedDiceEvent := EventDiceBlock{0}
-	gotDiceEvent := gHidden.ExtraEvent
-	if expectedDiceEvent != gotDiceEvent {
-		t.Errorf("Expected Dice event: %#v, got: %#v",
-			expectedDiceEvent, gotDiceEvent)
-	}
+	EventIs(EventDiceBlock{0}, gHidden.ExtraEvent, "Dice", t)
 
 	gBlue := g
 	gBlue.ExtraEvent.Handle(false, &gBlue)
-
-	expectedPlayerEvent := PickDiceBlock{1, gBlue.Config}
-	gotPlayerEvent := gBlue.ExtraEvent
-	if expectedPlayerEvent != gotPlayerEvent {
-		t.Errorf("Expected Player event: %#v, got: %#v",
-			expectedPlayerEvent, gotPlayerEvent)
-	}
-
-	expectedCoins := 13
-	gotCoins := gBlue.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	EventIs(PickDiceBlock{1, gBlue.Config}, gBlue.ExtraEvent, "Player", t)
+	CoinsIs(13, 0, gBlue, "", t)
 }

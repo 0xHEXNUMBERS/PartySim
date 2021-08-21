@@ -15,12 +15,7 @@ func TestSeedCheckAutoStar(t *testing.T) {
 	g.ExtraEvent.Handle(2, &g)    //Move: Toad
 	g.ExtraEvent.Handle(2, &g)    //Move: Toad
 
-	expectedPos := ChainSpace{1, 1}
-	gotPos := g.Players[0].CurrentSpace
-	if expectedPos != gotPos {
-		t.Errorf("Expected 0 pos: %#v, got: %#v",
-			expectedPos, gotPos)
-	}
+	SpaceIs(ChainSpace{1, 1}, 0, g, "0", t)
 	for i := 1; i < 4; i++ {
 		expectedPos := ChainSpace{0, 1}
 		gotPos := g.Players[i].CurrentSpace
@@ -55,26 +50,11 @@ func TestSeedCheckAutoBowser(t *testing.T) {
 	g.ExtraEvent.Handle(2, &g)     //Move: Bowser
 
 	for i := 0; i < 3; i++ {
-		expectedPos := ChainSpace{0, 1}
-		gotPos := g.Players[i].CurrentSpace
-		if expectedPos != gotPos {
-			t.Errorf("Expected %d pos: %#v, got: %#v",
-				i, expectedPos, gotPos)
-		}
+		SpaceIs(ChainSpace{0, 1}, i, g, "", t)
 	}
-	expectedPos := ChainSpace{1, 1}
-	gotPos := g.Players[3].CurrentSpace
-	if expectedPos != gotPos {
-		t.Errorf("Expected 3 pos: %#v, got: %#v",
-			expectedPos, gotPos)
-	}
+	SpaceIs(ChainSpace{1, 1}, 3, g, "", t)
 	for i := 0; i < 4; i++ {
-		expectedCoins := 3
-		gotCoins := g.Players[i].Coins
-		if expectedCoins != gotCoins {
-			t.Errorf("Expected %d coins: %d, got: %d",
-				i, expectedCoins, gotCoins)
-		}
+		CoinsIs(3, i, g, "", t)
 	}
 }
 
@@ -92,22 +72,7 @@ func TestPiranha(t *testing.T) {
 	g.ExtraEvent.Handle(2, &g)    //Move to unoccupied space with <30 coins
 	g.ExtraEvent.Handle(1, &g)    //Move to occupied space with no stars
 	g.ExtraEvent.Handle(1, &g)    //Move to occupied space with stars
-	expectedStars0 := 1
-	gotStars0 := g.Players[0].Stars
-	if expectedStars0 != gotStars0 {
-		t.Errorf("Expected 0 stars: %d, got: %d",
-			expectedStars0, gotStars0)
-	}
-	expectedCoins0 := 0
-	gotCoins0 := g.Players[0].Coins
-	if expectedCoins0 != gotCoins0 {
-		t.Errorf("Expected 0 coins: %d, got: %d",
-			expectedCoins0, gotCoins0)
-	}
-	expectedStars3 := 0
-	gotStars3 := g.Players[3].Stars
-	if expectedStars3 != gotStars3 {
-		t.Errorf("Expected 3 stars: %d, got: %d",
-			expectedStars3, gotStars3)
-	}
+	StarsIs(1, 0, g, "", t)
+	CoinsIs(0, 0, g, "0Coins", t)
+	StarsIs(0, 3, g, "3Stars", t)
 }

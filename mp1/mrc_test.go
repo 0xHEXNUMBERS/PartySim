@@ -1,7 +1,6 @@
 package mp1
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -11,11 +10,7 @@ func TestMRCFork(t *testing.T) {
 
 	g.ExtraEvent.Handle(1, &g) //Move
 	expectedRes := []Response{ChainSpace{1, 0}, ChainSpace{2, 0}}
-	gotRes := g.ExtraEvent.Responses()
-	if !reflect.DeepEqual(expectedRes, gotRes) {
-		t.Errorf("Expected ChainSpaces: %#v, got: %#v",
-			expectedRes, gotRes)
-	}
+	ResIs(expectedRes, g, "ChainSpaces", t)
 }
 
 func TestSwapCastleDirViaHappening(t *testing.T) {
@@ -39,10 +34,6 @@ func TestSwapCastleDirViaStar(t *testing.T) {
 		t.Errorf("Bowser is not swapped in")
 	}
 
-	expectedCoins := 23
-	gotCoins := g.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected coins: %d, got: %d",
-			expectedCoins, gotCoins)
-	}
+	CoinsIs(23, 0, g, "", t)
+	SpaceIs(ChainSpace{0, 2}, 0, g, "", t)
 }

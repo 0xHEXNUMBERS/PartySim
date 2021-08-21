@@ -15,12 +15,7 @@ func TestMove(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 4)
-	expected := ChainSpace{1, 27}
-	got := g.Players[0].CurrentSpace
-	if expected != got {
-		t.Errorf("Position expected: %#v, got: %#v", expected, got)
-	}
-
+	SpaceIs(ChainSpace{1, 27}, 0, g, "", t)
 }
 
 func TestCanPayThwomp(t *testing.T) {
@@ -34,11 +29,7 @@ func TestCanPayThwomp(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 10)
-	expected := ytiThwompBranchEvent{0, 6, 1}
-	got := g.ExtraEvent
-	if expected != got {
-		t.Errorf("Event expected: %#v, got: %#v", expected, got)
-	}
+	EventIs(ytiThwompBranchEvent{0, 6, 1}, g.ExtraEvent, "", t)
 }
 
 func TestCanNotPayThwomp(t *testing.T) {
@@ -53,11 +44,7 @@ func TestCanNotPayThwomp(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 10)
-	expectedEvt := NormalDiceBlock{1}
-	gotEvt := g.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
-	}
+	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
 }
 
 func TestGainCoins(t *testing.T) {
@@ -75,11 +62,7 @@ func TestGainCoins(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 1)
-	expected := 13
-	got := g.Players[0].Coins
-	if expected != got {
-		t.Errorf("Coins expected: %d, got: %d", expected, got)
-	}
+	CoinsIs(13, 0, g, "", t)
 }
 
 func TestPayThwompAndGainCoins(t *testing.T) {
@@ -103,23 +86,9 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	//Pay thwomp 3 coins, move and land on blue space
 	g.ExtraEvent.Handle(3, &g)
 
-	expectedEvt := NormalDiceBlock{1}
-	gotEvt := g.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
-	}
-
-	expectedSquare := ChainSpace{0, 12}
-	gotSquare := g.Players[0].CurrentSpace
-	if expectedSquare != gotSquare {
-		t.Errorf("Space expected: %#v, got: %#v", expectedSquare, gotSquare)
-	}
-
-	expectedCoins := 10
-	gotCoins := g.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
-	}
+	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	SpaceIs(ChainSpace{0, 12}, 0, g, "", t)
+	CoinsIs(10, 0, g, "", t)
 }
 
 func TestIgnoreThwomp(t *testing.T) {
@@ -139,23 +108,9 @@ func TestIgnoreThwomp(t *testing.T) {
 	g.MovePlayer(0, 10)
 	g.ExtraEvent.Handle(false, &g)
 
-	expectedEvt := NormalDiceBlock{1}
-	gotEvt := g.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
-	}
-
-	expectedSquare := ChainSpace{1, 5}
-	gotSquare := g.Players[0].CurrentSpace
-	if expectedSquare != gotSquare {
-		t.Errorf("Space expected: %#v, got: %#v", expectedSquare, gotSquare)
-	}
-
-	expectedCoins := 13
-	gotCoins := g.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
-	}
+	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	SpaceIs(ChainSpace{1, 5}, 0, g, "", t)
+	CoinsIs(13, 0, g, "", t)
 }
 
 func TestStarSwapViaHappening(t *testing.T) {
@@ -171,11 +126,7 @@ func TestStarSwapViaHappening(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 3)
-	expectedEvt := NormalDiceBlock{1}
-	gotEvt := g.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
-	}
+	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
 
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition == ytiRightIslandStar {
@@ -195,11 +146,7 @@ func TestCoinsOnStart(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 1)
-	expectedCoins := 20
-	gotCoins := g.Players[0].Coins
-	if expectedCoins != gotCoins {
-		t.Errorf("Coins expected: %d, got: %d", expectedCoins, gotCoins)
-	}
+	CoinsIs(20, 0, g, "", t)
 }
 
 func TestMushroomSpace(t *testing.T) {
@@ -214,33 +161,17 @@ func TestMushroomSpace(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 4)
-	expected := MushroomEvent{0}
-	got := g.ExtraEvent
-	if expected != got {
-		t.Errorf("Expected event: %#v, got: %#v", expected, got)
-	}
+	EventIs(MushroomEvent{0}, g.ExtraEvent, "", t)
 
 	//Received red mushroom
 	gRed := g
 	gRed.ExtraEvent.Handle(true, &gRed)
-	expectedEvent := NormalDiceBlock{0}
-	gotEvent := gRed.ExtraEvent
-	if expectedEvent != gotEvent {
-		t.Errorf("Expected Red Mushroom Event: %#v, got: %#v",
-			expectedEvent,
-			gotEvent,
-		)
-	}
+	EventIs(NormalDiceBlock{0}, gRed.ExtraEvent, "", t)
 
 	//Received poison mushroom
 	gPoison := g
 	gPoison.ExtraEvent.Handle(false, &gPoison)
-	expectedEvt := NormalDiceBlock{1}
-	gotEvt := gPoison.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
-	}
-
+	EventIs(NormalDiceBlock{1}, gPoison.ExtraEvent, "", t)
 	if !gPoison.Players[0].SkipTurn {
 		t.Errorf("SkipTurn not set")
 	}
@@ -274,33 +205,13 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 	g.ExtraEvent.Handle(0, &g)
 
 	//Should recieve 2nd minigame as all players were poisoned
-	expectedEvent := MinigameFFASelector{}
-	gotEvent := g.ExtraEvent
-	if expectedEvent != gotEvent {
-		t.Errorf("Expected Minigame event: %#v, got: %#v",
-			expectedEvent, gotEvent,
-		)
-	}
+	EventIs(MinigameFFASelector{}, g.ExtraEvent, "Minigame", t)
 
 	//Perform 2nd minigame
 	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
 	g.ExtraEvent.Handle(0, &g)
-
-	var expectedTurn uint8 = 2
-	gotTurn := g.Turn
-	if expectedTurn != gotTurn {
-		t.Errorf("Expected turn #%d, got turn #%d",
-			expectedTurn, gotTurn,
-		)
-	}
-
-	expectedDiceEvent := NormalDiceBlock{0}
-	gotDiceEvent := g.ExtraEvent
-	if expectedDiceEvent != gotDiceEvent {
-		t.Errorf("Expected Dice event: %#v, got: %#v",
-			expectedDiceEvent, gotDiceEvent,
-		)
-	}
+	IntIs(2, int(g.Turn), "Turn #", t)
+	EventIs(NormalDiceBlock{0}, g.ExtraEvent, "", t)
 }
 
 func TestSkipTurnViaCharacterTurn(t *testing.T) {
@@ -334,13 +245,7 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 	g.ExtraEvent.Handle(1, &g)
 	g.ExtraEvent.Handle(1, &g)
 
-	expectedEvent := NormalDiceBlock{3}
-	gotEvent := g.ExtraEvent
-	if expectedEvent != gotEvent {
-		t.Errorf("Expected event: %#v, got: %#v",
-			expectedEvent, gotEvent,
-		)
-	}
+	EventIs(NormalDiceBlock{3}, g.ExtraEvent, "", t)
 }
 
 func TestStealCoinsViaBoo(t *testing.T) {
@@ -364,33 +269,11 @@ func TestStealCoinsViaBoo(t *testing.T) {
 		RecvPlayer: 0,
 		Moves:      4,
 	}
-	gotEvent := g.ExtraEvent
-	if expectedEvent != gotEvent {
-		t.Errorf("Expected movement: %#v, got: %#v",
-			expectedEvent,
-			gotEvent,
-		)
-	}
+	EventIs(expectedEvent, g.ExtraEvent, "", t)
 
 	expectedEvent.Handle(5, &g)
-	expectedDaisyCoins := 15
-	gotDaisyCoins := g.Players[0].Coins
-
-	if expectedDaisyCoins != gotDaisyCoins {
-		t.Errorf("Daisy expected: %d coins, got: %d coins",
-			expectedDaisyCoins,
-			gotDaisyCoins,
-		)
-	}
-
-	expectedLuigiCoins := 5
-	gotLuigiCoins := g.Players[1].Coins
-	if expectedLuigiCoins != gotLuigiCoins {
-		t.Errorf("Luigi expected: %d coins, got: %d coins",
-			expectedLuigiCoins,
-			gotLuigiCoins,
-		)
-	}
+	CoinsIs(15, 0, g, "", t)
+	CoinsIs(5, 1, g, "", t)
 }
 
 func TestStealTooManyCoinsViaBoo(t *testing.T) {
@@ -414,33 +297,11 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 		RecvPlayer: 0,
 		Moves:      4,
 	}
-	gotEvent := g.ExtraEvent
-	if expectedEvent != gotEvent {
-		t.Errorf("Expected event: %#v, got: %#v",
-			expectedEvent,
-			gotEvent,
-		)
-	}
+	EventIs(expectedEvent, g.ExtraEvent, "", t)
 
 	expectedEvent.Handle(4, &g)
-	expectedDaisyCoins := 14
-	gotDaisyCoins := g.Players[0].Coins
-
-	if expectedDaisyCoins != gotDaisyCoins {
-		t.Errorf("Daisy expected: %d coins, got: %d coins",
-			expectedDaisyCoins,
-			gotDaisyCoins,
-		)
-	}
-
-	expectedLuigiCoins := 0
-	gotLuigiCoins := g.Players[1].Coins
-	if expectedLuigiCoins != gotLuigiCoins {
-		t.Errorf("Luigi expected: %d coins, got: %d coins",
-			expectedLuigiCoins,
-			gotLuigiCoins,
-		)
-	}
+	CoinsIs(14, 0, g, "", t)
+	CoinsIs(0, 1, g, "", t)
 }
 
 func TestPassEmptyBooSpace(t *testing.T) {
@@ -457,20 +318,8 @@ func TestPassEmptyBooSpace(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 4)
-	expectedEvt := NormalDiceBlock{1}
-	gotEvt := g.ExtraEvent
-	if expectedEvt != gotEvt {
-		t.Errorf("Expected event: %#v, got: %#v", expectedEvt, gotEvt)
-	}
-
-	expectedSpace := ChainSpace{1, 26}
-	gotSpace := g.Players[0].CurrentSpace
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected space: %#v, got: %#v",
-			expectedSpace,
-			gotSpace,
-		)
-	}
+	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	SpaceIs(ChainSpace{1, 26}, 0, g, "", t)
 }
 
 func TestBuyStar(t *testing.T) {
@@ -489,20 +338,7 @@ func TestBuyStar(t *testing.T) {
 
 	g.MovePlayer(0, 1) //Land on blue space
 
-	expectedSpace := ChainSpace{0, 20}
-	expectedCoins := 3
-	expectedStars := 1
-	gotSpace := g.Players[0].CurrentSpace
-	gotCoins := g.Players[0].Coins
-	gotStars := g.Players[0].Stars
-
-	if expectedSpace != gotSpace {
-		t.Errorf("Expected Space: %#v, got: %#v", expectedSpace, gotSpace)
-	}
-	if expectedCoins != gotCoins {
-		t.Errorf("Expected Coins: %#v, got: %#v", expectedCoins, gotCoins)
-	}
-	if expectedStars != gotStars {
-		t.Errorf("Expected Stars: %#v, got: %#v", expectedStars, gotStars)
-	}
+	SpaceIs(ChainSpace{0, 20}, 0, g, "", t)
+	CoinsIs(3, 0, g, "", t)
+	StarsIs(1, 0, g, "", t)
 }
