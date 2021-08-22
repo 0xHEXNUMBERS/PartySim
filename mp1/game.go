@@ -176,16 +176,14 @@ func (g *Game) ActivateSpace(player int) {
 
 func (g *Game) MovePlayer(playerIdx, moves int) {
 	chains := *g.Board.Chains
-	playerPos := g.Players[playerIdx].CurrentSpace
+	playerPos := &g.Players[playerIdx].CurrentSpace
 	for moves > 0 {
 		playerPos.Space++
 		if playerPos.Space >= len(chains[playerPos.Chain]) {
 			if g.CheckLinks(playerIdx, playerPos.Chain, moves) {
 				return
 			}
-			playerPos = g.Players[playerIdx].CurrentSpace
 		}
-		g.Players[playerIdx].CurrentSpace = playerPos
 		curSpace := chains[playerPos.Chain][playerPos.Space]
 		switch curSpace.Type {
 		case Invisible:
@@ -195,11 +193,6 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 				if g.ExtraEvent != nil {
 					return
 				}
-				//The PassingEvent() sets the new player position.
-				//As such, we must update our understanding of where
-				//the player is at
-				playerPos = g.Players[playerIdx].CurrentSpace
-				curSpace = chains[playerPos.Chain][playerPos.Space]
 			} else {
 				moves--
 			}
@@ -213,7 +206,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 				}
 			}
 		case Star:
-			if playerPos == g.StarSpaces.CurrentStarSpace &&
+			if *playerPos == g.StarSpaces.CurrentStarSpace &&
 				g.Players[playerIdx].Coins >= 20 {
 				g.Players[playerIdx].Stars++
 				g.AwardCoins(playerIdx, -20, false)
