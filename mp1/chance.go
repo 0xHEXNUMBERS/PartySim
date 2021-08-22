@@ -104,34 +104,22 @@ func (c ChanceTime) Handle(r Response, g *Game) {
 		middlePos := ChanceMiddleBlock(c.MiddlePosition)
 		switch middlePos {
 		case LTR10:
-			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 10)
-			g.AwardCoins(c.LeftSidePosition, -coinsTaken, false)
-			g.AwardCoins(c.RightSidePosition, coinsTaken, false)
+			g.GiveCoins(c.LeftSidePosition, c.RightSidePosition, 10, false)
 		case LTR20:
-			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 20)
-			g.AwardCoins(c.LeftSidePosition, -coinsTaken, false)
-			g.AwardCoins(c.RightSidePosition, coinsTaken, false)
+			g.GiveCoins(c.LeftSidePosition, c.RightSidePosition, 20, false)
 		case LTR30:
-			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 30)
-			g.AwardCoins(c.LeftSidePosition, -coinsTaken, false)
-			g.AwardCoins(c.RightSidePosition, coinsTaken, false)
+			g.GiveCoins(c.LeftSidePosition, c.RightSidePosition, 30, false)
 		case LTRStar:
 			if g.Players[c.LeftSidePosition].Stars > 0 {
 				g.Players[c.LeftSidePosition].Stars--
 				g.Players[c.RightSidePosition].Stars++
 			}
 		case RTL10:
-			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 10)
-			g.AwardCoins(c.LeftSidePosition, coinsTaken, false)
-			g.AwardCoins(c.RightSidePosition, -coinsTaken, false)
+			g.GiveCoins(c.RightSidePosition, c.LeftSidePosition, 10, false)
 		case RTL20:
-			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 20)
-			g.AwardCoins(c.LeftSidePosition, coinsTaken, false)
-			g.AwardCoins(c.RightSidePosition, -coinsTaken, false)
+			g.GiveCoins(c.RightSidePosition, c.LeftSidePosition, 20, false)
 		case RTL30:
-			coinsTaken := min(g.Players[c.LeftSidePosition].Coins, 30)
-			g.AwardCoins(c.LeftSidePosition, coinsTaken, false)
-			g.AwardCoins(c.RightSidePosition, -coinsTaken, false)
+			g.GiveCoins(c.RightSidePosition, c.LeftSidePosition, 30, false)
 		case RTLStar:
 			if g.Players[c.LeftSidePosition].Stars > 0 {
 				g.Players[c.LeftSidePosition].Stars++
