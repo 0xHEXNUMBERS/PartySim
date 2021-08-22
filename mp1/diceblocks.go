@@ -78,7 +78,7 @@ func (w WarpDiceBlock) Handle(r Response, g *Game) {
 	tmpSpace := g.Players[w.Player].CurrentSpace
 	g.Players[w.Player].CurrentSpace = g.Players[selectedPlayer].CurrentSpace
 	g.Players[selectedPlayer].CurrentSpace = tmpSpace
-	g.MovePlayer(w.Player, 0)
+	g.ActivateSpace(w.Player)
 }
 
 type EventDiceBlock struct {
