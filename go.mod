@@ -1,3 +1,3 @@
-module github.com/0xhexnumbers/partysim64
+module github.com/0xhexnumbers/partysim
 
 go 1.16
