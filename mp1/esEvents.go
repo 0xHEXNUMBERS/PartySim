@@ -194,6 +194,7 @@ func (e esChangeGates) Handle(r Response, g *Game) {
 	bd := g.Board.Data.(esBoardData)
 	bd.Gate = gate
 	bd.Gate2or3 = (gate != 1)
+	g.Board.Data = bd
 	g.Players[e.Player].CurrentSpace = ChainSpace{0, 0}
-	g.MovePlayer(e.Player, e.Moves-1)
+	g.MovePlayer(e.Player, e.Moves)
 }

@@ -124,20 +124,23 @@ func TestWarpG(t *testing.T) {
 
 	g1 := g
 	g1.Board.Data = esBoardData{Gate: 1}
-	g1.ExtraEvent.Handle(1, &g1)
-	g1.ExtraEvent.Handle(true, &g1)
+	g1.ExtraEvent.Handle(1, &g1)    //Move
+	g1.ExtraEvent.Handle(true, &g1) //Goto Warp G
+	g1.ExtraEvent.Handle(2, &g1)    //Set to Gate 2
 	SpaceIs(esStartingSpace, 0, g1, "G1", t)
 
 	g2 := g
 	g2.Board.Data = esBoardData{Gate: 2}
-	g2.ExtraEvent.Handle(1, &g2)
-	g2.ExtraEvent.Handle(true, &g2)
+	g2.ExtraEvent.Handle(1, &g2)    //Move
+	g2.ExtraEvent.Handle(true, &g2) //Goto Warp G
+	g2.ExtraEvent.Handle(3, &g2)    //Set to Gate 3
 	SpaceIs(esStartingSpace, 0, g2, "G2", t)
 
 	g3 := g
 	g3.Board.Data = esBoardData{Gate: 3}
-	g3.ExtraEvent.Handle(1, &g3)
-	g3.ExtraEvent.Handle(true, &g3)
+	g3.ExtraEvent.Handle(1, &g3)    //Move
+	g3.ExtraEvent.Handle(true, &g3) //Goto Warp G
+	g2.ExtraEvent.Handle(1, &g3)    //Set to Gate 1
 	SpaceIs(ChainSpace{11, 1}, 0, g3, "G3", t)
 }
 
@@ -187,20 +190,22 @@ func TestWarpJ(t *testing.T) {
 
 	g1 := g
 	g1.Board.Data = esBoardData{Gate: 1}
-	g1.ExtraEvent.Handle(1, &g1)
-	g1.ExtraEvent.Handle(true, &g1)
+	g1.ExtraEvent.Handle(1, &g1)    //Move
+	g1.ExtraEvent.Handle(true, &g1) //Goto warp J
+	g1.ExtraEvent.Handle(2, &g1)    //Set to gate 2
 	SpaceIs(esStartingSpace, 0, g1, "G1", t)
 
 	g2 := g
 	g2.Board.Data = esBoardData{Gate: 2}
-	g2.ExtraEvent.Handle(1, &g2)
-	g2.ExtraEvent.Handle(true, &g2)
+	g2.ExtraEvent.Handle(1, &g2)    //Move
+	g2.ExtraEvent.Handle(true, &g2) //Goto warp J
+	g2.ExtraEvent.Handle(3, &g2)    //Set to gate 3
 	SpaceIs(esStartingSpace, 0, g2, "G2", t)
 
 	g3 := g
 	g3.Board.Data = esBoardData{Gate: 3}
-	g3.ExtraEvent.Handle(1, &g3)
-	g3.ExtraEvent.Handle(true, &g3)
+	g3.ExtraEvent.Handle(1, &g3)    //Move
+	g3.ExtraEvent.Handle(true, &g3) //Goto warp J
 	SpaceIs(ChainSpace{11, 1}, 0, g3, "G3", t)
 }
 
@@ -294,12 +299,14 @@ func TestVisitBowser(t *testing.T) {
 	g.Players[0].Coins = 30
 
 	gCoins := g
-	gCoins.ExtraEvent.Handle(1, &gCoins)
+	gCoins.ExtraEvent.Handle(1, &gCoins) //Move
+	gCoins.ExtraEvent.Handle(1, &gCoins) //Set to gate 1
 	CoinsIs(13, 0, gCoins, "CoinsTaken", t)
 
 	gStars := g
 	gStars.Players[0].Stars = 2
-	gStars.ExtraEvent.Handle(1, &gStars)
+	gStars.ExtraEvent.Handle(1, &gStars) //Move
+	gStars.ExtraEvent.Handle(1, &gStars) //Set to gate 1
 	CoinsIs(33, 0, gStars, "StarTaken", t)
 	StarsIs(1, 0, gStars, "StarTaken", t)
 }

@@ -8,7 +8,7 @@ import (
 func SpaceIs(expected ChainSpace, player int, g Game, flavour string, t *testing.T) {
 	got := g.Players[player].CurrentSpace
 	if expected != got {
-		t.Errorf("Expected %s%d Space: %#v, got: %#v",
+		t.Errorf("Expected %s %d Space: %#v, got: %#v",
 			flavour, player, expected, got)
 	}
 }

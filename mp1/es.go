@@ -21,6 +21,8 @@ func esVisitBowser(g *Game, player, moves int) int {
 	} else {
 		g.AwardCoins(player, -20, false)
 	}
+	bd := g.Board.Data.(esBoardData)
+	g.ExtraEvent = esChangeGates{player, moves, bd.Gate}
 	return moves
 }
 
