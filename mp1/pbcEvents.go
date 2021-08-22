@@ -10,7 +10,7 @@ func (p pbcSeedCheck) Responses() []Response {
 }
 
 func (p pbcSeedCheck) ControllingPlayer() int {
-	return p.Player
+	return CPU_PLAYER
 }
 
 func (p pbcSeedCheck) Handle(r Response, g *Game) {
