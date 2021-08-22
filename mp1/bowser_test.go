@@ -60,13 +60,13 @@ func TestBowserBalloonBurst(t *testing.T) {
 	g.MovePlayer(0, 1)
 	g.ExtraEvent.Handle(BowserBalloonBurst, &g)
 	gDraw := g
-	gDraw.ExtraEvent.Handle(BBBDraw, &gDraw)
+	gDraw.ExtraEvent.Handle(4, &gDraw)
 	for i := range gDraw.Players {
 		CoinsIs(30, i, gDraw, "Draw", t)
 	}
 
 	gP1Win := g
-	gP1Win.ExtraEvent.Handle(BBBP1Win, &gP1Win)
+	gP1Win.ExtraEvent.Handle(0, &gP1Win)
 	CoinsIs(50, 0, gP1Win, "P1Win", t)
 	for i := 1; i < 4; i++ {
 		CoinsIs(40, i, gP1Win, "P1Win", t)

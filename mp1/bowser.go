@@ -79,18 +79,6 @@ func (b BowserEvent) Handle(r Response, g *Game) {
 	}
 }
 
-type BowserBalloonBurstEvent struct{}
-
-type BowserBalloonBurstResult int
-
-const (
-	BBBDraw BowserBalloonBurstResult = iota
-	BBBP1Win
-	BBBP2Win
-	BBBP3Win
-	BBBP4Win
-)
-
 func GetBowserMinigameCoinLoss(turn uint8) int {
 	if turn <= 9 {
 		return 10
@@ -102,16 +90,10 @@ func GetBowserMinigameCoinLoss(turn uint8) int {
 	return 40
 }
 
-var BBBResults = []Response{
-	BBBDraw,
-	BBBP1Win,
-	BBBP2Win,
-	BBBP3Win,
-	BBBP4Win,
-}
+type BowserBalloonBurstEvent struct{}
 
 func (b BowserBalloonBurstEvent) Responses() []Response {
-	return BBBResults
+	return CPURangeEvent{0, 4}.Responses()
 }
 
 func (b BowserBalloonBurstEvent) ControllingPlayer() int {
@@ -119,29 +101,19 @@ func (b BowserBalloonBurstEvent) ControllingPlayer() int {
 }
 
 func (b BowserBalloonBurstEvent) Handle(r Response, g *Game) {
-	results := r.(BowserBalloonBurstResult)
+	winner := r.(int)
 	coinLoss := -GetBowserMinigameCoinLoss(g.Turn)
-	switch results {
-	case BBBDraw:
+	if winner == 4 {
 		for p := range g.Players {
 			g.AwardCoins(p, -20, true)
 		}
-	case BBBP1Win:
-		g.AwardCoins(1, coinLoss, true)
-		g.AwardCoins(2, coinLoss, true)
-		g.AwardCoins(3, coinLoss, true)
-	case BBBP2Win:
-		g.AwardCoins(0, coinLoss, true)
-		g.AwardCoins(2, coinLoss, true)
-		g.AwardCoins(3, coinLoss, true)
-	case BBBP3Win:
-		g.AwardCoins(0, coinLoss, true)
-		g.AwardCoins(1, coinLoss, true)
-		g.AwardCoins(3, coinLoss, true)
-	case BBBP4Win:
-		g.AwardCoins(0, coinLoss, true)
-		g.AwardCoins(1, coinLoss, true)
-		g.AwardCoins(2, coinLoss, true)
+	} else {
+		for p := range g.Players {
+			if p == winner {
+				continue
+			}
+			g.AwardCoins(p, coinLoss, true)
+		}
 	}
 	g.EndCharacterTurn()
 }
