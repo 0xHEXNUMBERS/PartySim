@@ -1,5 +1,6 @@
 package mp1
 
+//esBranchEvent let's the player decide if they want to take the warp.
 type esBranchEvent struct {
 	Player int
 	Moves  int
@@ -8,6 +9,7 @@ type esBranchEvent struct {
 	Warp3  ChainSpace
 }
 
+//Responses returns a slice of bools (true/false).
 func (e esBranchEvent) Responses() []Response {
 	return []Response{true, false}
 }
@@ -16,6 +18,10 @@ func (e esBranchEvent) ControllingPlayer() int {
 	return e.Player
 }
 
+//Handle executes based on r. If r is true, the player's new positon is set
+//based on the current gate (setting the next event to set the gate if
+//the gate is unknown). If r is false, the player continues down their
+//current chain.
 func (e esBranchEvent) Handle(r Response, g *Game) {
 	gotoWarp := r.(bool)
 	bd := g.Board.Data.(esBoardData)
@@ -44,12 +50,15 @@ func (e esBranchEvent) Handle(r Response, g *Game) {
 	}
 }
 
+//esVisitBabyBowser let's the player decide if they want to play baby
+//bowser's minigame to win a star.
 type esVisitBabyBowser struct {
 	Player int
 	Moves  int
 	Index  int
 }
 
+//Responses return a slice of bools (true/false).
 func (e esVisitBabyBowser) Responses() []Response {
 	return []Response{true, false}
 }
@@ -58,6 +67,8 @@ func (e esVisitBabyBowser) ControllingPlayer() int {
 	return e.Player
 }
 
+//Handle sets the next event to the baby bowser minigame if r is true. If r
+//is false, then nothing happens.
 func (e esVisitBabyBowser) Handle(r Response, g *Game) {
 	battle := r.(bool)
 	if battle {
@@ -70,12 +81,14 @@ func (e esVisitBabyBowser) Handle(r Response, g *Game) {
 	}
 }
 
+//esBattleBabyBowser decides if the player wins the minigame.
 type esBattleBabyBowser struct {
 	Player int
 	Moves  int
 	Index  int
 }
 
+//Responses return a slice of bools (true/false).
 func (e esBattleBabyBowser) Responses() []Response {
 	return []Response{true, false}
 }
@@ -84,6 +97,8 @@ func (e esBattleBabyBowser) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle gives the player a star and sets the baby bowser's StarTaken flag
+//to true if r is true. If r is false, a star is taken from the plaeyr.
 func (e esBattleBabyBowser) Handle(r Response, g *Game) {
 	star := r.(bool)
 	bd := g.Board.Data.(esBoardData)
@@ -102,11 +117,14 @@ func (e esBattleBabyBowser) Handle(r Response, g *Game) {
 	g.MovePlayer(e.Player, e.Moves)
 }
 
+//esWarpCDest decides which Warp C destination the player goes to.
 type esWarpCDest struct {
 	Player int
 	Moves  int
 }
 
+//Resopnses returns a slice of the 2 possible spaces the player can warp
+//to.
 func (e esWarpCDest) Responses() []Response {
 	return []Response{esEntrance1, esEntrance7}
 }
@@ -115,6 +133,8 @@ func (e esWarpCDest) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle moves the player to the ChainSpace r and sets various flags if
+//needed.
 func (e esWarpCDest) Handle(r Response, g *Game) {
 	dest := r.(ChainSpace)
 	g.Players[e.Player].CurrentSpace = dest
@@ -130,11 +150,13 @@ func (e esWarpCDest) Handle(r Response, g *Game) {
 	g.MovePlayer(e.Player, e.Moves)
 }
 
+//esWarpDestResponse is a response that can be made to a esWarpDest Event.
 type esWarpDestResponse struct {
 	Dest ChainSpace
 	Gate int
 }
 
+//esWarpDest decides which gate the board is playing under currently.
 type esWarpDest struct {
 	Player   int
 	Moves    int
@@ -144,6 +166,8 @@ type esWarpDest struct {
 	Island3  ChainSpace
 }
 
+//Responses returns the list of possible ChainSpaces that the player can
+//warp to.
 func (e esWarpDest) Responses() []Response {
 	ret := []Response{
 		esWarpDestResponse{e.Island1, 1},
@@ -160,6 +184,8 @@ func (e esWarpDest) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle moves the player to the ChainSpace in r and set's the current
+//gate the board is under in r.
 func (e esWarpDest) Handle(r Response, g *Game) {
 	dest := r.(esWarpDestResponse)
 	bd := g.Board.Data.(esBoardData)
@@ -169,6 +195,7 @@ func (e esWarpDest) Handle(r Response, g *Game) {
 	g.MovePlayer(e.Player, e.Moves)
 }
 
+//esChangeGates decides which Gate the board will change to.
 type esChangeGates struct {
 	Player  int
 	Moves   int
@@ -181,6 +208,7 @@ var esChangeGatesResponses = [3][]Response{
 	{1, 2},
 }
 
+//Responses returns the gates that can be switched to.
 func (e esChangeGates) Responses() []Response {
 	return esChangeGatesResponses[e.Current-1]
 }
@@ -189,6 +217,8 @@ func (e esChangeGates) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle switches the current gate configuration to r, moves the player to
+//the starting space, and moves the player their remaining spaces.
 func (e esChangeGates) Handle(r Response, g *Game) {
 	gate := r.(int)
 	bd := g.Board.Data.(esBoardData)

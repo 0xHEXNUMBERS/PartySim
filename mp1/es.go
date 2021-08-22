@@ -1,5 +1,6 @@
 package mp1
 
+//esBoardData holds all of the board specific data related to ES.
 type esBoardData struct {
 	StarTaken [7]bool
 	Gate      int //0 if unknown
@@ -15,6 +16,9 @@ var esEntrance7 = ChainSpace{10, 0}
 var esEntrance8 = ChainSpace{11, 0}
 var esEntrance9 = ChainSpace{12, 0}
 
+//esVisitBowser steals a star if the player has one, or steals 20 coins
+//otherwise. The next event is set to change the gate the board will play
+//under.
 func esVisitBowser(g *Game, player, moves int) int {
 	if g.Players[player].Stars > 0 {
 		g.Players[player].Stars--
@@ -26,6 +30,8 @@ func esVisitBowser(g *Game, player, moves int) int {
 	return moves
 }
 
+//esSendToStart sends each player to the starting space, and the landing
+//player gains coins from a blue space.
 func esSendToStart(g *Game, player int) {
 	for i := range g.Players {
 		g.Players[i].CurrentSpace = esStartingSpace
@@ -41,6 +47,7 @@ func esSendToStart(g *Game, player int) {
 	}
 }
 
+//esWarpC handles Warp C.
 func esWarpC(g *Game, player, moves int) int {
 	bd := g.Board.Data.(esBoardData)
 	if bd.Gate2or3 {
@@ -58,6 +65,7 @@ func esWarpC(g *Game, player, moves int) int {
 	return moves
 }
 
+//esWarpSpace handles warp spaces D-K.
 func esWarpSpace(dest1, dest2, dest3 ChainSpace) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		bd := g.Board.Data.(esBoardData)
@@ -80,6 +88,7 @@ func esWarpSpace(dest1, dest2, dest3 ChainSpace) func(*Game, int, int) int {
 	}
 }
 
+//esBranchWithWarp handles warps that are on a chain by themselves.
 func esBranchWithWarp(dest1, dest2, dest3 ChainSpace) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		g.ExtraEvent = esBranchEvent{
@@ -93,6 +102,8 @@ func esBranchWithWarp(dest1, dest2, dest3 ChainSpace) func(*Game, int, int) int 
 	}
 }
 
+//esAllStarsCollected returns true if all stars on the board have been
+//collected.
 func esAllStarsCollected(e esBoardData) bool {
 	for _, star := range e.StarTaken {
 		if !star {
@@ -102,6 +113,11 @@ func esAllStarsCollected(e esBoardData) bool {
 	return true
 }
 
+//esPassStarSpace sets the next event to decide if the player wants to play
+//the baby bowser minigame if they have >=20 coins and the star space is
+//available. If the player does not have 20 coins, then they pass by the
+//space. If the star has been collected, then the space is assumed to be
+//landable.
 func esPassStarSpace(i int) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		bd := g.Board.Data.(esBoardData)
@@ -119,10 +135,12 @@ func esPassStarSpace(i int) func(*Game, int, int) int {
 	}
 }
 
+//esLandOnChanceTime sets the player's LastSaceType to Chance.
 func esLandOnChanceTime(g *Game, player int) {
 	g.Players[player].LastSpaceType = Chance
 }
 
+//ES holds the data for Eternal Star.
 var ES = Board{
 	Chains: &[]Chain{
 		{ //0: Entrance 1

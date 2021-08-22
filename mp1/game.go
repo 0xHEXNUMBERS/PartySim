@@ -1,5 +1,6 @@
 package mp1
 
+//GameConfig holds the configuration settings of the current game.
 type GameConfig struct {
 	MaxTurns     uint8
 	NoBonusStars bool
@@ -11,17 +12,23 @@ type GameConfig struct {
 	EventsDice   bool
 }
 
+//Game is the structure that holds all game information.
 type Game struct {
 	Board
+	Config        GameConfig
 	StarSpaces    StarData
 	Players       [4]Player
 	Turn          uint8
 	CurrentPlayer int
-	KoopaPasses   int
 	ExtraEvent    Event
-	Config        GameConfig
+
+	//Every 10 passes, Koopa rewards 20 coins to the passing player.
+	KoopaPasses int
 }
 
+//SetDiceBlock looks at the GameConfig to see if there are any special
+//dice in play. If there are, the next Event is set to pick a dice block.
+//Otherwise, the next Event is set to the normal dice block.
 func (g *Game) SetDiceBlock() {
 	if g.Config.RedDice || g.Config.BlueDice || g.Config.WarpDice || g.Config.EventsDice {
 		g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
@@ -30,6 +37,11 @@ func (g *Game) SetDiceBlock() {
 	}
 }
 
+//InitializeGame returns a new game given a Board and a GameConfig.
+//This function goes through 2 main steps.
+//1. It finds the start space and sets all player positions to that space.
+//If there is no start space, player positions are set to ChainSpace{0, 0}.
+//2. It looks for all of the star spaces and intializes StarData.
 func InitializeGame(b Board, config GameConfig) *Game {
 	g := &Game{
 		Board: b,
@@ -73,10 +85,14 @@ func InitializeGame(b Board, config GameConfig) *Game {
 	return g
 }
 
+//LastFiveTurns returns true if the game is in its' final 5 turns.
 func (g *Game) LastFiveTurns() bool {
 	return g.Config.MaxTurns-g.Turn <= 5
 }
 
+//AwardCoins awards a player with coins. It handles min/maxing
+//of coins values and Coin/Minigame bonus stars. It returns the
+//number of coins the player recieved.
 func (g *Game) AwardCoins(player, coins int, minigame bool) int {
 	coins0 := g.Players[player].Coins
 	g.Players[player].Coins += coins
@@ -92,11 +108,15 @@ func (g *Game) AwardCoins(player, coins int, minigame bool) int {
 	return coinsGiven
 }
 
+//GiveCoins transfers coins from one player to another.
 func (g *Game) GiveCoins(givingPlayer, takingPlayer, coins int, minigame bool) {
 	coinsTaken := -g.AwardCoins(givingPlayer, -coins, minigame)
 	g.AwardCoins(takingPlayer, coinsTaken, minigame)
 }
 
+//CheckLinks looks through the boards linkage system to determine if a
+//player needs to make a decision where to branch off to, or setting the
+//player's new position if there's <=1 link at the player's current chain.
 func (g *Game) CheckLinks(player, chain, moves int) (branch bool) {
 	//Check for links
 	if g.Board.Links != nil {
@@ -122,6 +142,7 @@ func (g *Game) CheckLinks(player, chain, moves int) (branch bool) {
 	return false
 }
 
+//ActivateSpace performs the action of a player landing on a space.
 func (g *Game) ActivateSpace(player int) {
 	//Activate Space
 	chains := *g.Board.Chains
@@ -174,6 +195,8 @@ func (g *Game) ActivateSpace(player int) {
 	}
 }
 
+//MovePlayer moves the player x many spaces through the board. It handles
+//branching and passing events.
 func (g *Game) MovePlayer(playerIdx, moves int) {
 	chains := *g.Board.Chains
 	playerPos := &g.Players[playerIdx].CurrentSpace
@@ -249,6 +272,8 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	g.ActivateSpace(playerIdx)
 }
 
+//AwardBonusStars looks through the players' aggregated statistics to
+//award bonus stars.
 func (g *Game) AwardBonusStars() {
 	if g.Config.NoBonusStars {
 		return
@@ -285,6 +310,8 @@ func (g *Game) AwardBonusStars() {
 	}
 }
 
+//Winners returns a list of the winning player indexes at the current game
+//state.
 func (g *Game) Winners() []int {
 	maxStarHolders := []int{}
 	maxStars := g.Players[0].Stars
@@ -310,6 +337,9 @@ func (g *Game) Winners() []int {
 	return winners
 }
 
+//EndGameTurn ends the game turn. It handles awarding bonus stars at the
+//end of the game, skipping player 0's turn in case of poison mushroom,
+//and setting the next diceblock.
 func (g *Game) EndGameTurn() {
 	g.Turn++
 	if g.Turn == g.Config.MaxTurns {
@@ -326,10 +356,15 @@ func (g *Game) EndGameTurn() {
 	}
 }
 
+//StartMinigamePrep starts preparation for the next end of turn minigame.
 func (g *Game) StartMinigamePrep() {
 	g.FindGreenPlayer()
 }
 
+//EndCharacterTurn handles events that occur at the end of a character's
+//turn. It handles skipping player turns if the next player received a
+//poison mushroom, Starting minigame preparation if player 3 just
+//finished, and calling the board's specifc end of turn event.
 func (g *Game) EndCharacterTurn() {
 	if g.Board.EndCharacterTurnEvent != nil {
 		g.Board.EndCharacterTurnEvent(g, g.CurrentPlayer)

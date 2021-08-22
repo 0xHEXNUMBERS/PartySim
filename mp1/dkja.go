@@ -1,5 +1,6 @@
 package mp1
 
+//dkjaBoardData holds all of the board specific data related to DKJA.
 type dkjaBoardData struct {
 	WhompPos                 [3]bool
 	WhompMainDestination     [3]ChainSpace
@@ -8,6 +9,8 @@ type dkjaBoardData struct {
 	CoinRejectDestination    [2]ChainSpace
 }
 
+//dkjaGetWhompDestination gets the ChainSpace that the whomp is not
+//currently blocking.
 func dkjaGetWhompDestination(g *Game, whomp int) ChainSpace {
 	data := g.Board.Data.(dkjaBoardData)
 	var pos ChainSpace
@@ -19,6 +22,9 @@ func dkjaGetWhompDestination(g *Game, whomp int) ChainSpace {
 	return pos
 }
 
+//dkjaCanPassWhomp checks to see if the player can pay the toll to pass
+//the whomp. If so, the next event is set for the player to make that
+//decision.
 func dkjaCanPassWhomp(whomp int) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		if g.Players[player].Coins >= 10 {
@@ -33,6 +39,9 @@ func dkjaCanPassWhomp(whomp int) func(*Game, int, int) int {
 	}
 }
 
+//dkjaCanPassCoinBlockade checks to see if the player has the amount of
+//coins to pass the blockade. If so, the next event is set for the player
+//to make that decision.
 func dkjaCanPassCoinBlockade(blockade int) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		if g.Players[player].Coins >= 20 {
@@ -47,6 +56,8 @@ func dkjaCanPassCoinBlockade(blockade int) func(*Game, int, int) int {
 	}
 }
 
+//dkjaBoulder moves any players on the boulder's path to the end of the
+//path.
 func dkjaBoulder(g *Game, player int) {
 	for i := 0; i < 4; i++ {
 		pos := g.Players[i].CurrentSpace
@@ -56,6 +67,7 @@ func dkjaBoulder(g *Game, player int) {
 	}
 }
 
+//DKJA holds the data for Donkey Kong's Jungle Adventure.
 var DKJA = Board{
 	Chains: &[]Chain{
 		{ //Last Offshoot to first thwomp fork

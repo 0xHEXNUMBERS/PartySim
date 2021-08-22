@@ -1,9 +1,12 @@
 package mp1
 
+//wbcBoardData holds all of the board specific data related to WBC.
 type wbcBoardData struct {
 	Direction bool
 }
 
+//wbcCannonShot sets the player's new chain, and set the next event to set
+//the player's new position.
 func wbcCannonShot(g *Game, player, moves int) int {
 	newChain := g.Players[player].CurrentSpace.Chain
 	data := g.Board.Data.(wbcBoardData)
@@ -18,17 +21,23 @@ func wbcCannonShot(g *Game, player, moves int) int {
 	return moves
 }
 
+//wbcReverseCannons reverses the cannons' direction.
 func wbcReverseCannons(g *Game, player int) {
 	data := g.Board.Data.(wbcBoardData)
 	data.Direction = !data.Direction
 	g.Board.Data = data
 }
 
+//wbcLoadPlayerInBowserCannon sets the next event to choosing a chain for
+//the player to land on.
 func wbcLoadPlayerInBowserCannon(g *Game, player, moves int) int {
 	g.ExtraEvent = wbcBowserCannon{player, moves}
 	return moves
 }
 
+//wbcShyGuy occurs when a player passes shyguy. If the player has >=10
+//coins, then the next event is set for the player to respond to the
+//shyguy.
 func wbcShyGuy(g *Game, player, moves int) int {
 	if g.Players[player].Coins >= 10 {
 		g.ExtraEvent = wbcShyGuyEvent{player, moves}
@@ -36,6 +45,7 @@ func wbcShyGuy(g *Game, player, moves int) int {
 	return moves
 }
 
+//WBC holds the data for Wario's Battle Canyon.
 var WBC = Board{
 	Chains: &[]Chain{
 		{ //Bottom Left

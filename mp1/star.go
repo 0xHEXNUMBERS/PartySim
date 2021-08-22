@@ -1,5 +1,7 @@
 package mp1
 
+//StarData holds the data for star locations, which stars have been
+//collected at least once, and which stars have been collected recently.
 type StarData struct {
 	StarSpaceCount   uint8
 	AbsoluteVisited  uint64 //For Chance vs. Blue
@@ -8,6 +10,8 @@ type StarData struct {
 	IndexToPosition  *[]ChainSpace
 }
 
+//GetIndex is a mapping from ChainSpace to the internal s.IndexToPosition
+//slice index. Returns -1 if c is not in s.IndexToPosition.
 func (s StarData) GetIndex(c ChainSpace) int {
 	for i := 0; i < len(*s.IndexToPosition); i++ {
 		tmp := (*s.IndexToPosition)[i]
@@ -20,12 +24,15 @@ func (s StarData) GetIndex(c ChainSpace) int {
 	return -1
 }
 
+//StarLocationEvent holds the implementation for picking a new star space.
 type StarLocationEvent struct {
 	StarData
 	Player int
 	Moves  int
 }
 
+//Responses returns a slice of the available indexes of the available star
+//spaces.
 func (s StarLocationEvent) Responses() []Response {
 	var i uint8
 	res := []Response{}
@@ -41,6 +48,9 @@ func (s StarLocationEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle takes the index r and sets the new star space to that index. If
+//r is the last available star space, then the list of star spaces already
+//landed on is reset.
 func (s StarLocationEvent) Handle(r Response, g *Game) {
 	i := r.(uint8)
 	s.AbsoluteVisited |= (1 << i)

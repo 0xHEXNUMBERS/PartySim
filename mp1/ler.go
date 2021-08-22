@@ -1,9 +1,11 @@
 package mp1
 
+//lerBoardData holds all of the board specific data related to LER.
 type lerBoardData struct {
 	BlueUp bool
 }
 
+//lerRBRFork handles the 3-way fork on the board.
 func lerRBRFork(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
@@ -14,6 +16,7 @@ func lerRBRFork(g *Game, player, moves int) int {
 	return moves - 1
 }
 
+//lerRBFork handles the Red/Blue fork on the board.
 func lerRBFork(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
@@ -24,6 +27,7 @@ func lerRBFork(g *Game, player, moves int) int {
 	return moves - 1
 }
 
+//lerBRFork1 handles the Blue/Red fork on the top-middle part of the board.
 func lerBRFork1(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
@@ -34,6 +38,7 @@ func lerBRFork1(g *Game, player, moves int) int {
 	return moves - 1
 }
 
+//lerBRFork2 handles the Blue/Red fork on the top-left part of the board.
 func lerBRFork2(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
@@ -44,6 +49,7 @@ func lerBRFork2(g *Game, player, moves int) int {
 	return moves - 1
 }
 
+//lerBRFork3 handles the Blue/Red fork on the top-right part of the board.
 func lerBRFork3(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
@@ -54,18 +60,23 @@ func lerBRFork3(g *Game, player, moves int) int {
 	return moves - 1
 }
 
+//lerSwapGates swaps which gates are up.
 func lerSwapGates(g *Game, player int) {
 	bd := g.Board.Data.(lerBoardData)
 	bd.BlueUp = !bd.BlueUp
 	g.Board.Data = bd
 }
 
+//lerGotoIsland sets the player's new position to the island at the
+//top-left section of the board.
 func lerGotoIsland(space int) func(*Game, int) {
 	return func(g *Game, player int) {
 		g.Players[player].CurrentSpace = ChainSpace{8, space}
 	}
 }
 
+//lerVisitRobot sets the next event to deciding to swap gates if the player
+//has >= 20 coins.
 func lerVisitRobot(g *Game, player, moves int) int {
 	if g.Players[player].Coins >= 20 {
 		g.ExtraEvent = lerRobot{player, moves}
@@ -73,6 +84,7 @@ func lerVisitRobot(g *Game, player, moves int) int {
 	return moves
 }
 
+//LER holds the data for Luigi's Engine Room.
 var LER = Board{
 	Chains: &[]Chain{
 		{ //Start to first fork

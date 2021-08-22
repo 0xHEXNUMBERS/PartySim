@@ -1,5 +1,7 @@
 package mp1
 
+//ChanceMiddleBlock is an enumeration of the exchagne actions that can
+//occur during Chance Time.
 type ChanceMiddleBlock int
 
 const (
@@ -17,6 +19,7 @@ const (
 	CMBCount
 )
 
+//ChanceTimeBlock is an enumeration of the Chance Time blocks.
 type ChanceTimeBlock int
 
 const (
@@ -25,6 +28,7 @@ const (
 	CTBRight
 )
 
+//ChanceTime holds the implementation of a Chance Space.
 type ChanceTime struct {
 	Player int
 
@@ -36,11 +40,15 @@ type ChanceTime struct {
 	RightSidePosition int
 }
 
+//ChanceTimeRespnse is a valid response to picking a block during chance
+//time.
 type ChanceTimeResponse struct {
 	Block    ChanceTimeBlock
 	Position int
 }
 
+//Responses returns a slice of the remaining blocks and block positions
+//that can be chosen during chance time.
 func (c ChanceTime) Responses() []Response {
 	res := []Response{}
 	if !c.LeftSideHit {
@@ -86,6 +94,9 @@ func (c ChanceTime) ControllingPlayer() int {
 	}
 }
 
+//Handle sets the specific block and block position based on r. If all
+//blocks have been hit, then the exchange occurs and the current player's
+//turn ends. Otherwise, the next event is set to c.
 func (c ChanceTime) Handle(r Response, g *Game) {
 	res := r.(ChanceTimeResponse)
 	switch res.Block {

@@ -1,5 +1,8 @@
 package mp1
 
+//PreBowserCheck is a check that happens before the player visits bowser.
+//If certain conditions are met, bowser will perform different actions
+//instead of picking one of his normal actions.
 func (g *Game) PreBowserCheck(player int) {
 	//Special events when player has 0 coins
 	if g.Players[player].Coins == 0 {
@@ -15,10 +18,13 @@ func (g *Game) PreBowserCheck(player int) {
 	}
 }
 
+//BowserEvent is the normal event that occurs when a player lands on a
+//bowser space.
 type BowserEvent struct {
 	Player int
 }
 
+//BowserResponse is an enumeration for all of Bowser's normal actions.
 type BowserResponse int
 
 const (
@@ -32,6 +38,7 @@ const (
 	StarPresent
 )
 
+//Responses returns a slice of all of Bowser's actions.
 func (b BowserEvent) Responses() []Response {
 	return []Response{
 		CoinsForBowser,
@@ -49,6 +56,7 @@ func (b BowserEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle takes the action r and executes it, setting a new event if needed.
 func (b BowserEvent) Handle(r Response, g *Game) {
 	choice := r.(BowserResponse)
 	switch choice {
@@ -90,8 +98,10 @@ func GetBowserMinigameCoinLoss(turn uint8) int {
 	return 40
 }
 
+//BowserBalloonBurstEvent holds the imlpementation for Bowser's Balloon Burst.
 type BowserBalloonBurstEvent struct{}
 
+//Responses returns a slice of ints from [0, 4].
 func (b BowserBalloonBurstEvent) Responses() []Response {
 	return CPURangeEvent{0, 4}.Responses()
 }
@@ -100,6 +110,8 @@ func (b BowserBalloonBurstEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle takes coins from every player except for player r. If r == 4,
+//then every player loses 20 coins.
 func (b BowserBalloonBurstEvent) Handle(r Response, g *Game) {
 	winner := r.(int)
 	coinLoss := -GetBowserMinigameCoinLoss(g.Turn)
@@ -118,10 +130,12 @@ func (b BowserBalloonBurstEvent) Handle(r Response, g *Game) {
 	g.EndCharacterTurn()
 }
 
+//BowsersFaceLiftEvent holds the implementation for Bowser's Face Lift.
 type BowsersFaceLiftEvent struct {
 	Player int
 }
 
+//Responses returns a slice of ints from [1, 15].
 func (b BowsersFaceLiftEvent) Responses() []Response {
 	return CPURangeEvent{1, 15}.Responses()
 }
@@ -130,6 +144,9 @@ func (b BowsersFaceLiftEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle calculates coin loses for each player depending on the avlue of r.
+//Each bit p in r, if set to 0, loses player p some number of coins. If r
+//is 15, then b.Player loses 50 coins.
 func (b BowsersFaceLiftEvent) Handle(r Response, g *Game) {
 	results := r.(int)
 	if results == 15 { //All players won
@@ -146,10 +163,13 @@ func (b BowsersFaceLiftEvent) Handle(r Response, g *Game) {
 	g.EndCharacterTurn()
 }
 
+//BowsersTugoWarEvent holds the implementation for Bowser's Tug o War.
 type BowsersTugoWarEvent struct {
 	Player int
 }
 
+//BowsersTugoWarResult is an enumeration of ending results of Bowser's
+//Tug o War.
 type BowsersTugoWarResult int
 
 const (
@@ -164,6 +184,7 @@ var BTWResults = []Response{
 	BTW3TWin,
 }
 
+//Responses returns a slice of the valid end results of Bowser's Tug o War.
 func (b BowsersTugoWarEvent) Responses() []Response {
 	return BTWResults
 }
@@ -172,6 +193,7 @@ func (b BowsersTugoWarEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle calculates coin loses given a valid end result r.
 func (b BowsersTugoWarEvent) Handle(r Response, g *Game) {
 	results := r.(BowsersTugoWarResult)
 	switch results {
@@ -192,11 +214,15 @@ func (b BowsersTugoWarEvent) Handle(r Response, g *Game) {
 	g.EndCharacterTurn()
 }
 
+//BowsersBashnCash holds the implementation of Bowser's BashnCash.
 type BowsersBashnCash struct {
 	Player int
 	Coins  int
 }
 
+//Responses returns a slice of ints from [1, max], where max is the
+//maximum number of hits the solo player can take before losing all of
+//their coins.
 func (b BowsersBashnCash) Responses() []Response {
 	max := b.Coins / 5
 	max += b.Coins % 5
@@ -207,6 +233,8 @@ func (b BowsersBashnCash) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle calculates the coin loss for the solo player based on the number
+//of hits they took.
 func (b BowsersBashnCash) Handle(r Response, g *Game) {
 	timesHit := r.(int)
 	coinsLost := 0
@@ -221,8 +249,10 @@ func (b BowsersBashnCash) Handle(r Response, g *Game) {
 	g.EndCharacterTurn()
 }
 
+//BowsersChanceTimeEvent holds the implementation for Bowser's Chance Time.
 type BowsersChanceTimeEvent struct{}
 
+//BCTResponse is a valid response to Bowser's Chance Time Event.
 type BCTResponse struct {
 	Player int
 	Coins  int
@@ -240,6 +270,7 @@ var BCTResponses = []Response{
 	BCTResponse{2, 30},
 }
 
+//Responses return the valid responses to Bowser's Chance Time Event.
 func (b BowsersChanceTimeEvent) Responses() []Response {
 	return BCTResponses
 }
@@ -248,6 +279,7 @@ func (b BowsersChanceTimeEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
+//Handle calculates coin loss given a valid Response r.
 func (b BowsersChanceTimeEvent) Handle(r Response, g *Game) {
 	res := r.(BCTResponse)
 	g.AwardCoins(res.Player, -res.Coins, false)

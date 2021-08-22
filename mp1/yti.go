@@ -1,5 +1,6 @@
 package mp1
 
+//ytiBoardData holds all of the board specific data related to YTI.
 type ytiBoardData struct {
 	Thwomps         [2]int
 	AcceptThwompPos [2]ChainSpace
@@ -7,6 +8,7 @@ type ytiBoardData struct {
 	StarPosition    ChainSpace
 }
 
+//ytiCheckThwomp checks to see if the current player can pass this thwomp.
 func ytiCheckThwomp(thwomp int) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		bd := g.Board.Data.(ytiBoardData)
@@ -27,6 +29,7 @@ func ytiCheckThwomp(thwomp int) func(*Game, int, int) int {
 var ytiLeftIslandStar = ChainSpace{0, 19}
 var ytiRightIslandStar = ChainSpace{1, 18}
 
+//ytiSwapStarPosition will swap the current star position.
 func ytiSwapStarPosition(g *Game, player int) {
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition == ytiLeftIslandStar {
@@ -37,6 +40,8 @@ func ytiSwapStarPosition(g *Game, player int) {
 	g.Board.Data = bd
 }
 
+//ytiGainStar will increment the player's star count if they have >=20
+//coins.
 func ytiGainStar(g *Game, player, moves int) int {
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition == g.Players[player].CurrentSpace {
@@ -51,6 +56,7 @@ func ytiGainStar(g *Game, player, moves int) int {
 	return moves
 }
 
+//YTI holds the data for Yoshi's Tropical Island.
 var YTI = Board{
 	Chains: &[]Chain{
 		{ //Left island

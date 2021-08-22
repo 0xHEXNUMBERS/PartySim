@@ -1,10 +1,13 @@
 package mp1
 
+//bmmBoardData holds all of the board specific data related to BMM.
 type bmmBoardData struct {
 	MagmaActive    bool
 	MagmaTurnCount int
 }
 
+//bmmEruptVolcano turns all *blue* spaces to *red* spaces for 2 full game
+//turns.
 func bmmEruptVolcano(g *Game, player int) {
 	bd := g.Board.Data.(bmmBoardData)
 	if !bd.MagmaActive {
@@ -14,6 +17,8 @@ func bmmEruptVolcano(g *Game, player int) {
 	}
 }
 
+//bmmCharacterEndTurn decrements the turn counter at the end of each
+//character's turn, swapping all *red* spaces back to *blue* spaces.
 func bmmCharacterEndTurn(g *Game, player int) {
 	bd := g.Board.Data.(bmmBoardData)
 	if bd.MagmaActive {
@@ -25,6 +30,8 @@ func bmmCharacterEndTurn(g *Game, player int) {
 	}
 }
 
+//bmmLandOnRegularSpace sets the player's LastSpaceType to Blue/Red
+//depending if the volcano is active or not.
 func bmmLandOnRegularSpace(g *Game, player int) {
 	bd := g.Board.Data.(bmmBoardData)
 	if bd.MagmaActive {
@@ -34,6 +41,8 @@ func bmmLandOnRegularSpace(g *Game, player int) {
 	}
 }
 
+//bmmReachFork sets the next event to a custom branch event if the player
+//has >=10 coins. Otherwise, they continue down the bowser path.
 func bmmReachFork(bowserPath, starPath ChainSpace) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		if g.Players[player].Coins >= 10 {
@@ -45,6 +54,7 @@ func bmmReachFork(bowserPath, starPath ChainSpace) func(*Game, int, int) int {
 	}
 }
 
+//bmmFinalFork sets the next event to the custom branch event.
 func bmmFinalFork(g *Game, player, moves int) int {
 	g.ExtraEvent = bmmBranchDecision{
 		player, moves, ChainSpace{4, 0}, ChainSpace{5, 0},
@@ -52,6 +62,8 @@ func bmmFinalFork(g *Game, player, moves int) int {
 	return moves
 }
 
+//bmmVisitBowser rolls a roulette if the player has one. Otherwise, bowser
+//steals 20 coins.
 func bmmVisitBowser(g *Game, player, moves int) int {
 	if g.Players[player].Stars > 0 {
 		g.ExtraEvent = bmmBowserRoulette{player, moves}
@@ -61,6 +73,7 @@ func bmmVisitBowser(g *Game, player, moves int) int {
 	return moves
 }
 
+//BMM holds the data for Bowser's Magma Mountain.
 var BMM = Board{
 	Chains: &[]Chain{
 		{ //After last fork to first fork

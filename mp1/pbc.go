@@ -1,5 +1,6 @@
 package mp1
 
+//pbcBoardData holds all of the board specific data related to PBC.
 type pbcBoardData struct {
 	BowserSeedPlanted bool
 	SeedCount         int
@@ -7,6 +8,9 @@ type pbcBoardData struct {
 	PiranhaPlant      [14]int
 }
 
+//pbcVisitSeed occurs when the player visit the seed game. If the seed the
+//player will pick is known, then the decision is made for them. Otherwise,
+//the next event is set to make that decision.
 func pbcVisitSeed(g *Game, player, moves int) int {
 	g.AwardCoins(player, -10, false)
 	data := g.Board.Data.(pbcBoardData)
@@ -28,6 +32,11 @@ func pbcVisitSeed(g *Game, player, moves int) int {
 	return moves - 1
 }
 
+//pbcVisitPiranha occurs when a player lands on a happening space. If the
+//space is occupied by another player and the current player has a star,
+//then the current player will give their star to the occupying player.
+//If the space is unoccupied, then the player can make a decision to
+//occupy it if they have 30 coins.
 func pbcVisitPiranha(piranha int) func(*Game, int) {
 	return func(g *Game, player int) {
 		data := g.Board.Data.(pbcBoardData)
@@ -43,6 +52,7 @@ func pbcVisitPiranha(piranha int) func(*Game, int) {
 	}
 }
 
+//PBC holds the data for Peach's Birthday Cake.
 var PBC = Board{
 	Chains: &[]Chain{
 		{ //Main Path

@@ -1,15 +1,18 @@
 package mp1
 
+//mrcBoardData holds all of the board specific data related to MRC.
 type mrcBoardData struct {
 	IsBowser bool
 }
 
+//mrcSwapCastleDir swaps toad/bowser's castle direction.
 func mrcSwapCastleDir(g *Game, player int) {
 	bd := g.Board.Data.(mrcBoardData)
 	bd.IsBowser = !bd.IsBowser
 	g.Board.Data = bd
 }
 
+//mrcVisitCastle handles the event when a player visits the castle.
 func mrcVisitCastle(g *Game, player int, moves int) int {
 	bd := g.Board.Data.(mrcBoardData)
 	if bd.IsBowser {
@@ -25,6 +28,7 @@ func mrcVisitCastle(g *Game, player int, moves int) int {
 	return moves
 }
 
+//MRC holds the data for Mario's Rainbow Castle.
 var MRC = Board{
 	Chains: &[]Chain{
 		{ //Start to first fork

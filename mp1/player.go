@@ -4,6 +4,7 @@ package mp1
 //events that normal players have no control over
 const CPU_PLAYER int = 4
 
+//Player holds all player data, including bonus star stats.
 type Player struct {
 	Char          string
 	Stars         int
@@ -18,6 +19,7 @@ type Player struct {
 	MinigameCoins  int
 }
 
+//NewPlayer generates a new player with a given name.
 func NewPlayer(name string, stars, coins int, space ChainSpace) Player {
 	return Player{
 		name,
