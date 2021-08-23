@@ -26,6 +26,16 @@ type Game struct {
 	KoopaPasses int
 }
 
+//Responses returns the valid responses for the next event.
+func (g *Game) Responses() []Response {
+	return g.NextEvent.Responses()
+}
+
+//HandleEvent executes the next event using the given Response r.
+func (g *Game) HandleEvent(r Response) {
+	g.NextEvent.Handle(r, g)
+}
+
 //SetDiceBlock looks at the GameConfig to see if there are any special
 //dice in play. If there are, the next Event is set to pick a dice block.
 //Otherwise, the next Event is set to the normal dice block.
