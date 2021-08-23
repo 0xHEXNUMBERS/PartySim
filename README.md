@@ -37,7 +37,7 @@ To download the core for all games, use `git clone https://github.com/0xhexnumbe
 
 ### go get
 
-To download the core for a particular game, use `go get github.com/0xhexnumbers/partysim/[game abbr]`. For example: to download the core for Mario Party 1, use `go get github.com/0xhexnumbers/partysim/mp1`.
+To download the core for all games, use `go get github.com/0xhexnumbers/partysim@v0.0.1`.
 
 ## Control Flow
 
