@@ -177,7 +177,7 @@ func (b BooEvent) Handle(r Response, g *Game) {
 		if b.Players[steal.GivingPlayer].Coins <= maxCoins {
 			maxCoins = b.Players[steal.GivingPlayer].Coins
 		}
-		g.ExtraEvent = BooCoinsEvent{
+		g.NextEvent = BooCoinsEvent{
 			PayRangeEvent{steal.GivingPlayer, 1, maxCoins},
 			steal.RecvPlayer,
 			b.Moves,

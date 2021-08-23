@@ -28,7 +28,7 @@ func (e esBranchEvent) Handle(r Response, g *Game) {
 	if gotoWarp {
 		switch bd.Gate {
 		case 0:
-			g.ExtraEvent = esWarpDest{
+			g.NextEvent = esWarpDest{
 				e.Player,
 				e.Moves,
 				bd.Gate2or3,
@@ -73,7 +73,7 @@ func (e esVisitBabyBowser) Handle(r Response, g *Game) {
 	battle := r.(bool)
 	if battle {
 		g.AwardCoins(e.Player, -20, false)
-		g.ExtraEvent = esBattleBabyBowser{
+		g.NextEvent = esBattleBabyBowser{
 			e.Player, e.Moves, e.Index,
 		}
 	} else {

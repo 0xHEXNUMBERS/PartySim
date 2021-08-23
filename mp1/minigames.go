@@ -42,7 +42,7 @@ func (m MinigameFFAReward) Handle(r Response, g *Game) {
 		g.AwardCoins(player, 10, true)
 	}
 	if m.IsCoinMinigame {
-		g.ExtraEvent = m.Coin
+		g.NextEvent = m.Coin
 	} else {
 		g.EndGameTurn()
 	}
@@ -72,7 +72,7 @@ func (c CoinMinigameFFAReward) Handle(r Response, g *Game) {
 		g.EndGameTurn()
 	} else {
 		c.Player++
-		g.ExtraEvent = c
+		g.NextEvent = c
 	}
 }
 
@@ -206,7 +206,7 @@ func (m MinigameGrabBag) Handle(r Response, g *Game) {
 		g.AwardCoins(3, m.Acc, true)
 		g.EndGameTurn()
 	} else {
-		g.ExtraEvent = m
+		g.NextEvent = m
 	}
 }
 
@@ -282,60 +282,60 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 	game := r.(MinigameFFAGame)
 	switch game {
 	case MinigameFFABurriedTreasure:
-		g.ExtraEvent = MinigameFFAReward{}
+		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFATreasureDivers:
-		g.ExtraEvent = CoinMinigameFFAReward{0, 50}
+		g.NextEvent = CoinMinigameFFAReward{0, 50}
 	case MinigameFFAHotBobomb:
-		g.ExtraEvent = MinigameFFA1Loser{}
+		g.NextEvent = MinigameFFA1Loser{}
 	case MinigameFFAMusicalMushroom:
-		g.ExtraEvent = MinigameFFAReward{}
+		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFACrazyCutter:
-		g.ExtraEvent = MinigameFFAMultiWinReward{10, -5, 0}
+		g.NextEvent = MinigameFFAMultiWinReward{10, -5, 0}
 	case MinigameFFAFaceLift:
-		g.ExtraEvent = MinigameFFAMultiWinReward{10, -5, 0}
+		g.NextEvent = MinigameFFAMultiWinReward{10, -5, 0}
 	case MinigameFFABalloonBurst:
-		g.ExtraEvent = MinigameFFAReward{}
+		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFACoinBlockBlitz:
-		g.ExtraEvent = CoinMinigameFFAReward{0, 40}
+		g.NextEvent = CoinMinigameFFAReward{0, 40}
 	case MinigameFFASkateboardScamper:
 		//TODO: Separate coin from coinbag
-		g.ExtraEvent = MinigameFFAReward{true, CoinMinigameFFAReward{0, 10}}
+		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{0, 10}}
 	case MinigameFFABoxMountainMayhem:
-		g.ExtraEvent = CoinMinigameFFAReward{0, 25}
+		g.NextEvent = CoinMinigameFFAReward{0, 25}
 	case MinigameFFAPlatformPeril:
 		//TODO: Separate coin from coinbag
-		g.ExtraEvent = MinigameFFAReward{true, CoinMinigameFFAReward{0, 10}}
+		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{0, 10}}
 	case MinigameFFAMushroomMixup:
-		g.ExtraEvent = DrawableFFAReward{}
+		g.NextEvent = DrawableFFAReward{}
 	case MinigameFFAGrabBag:
 		//TODO: I'm not sure how I feel about max of 50.
 		//Theoritically, players can steal > 50 coins, but probably not
 		//feasible
-		g.ExtraEvent = MinigameGrabBag{0, 0, 50}
+		g.NextEvent = MinigameGrabBag{0, 0, 50}
 	case MinigameFFABumperBalls:
-		g.ExtraEvent = DrawableFFAReward{}
+		g.NextEvent = DrawableFFAReward{}
 	case MinigameFFATipsyTourney:
-		g.ExtraEvent = MinigameFFAReward{}
+		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFABombsAway:
-		g.ExtraEvent = MinigameFFAReward{}
+		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFAMarioBandstand:
 		//TODO: Find out how many coins are distributed
-		g.ExtraEvent = MinigameFFAMultiWinReward{}
+		g.NextEvent = MinigameFFAMultiWinReward{}
 	case MinigameFFAShyGuySays:
-		g.ExtraEvent = MinigameFFAReward{}
+		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFACastAways:
 		//TODO: Should optimize; ask for chests/bags/coins
-		g.ExtraEvent = CoinMinigameFFAReward{0, 80}
+		g.NextEvent = CoinMinigameFFAReward{0, 80}
 	case MinigameFFAKeypaWay:
-		g.ExtraEvent = MinigameFFACoop{}
+		g.NextEvent = MinigameFFACoop{}
 	case MinigameFFARunningoftheBulb:
-		g.ExtraEvent = MinigameFFAMultiWinReward{10, 0, -5}
+		g.NextEvent = MinigameFFAMultiWinReward{10, 0, -5}
 	case MinigameFFAHotRopeJump:
-		g.ExtraEvent = MinigameFFA1Loser{}
+		g.NextEvent = MinigameFFA1Loser{}
 	case MinigameFFAHammerDrop:
-		g.ExtraEvent = CoinMinigameFFAReward{0, 20}
+		g.NextEvent = CoinMinigameFFAReward{0, 20}
 	case MinigameFFASlotCarDerby:
-		g.ExtraEvent = MinigameFFAReward{}
+		g.NextEvent = MinigameFFAReward{}
 	}
 }
 
@@ -417,7 +417,7 @@ func (c CoinMinigame2V2Reward) Handle(r Response, g *Game) {
 		return
 	}
 	c.Team++
-	g.ExtraEvent = c
+	g.NextEvent = c
 }
 
 //Minigame2V2Game is a enumeration of the available 2V2 minigames.
@@ -457,23 +457,23 @@ func (m Minigame2V2Selector) Handle(r Response, g *Game) {
 	game := r.(Minigame2V2Game)
 	switch game {
 	case Minigame2V2BobsledRun:
-		g.ExtraEvent = Minigame2V2Reward{
+		g.NextEvent = Minigame2V2Reward{
 			m.Team1, m.Team2,
 		}
 	case Minigame2V2DesertDash:
-		g.ExtraEvent = Minigame2V2Reward{
+		g.NextEvent = Minigame2V2Reward{
 			m.Team1, m.Team2,
 		}
 	case Minigame2V2Bombsketball:
-		g.ExtraEvent = Minigame2V2Reward{
+		g.NextEvent = Minigame2V2Reward{
 			m.Team1, m.Team2,
 		}
 	case Minigame2V2HandcarHavoc:
-		g.ExtraEvent = Minigame2V2Reward{
+		g.NextEvent = Minigame2V2Reward{
 			m.Team1, m.Team2,
 		}
 	case Minigame2V2DeepSeaDivers:
-		g.ExtraEvent = CoinMinigame2V2Reward{
+		g.NextEvent = CoinMinigame2V2Reward{
 			m.Team1, m.Team2, 0, 50,
 		}
 	}
@@ -554,7 +554,7 @@ func (t Throwable1V3Minigame) Handle(r Response, g *Game) {
 	if throw {
 		g.EndGameTurn()
 	} else {
-		g.ExtraEvent = t.Minigame
+		g.NextEvent = t.Minigame
 	}
 }
 
@@ -611,7 +611,7 @@ func (m MinigameBashnCash) Handle(r Response, g *Game) {
 	if m.Player == 0 {
 		nextEvent.CurrentPlayer = 1
 	}
-	g.ExtraEvent = nextEvent
+	g.NextEvent = nextEvent
 }
 
 //MinigameBashnCashCoinAwards distributes a set of coins from a player to
@@ -644,7 +644,7 @@ func (m MinigameBashnCashCoinAwards) Handle(r Response, g *Game) {
 	if m.CurrentPlayer >= 4 {
 		g.EndGameTurn()
 	} else {
-		g.ExtraEvent = m
+		g.NextEvent = m
 	}
 }
 
@@ -744,7 +744,7 @@ func (m MinigameCraneGameCoins) Handle(r Response, g *Game) {
 				groupPlayers[i] = i
 			}
 		}
-		g.ExtraEvent = MinigameCraneGamePlayers{
+		g.NextEvent = MinigameCraneGamePlayers{
 			m.Player,
 			groupPlayers,
 		}
@@ -869,26 +869,26 @@ func (m Minigame1V3Selector) Handle(r Response, g *Game) {
 	minigame := r.(Minigame1V3Game)
 	switch minigame {
 	case Minigame1V3PipeMaze:
-		g.ExtraEvent = MinigamePipeMaze{m.Player}
+		g.NextEvent = MinigamePipeMaze{m.Player}
 	case Minigame1V3BashnCash:
 		coins := g.Players[m.Player].Coins
-		g.ExtraEvent = MinigameBashnCash{BowsersBashnCash{m.Player, coins}}
+		g.NextEvent = MinigameBashnCash{BowsersBashnCash{m.Player, coins}}
 	case Minigame1V3BowlOver:
-		g.ExtraEvent = MinigameBowlOver{m.Player}
+		g.NextEvent = MinigameBowlOver{m.Player}
 	case Minigame1V3CoinBlockBash:
-		g.ExtraEvent = CoinMinigameFFAReward{0, 30}
+		g.NextEvent = CoinMinigameFFAReward{0, 30}
 	case Minigame1V3TightropeTreachery:
-		g.ExtraEvent = Minigame1V3Reward{m.Player}
+		g.NextEvent = Minigame1V3Reward{m.Player}
 	case Minigame1V3CraneGame:
-		g.ExtraEvent = MinigameCraneGameCoins{m.Player}
+		g.NextEvent = MinigameCraneGameCoins{m.Player}
 	case Minigame1V3PiranhaPursuit:
-		g.ExtraEvent = Minigame1V3Reward{m.Player}
+		g.NextEvent = Minigame1V3Reward{m.Player}
 	case Minigame1V3TugoWar:
-		g.ExtraEvent = Minigame1V3Reward{m.Player}
+		g.NextEvent = Minigame1V3Reward{m.Player}
 	case Minigame1V3PaddleBattle:
-		g.ExtraEvent = MinigamePaddleBattle{m.Player}
+		g.NextEvent = MinigamePaddleBattle{m.Player}
 	case Minigame1V3CoinShowerFlower:
-		g.ExtraEvent = Throwable1V3Minigame{m.Player, CoinMinigameFFAReward{0, 30}}
+		g.NextEvent = Throwable1V3Minigame{m.Player, CoinMinigameFFAReward{0, 30}}
 	}
 }
 
@@ -1001,25 +1001,25 @@ func (m Minigame1PSelector) Handle(r Response, g *Game) {
 	baseGame := Minigame1PRewards{m.Player}
 	switch game {
 	case Minigame1PMemoryMatch:
-		g.ExtraEvent = MinigameMemoryMatch{baseGame}
+		g.NextEvent = MinigameMemoryMatch{baseGame}
 	case Minigame1PSlotMachine:
-		g.ExtraEvent = MinigameSlotMachine{baseGame}
+		g.NextEvent = MinigameSlotMachine{baseGame}
 	case Minigame1PShellGame:
-		g.ExtraEvent = baseGame
+		g.NextEvent = baseGame
 	case Minigame1PGhostGuess:
-		g.ExtraEvent = baseGame
+		g.NextEvent = baseGame
 	case Minigame1PPedalPower:
-		g.ExtraEvent = baseGame
+		g.NextEvent = baseGame
 	case Minigame1PWhackaPlant:
-		g.ExtraEvent = MinigameWhackaPlant{baseGame}
+		g.NextEvent = MinigameWhackaPlant{baseGame}
 	case Minigame1PGroundPound:
-		g.ExtraEvent = baseGame
+		g.NextEvent = baseGame
 	case Minigame1PTeeteringTowers:
-		g.ExtraEvent = MinigameTeeteringTowers{baseGame}
+		g.NextEvent = MinigameTeeteringTowers{baseGame}
 	case Minigame1PKnockBlockTower:
-		g.ExtraEvent = baseGame
+		g.NextEvent = baseGame
 	case Minigame1PLimboDance:
-		g.ExtraEvent = baseGame
+		g.NextEvent = baseGame
 	}
 }
 
@@ -1072,7 +1072,7 @@ func (g *Game) GetMinigame() {
 	case 3:
 		minigame = Minigame1V3Selector{redTeam[0], g.Players[redTeam[0]].Coins}
 	}
-	g.ExtraEvent = minigame
+	g.NextEvent = minigame
 }
 
 //FindGreenPlayer looks through the 4 players to find one that is on the
@@ -1080,7 +1080,7 @@ func (g *Game) GetMinigame() {
 func (g *Game) FindGreenPlayer() {
 	for i, p := range g.Players {
 		if SpaceToTeam(p.LastSpaceType) == GreenTeam {
-			g.ExtraEvent = DeterminePlayerTeamEvent{
+			g.NextEvent = DeterminePlayerTeamEvent{
 				Player: i,
 			}
 			return

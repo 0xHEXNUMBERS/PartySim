@@ -25,7 +25,7 @@ func (y ytiThwompBranchEvent) Handle(r Response, g *Game) {
 	pay := r.(bool)
 	bd := g.Board.Data.(ytiBoardData)
 	if pay {
-		g.ExtraEvent = ytiPayThwompEvent{
+		g.NextEvent = ytiPayThwompEvent{
 			PayRangeEvent{
 				y.Player,
 				bd.Thwomps[y.Thwomp],

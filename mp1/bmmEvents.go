@@ -25,7 +25,7 @@ func (b bmmBranchPay) Handle(r Response, g *Game) {
 	pay := r.(bool)
 	if pay {
 		g.AwardCoins(b.Player, -10, false)
-		g.ExtraEvent = bmmBranchDecision{
+		g.NextEvent = bmmBranchDecision{
 			b.Player, b.Moves, b.BowserPath, b.StarPath,
 		}
 	} else {

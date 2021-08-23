@@ -147,6 +147,6 @@ func (c ChanceTime) Handle(r Response, g *Game) {
 		}
 		g.EndCharacterTurn()
 	} else {
-		g.ExtraEvent = c
+		g.NextEvent = c
 	}
 }

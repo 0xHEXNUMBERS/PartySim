@@ -20,7 +20,7 @@ func (h HiddenBlockEvent) ControllingPlayer() int {
 func (h HiddenBlockEvent) Handle(r Response, g *Game) {
 	isHiddenBlock := r.(bool)
 	if isHiddenBlock {
-		g.ExtraEvent = EventDiceBlock{h.Player}
+		g.NextEvent = EventDiceBlock{h.Player}
 	} else {
 		g.ActivateSpace(h.Player)
 	}

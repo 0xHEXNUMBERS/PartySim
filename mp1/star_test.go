@@ -47,15 +47,15 @@ func TestMultipleStarSpaces(t *testing.T) {
 	g.Players[3].Coins = 20
 
 	expectedRes := []Response{uint8(0), uint8(1), uint8(2), uint8(3), uint8(4)}
-	gotRes := g.ExtraEvent.Responses()
+	gotRes := g.NextEvent.Responses()
 	if !reflect.DeepEqual(expectedRes, gotRes) {
 		t.Errorf("Expected responses: %#v, got: %#v",
 			expectedRes, gotRes)
 	}
 
-	g.ExtraEvent.Handle(uint8(1), g) //Set {0, 2} as current star space
-	g.ExtraEvent.Handle(2, g)        //Move player to {0, 3}, gaining star
-	g.ExtraEvent.Handle(uint8(3), g) //Set {0, 4} as current star space
+	g.NextEvent.Handle(uint8(1), g) //Set {0, 2} as current star space
+	g.NextEvent.Handle(2, g)        //Move player to {0, 3}, gaining star
+	g.NextEvent.Handle(uint8(3), g) //Set {0, 4} as current star space
 	//Player 0 should have 1 star, and 3 coins
 	expectedStars := 1
 	gotStars := g.Players[0].Stars
@@ -67,10 +67,10 @@ func TestMultipleStarSpaces(t *testing.T) {
 		)
 	}
 
-	g.ExtraEvent.Handle(2, g) //Move player to {0, 2} landing on chance time
+	g.NextEvent.Handle(2, g) //Move player to {0, 2} landing on chance time
 	//Chance time should be happening
 	expectedEvent := ChanceTime{Player: 1}
-	gotEvent := g.ExtraEvent
+	gotEvent := g.NextEvent
 	if expectedEvent != gotEvent {
 		t.Errorf("Expected event: %#v, got: %#v",
 			expectedEvent, gotEvent,
@@ -89,7 +89,7 @@ func TestSingleStarSpace(t *testing.T) {
 	g.Players[2].Coins = 20
 	g.Players[3].Coins = 20
 
-	g.ExtraEvent.Handle(2, g) //Move player to {0, 3}, gaining star
+	g.NextEvent.Handle(2, g) //Move player to {0, 3}, gaining star
 	//Player 0 should have 1 star, and 3 coins
 	expectedStars := 1
 	gotStars := g.Players[0].Stars
@@ -101,7 +101,7 @@ func TestSingleStarSpace(t *testing.T) {
 		)
 	}
 
-	g.ExtraEvent.Handle(2, g) //Move player to {0, 3}, gaining star
+	g.NextEvent.Handle(2, g) //Move player to {0, 3}, gaining star
 	gotStars = g.Players[1].Stars
 	gotCoins = g.Players[1].Coins
 	if expectedStars != gotStars || expectedCoins != gotCoins {

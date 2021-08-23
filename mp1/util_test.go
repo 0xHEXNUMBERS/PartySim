@@ -59,7 +59,7 @@ func EventIs(expected, got Event, flavour string, t *testing.T) {
 }
 
 func ResIs(expected []Response, g Game, flavour string, t *testing.T) {
-	got := g.ExtraEvent.Responses()
+	got := g.NextEvent.Responses()
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Expected %s Res: %#v, got: %#v",
 			flavour, expected, got)

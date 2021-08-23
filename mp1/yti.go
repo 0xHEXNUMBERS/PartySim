@@ -13,7 +13,7 @@ func ytiCheckThwomp(thwomp int) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		bd := g.Board.Data.(ytiBoardData)
 		if g.Players[player].Coins >= bd.Thwomps[thwomp] {
-			g.ExtraEvent = ytiThwompBranchEvent{
+			g.NextEvent = ytiThwompBranchEvent{
 				player,
 				moves,
 				thwomp,

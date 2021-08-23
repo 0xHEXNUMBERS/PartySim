@@ -132,7 +132,7 @@ func (e EventDiceBlock) Handle(r Response, g *Game) {
 	event := r.(EventBlockEvent)
 	switch event {
 	case BooEventBlock:
-		g.ExtraEvent = BooEvent{
+		g.NextEvent = BooEvent{
 			e.Player,
 			g.Players,
 			0,
@@ -182,5 +182,5 @@ func (p PickDiceBlock) ControllingPlayer() int {
 //Handle sets the next event to the dice block r.
 func (p PickDiceBlock) Handle(r Response, g *Game) {
 	evt := r.(Event)
-	g.ExtraEvent = evt
+	g.NextEvent = evt
 }

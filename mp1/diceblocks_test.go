@@ -13,9 +13,9 @@ func TestRedDiceBlock(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
-		ExtraEvent: RedDiceBlock{0},
+		NextEvent: RedDiceBlock{0},
 	}
-	g.ExtraEvent.Handle(9, &g) //Land on minigame space
+	g.NextEvent.Handle(9, &g) //Land on minigame space
 	SpaceIs(ChainSpace{0, 9}, 0, g, "", t)
 	CoinsIs(1, 0, g, "", t)
 }
@@ -29,9 +29,9 @@ func TestBlueDiceBlock(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
-		ExtraEvent: BlueDiceBlock{0},
+		NextEvent: BlueDiceBlock{0},
 	}
-	g.ExtraEvent.Handle(9, &g) //Land on minigame space
+	g.NextEvent.Handle(9, &g) //Land on minigame space
 	SpaceIs(ChainSpace{0, 9}, 0, g, "", t)
 	CoinsIs(19, 0, g, "", t)
 }
@@ -45,9 +45,9 @@ func TestWarpDiceBlock(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
-		ExtraEvent: WarpDiceBlock{0},
+		NextEvent: WarpDiceBlock{0},
 	}
-	g.ExtraEvent.Handle(1, &g) //Swap with Luigi
+	g.NextEvent.Handle(1, &g) //Swap with Luigi
 	SpaceIs(ChainSpace{0, 0}, 0, g, "", t)
 	SpaceIs(ChainSpace{1, 23}, 1, g, "", t)
 }
@@ -61,25 +61,25 @@ func TestEventDiceBlock(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
 		},
-		ExtraEvent: EventDiceBlock{0},
+		NextEvent: EventDiceBlock{0},
 	}
 	gBoo := g
-	gBoo.ExtraEvent.Handle(BooEventBlock, &gBoo)
+	gBoo.NextEvent.Handle(BooEventBlock, &gBoo)
 	expectedBooEvent := BooEvent{0, gBoo.Players, 0, gBoo.Players[0].Coins}
-	EventIs(expectedBooEvent, gBoo.ExtraEvent, "Boo", t)
+	EventIs(expectedBooEvent, gBoo.NextEvent, "Boo", t)
 
-	gBoo.ExtraEvent.Handle(BooStealAction{0, 1, false}, &gBoo)
-	gBoo.ExtraEvent.Handle(10, &gBoo)
+	gBoo.NextEvent.Handle(BooStealAction{0, 1, false}, &gBoo)
+	gBoo.NextEvent.Handle(10, &gBoo)
 	SpaceIs(ChainSpace{1, 23}, 0, gBoo, "Boo", t)
 
 	gBowser := g
-	gBowser.ExtraEvent.Handle(BowserEventBlock, &gBowser)
-	EventIs(NormalDiceBlock{1}, gBowser.ExtraEvent, "Bowser", t)
+	gBowser.NextEvent.Handle(BowserEventBlock, &gBowser)
+	EventIs(NormalDiceBlock{1}, gBowser.NextEvent, "Bowser", t)
 	CoinsIs(0, 0, gBowser, "Bowser", t)
 
 	gKoopa := g
-	gKoopa.ExtraEvent.Handle(KoopaEventBlock, &gKoopa)
-	EventIs(NormalDiceBlock{1}, gKoopa.ExtraEvent, "Koopa", t)
+	gKoopa.NextEvent.Handle(KoopaEventBlock, &gKoopa)
+	EventIs(NormalDiceBlock{1}, gKoopa.NextEvent, "Koopa", t)
 	CoinsIs(20, 0, gKoopa, "Koopa", t)
 }
 
@@ -97,7 +97,7 @@ func TestPickDiceBlock(t *testing.T) {
 			BlueDice: true,
 		},
 	}
-	g.ExtraEvent = PickDiceBlock{0, g.Config}
+	g.NextEvent = PickDiceBlock{0, g.Config}
 	expected := []Response{NormalDiceBlock{0}, RedDiceBlock{0}, BlueDiceBlock{0}}
 	ResIs(expected, g, "", t)
 }

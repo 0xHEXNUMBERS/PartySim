@@ -51,7 +51,7 @@ func (w wbcBowserCannon) ControllingPlayer() int {
 //selecting the player's new space.
 func (w wbcBowserCannon) Handle(r Response, g *Game) {
 	chain := r.(int)
-	g.ExtraEvent = wbcCannon{w.Player, w.Moves, chain}
+	g.NextEvent = wbcCannon{w.Player, w.Moves, chain}
 }
 
 //wbcShyGuyResponse is a possible response to the shyguy action.
@@ -121,7 +121,7 @@ func (w wbcShyGuyEvent) Handle(r Response, g *Game) {
 	res := r.(wbcShyGuyResponse)
 	switch res.Action {
 	case wbcFlyToBowser:
-		g.ExtraEvent = wbcCannon{w.Player, w.Moves, 4}
+		g.NextEvent = wbcCannon{w.Player, w.Moves, 4}
 	case wbcBringPlayer:
 		g.Players[res.Player].CurrentSpace = ChainSpace{3, 4}
 		g.MovePlayer(w.Player, w.Moves)

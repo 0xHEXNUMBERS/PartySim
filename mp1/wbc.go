@@ -15,7 +15,7 @@ func wbcCannonShot(g *Game, player, moves int) int {
 	} else {
 		newChain = (newChain + 1) % 4
 	}
-	g.ExtraEvent = wbcCannon{
+	g.NextEvent = wbcCannon{
 		player, moves, newChain,
 	}
 	return moves
@@ -31,7 +31,7 @@ func wbcReverseCannons(g *Game, player int) {
 //wbcLoadPlayerInBowserCannon sets the next event to choosing a chain for
 //the player to land on.
 func wbcLoadPlayerInBowserCannon(g *Game, player, moves int) int {
-	g.ExtraEvent = wbcBowserCannon{player, moves}
+	g.NextEvent = wbcBowserCannon{player, moves}
 	return moves
 }
 
@@ -40,7 +40,7 @@ func wbcLoadPlayerInBowserCannon(g *Game, player, moves int) int {
 //shyguy.
 func wbcShyGuy(g *Game, player, moves int) int {
 	if g.Players[player].Coins >= 10 {
-		g.ExtraEvent = wbcShyGuyEvent{player, moves}
+		g.NextEvent = wbcShyGuyEvent{player, moves}
 	}
 	return moves
 }

@@ -26,7 +26,7 @@ func esVisitBowser(g *Game, player, moves int) int {
 		g.AwardCoins(player, -20, false)
 	}
 	bd := g.Board.Data.(esBoardData)
-	g.ExtraEvent = esChangeGates{player, moves, bd.Gate}
+	g.NextEvent = esChangeGates{player, moves, bd.Gate}
 	return moves
 }
 
@@ -55,7 +55,7 @@ func esWarpC(g *Game, player, moves int) int {
 	} else {
 		switch bd.Gate {
 		case 0:
-			g.ExtraEvent = esWarpCDest{player, moves}
+			g.NextEvent = esWarpCDest{player, moves}
 		case 1:
 			g.Players[player].CurrentSpace = esEntrance7
 		default:
@@ -71,7 +71,7 @@ func esWarpSpace(dest1, dest2, dest3 ChainSpace) func(*Game, int, int) int {
 		bd := g.Board.Data.(esBoardData)
 		switch bd.Gate {
 		case 0:
-			g.ExtraEvent = esWarpDest{
+			g.NextEvent = esWarpDest{
 				player, moves, bd.Gate2or3,
 				dest1,
 				dest2,
@@ -91,7 +91,7 @@ func esWarpSpace(dest1, dest2, dest3 ChainSpace) func(*Game, int, int) int {
 //esBranchWithWarp handles warps that are on a chain by themselves.
 func esBranchWithWarp(dest1, dest2, dest3 ChainSpace) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
-		g.ExtraEvent = esBranchEvent{
+		g.NextEvent = esBranchEvent{
 			player,
 			moves,
 			dest1,
@@ -123,7 +123,7 @@ func esPassStarSpace(i int) func(*Game, int, int) int {
 		bd := g.Board.Data.(esBoardData)
 		if !bd.StarTaken[i] {
 			if g.Players[player].Coins >= 20 {
-				g.ExtraEvent = esVisitBabyBowser{
+				g.NextEvent = esVisitBabyBowser{
 					player,
 					moves,
 					i,

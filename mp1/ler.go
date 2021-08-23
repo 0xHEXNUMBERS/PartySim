@@ -9,7 +9,7 @@ type lerBoardData struct {
 func lerRBRFork(g *Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
-		g.ExtraEvent = lerRedFork{player, moves}
+		g.NextEvent = lerRedFork{player, moves}
 	} else {
 		g.Players[player].CurrentSpace = ChainSpace{5, 0}
 	}
@@ -79,7 +79,7 @@ func lerGotoIsland(space int) func(*Game, int) {
 //has >= 20 coins.
 func lerVisitRobot(g *Game, player, moves int) int {
 	if g.Players[player].Coins >= 20 {
-		g.ExtraEvent = lerRobot{player, moves}
+		g.NextEvent = lerRobot{player, moves}
 	}
 	return moves
 }

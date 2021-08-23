@@ -9,11 +9,11 @@ func TestSeedCheckAutoStar(t *testing.T) {
 	g.Players[2].CurrentSpace = ChainSpace{0, 46}
 	g.Players[3].CurrentSpace = ChainSpace{0, 46}
 
-	g.ExtraEvent.Handle(2, &g)    //Move
-	g.ExtraEvent.Handle(true, &g) //Picked Bowser
-	g.ExtraEvent.Handle(2, &g)    //Move: Toad
-	g.ExtraEvent.Handle(2, &g)    //Move: Toad
-	g.ExtraEvent.Handle(2, &g)    //Move: Toad
+	g.NextEvent.Handle(2, &g)    //Move
+	g.NextEvent.Handle(true, &g) //Picked Bowser
+	g.NextEvent.Handle(2, &g)    //Move: Toad
+	g.NextEvent.Handle(2, &g)    //Move: Toad
+	g.NextEvent.Handle(2, &g)    //Move: Toad
 
 	SpaceIs(ChainSpace{1, 1}, 0, g, "0", t)
 	for i := 1; i < 4; i++ {
@@ -41,13 +41,13 @@ func TestSeedCheckAutoBowser(t *testing.T) {
 	g.Players[2].CurrentSpace = ChainSpace{0, 46}
 	g.Players[3].CurrentSpace = ChainSpace{0, 46}
 
-	g.ExtraEvent.Handle(2, &g)     //Move
-	g.ExtraEvent.Handle(false, &g) //Picked Toad
-	g.ExtraEvent.Handle(2, &g)     //Move
-	g.ExtraEvent.Handle(false, &g) //Picked Toad
-	g.ExtraEvent.Handle(2, &g)     //Move
-	g.ExtraEvent.Handle(false, &g) //Picked Toad
-	g.ExtraEvent.Handle(2, &g)     //Move: Bowser
+	g.NextEvent.Handle(2, &g)     //Move
+	g.NextEvent.Handle(false, &g) //Picked Toad
+	g.NextEvent.Handle(2, &g)     //Move
+	g.NextEvent.Handle(false, &g) //Picked Toad
+	g.NextEvent.Handle(2, &g)     //Move
+	g.NextEvent.Handle(false, &g) //Picked Toad
+	g.NextEvent.Handle(2, &g)     //Move: Bowser
 
 	for i := 0; i < 3; i++ {
 		SpaceIs(ChainSpace{0, 1}, i, g, "", t)
@@ -67,11 +67,11 @@ func TestPiranha(t *testing.T) {
 	g.Players[0].Coins = 30
 	g.Players[3].Stars = 1
 
-	g.ExtraEvent.Handle(1, &g)    //Move to unoccupied space
-	g.ExtraEvent.Handle(true, &g) //Pay 30 coins
-	g.ExtraEvent.Handle(2, &g)    //Move to unoccupied space with <30 coins
-	g.ExtraEvent.Handle(1, &g)    //Move to occupied space with no stars
-	g.ExtraEvent.Handle(1, &g)    //Move to occupied space with stars
+	g.NextEvent.Handle(1, &g)    //Move to unoccupied space
+	g.NextEvent.Handle(true, &g) //Pay 30 coins
+	g.NextEvent.Handle(2, &g)    //Move to unoccupied space with <30 coins
+	g.NextEvent.Handle(1, &g)    //Move to occupied space with no stars
+	g.NextEvent.Handle(1, &g)    //Move to occupied space with stars
 	StarsIs(1, 0, g, "", t)
 	CoinsIs(0, 0, g, "0Coins", t)
 	StarsIs(0, 3, g, "3Stars", t)

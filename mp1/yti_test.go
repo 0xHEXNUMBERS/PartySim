@@ -29,7 +29,7 @@ func TestCanPayThwomp(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 10)
-	EventIs(ytiThwompBranchEvent{0, 6, 1}, g.ExtraEvent, "", t)
+	EventIs(ytiThwompBranchEvent{0, 6, 1}, g.NextEvent, "", t)
 }
 
 func TestCanNotPayThwomp(t *testing.T) {
@@ -44,7 +44,7 @@ func TestCanNotPayThwomp(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 10)
-	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 }
 
 func TestGainCoins(t *testing.T) {
@@ -82,11 +82,11 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	//Move player to invisible space
 	g.MovePlayer(0, 10)
 	//Accept payment to thwomp 1
-	g.ExtraEvent.Handle(true, &g)
+	g.NextEvent.Handle(true, &g)
 	//Pay thwomp 3 coins, move and land on blue space
-	g.ExtraEvent.Handle(3, &g)
+	g.NextEvent.Handle(3, &g)
 
-	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 	SpaceIs(ChainSpace{0, 12}, 0, g, "", t)
 	CoinsIs(10, 0, g, "", t)
 }
@@ -106,9 +106,9 @@ func TestIgnoreThwomp(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 10)
-	g.ExtraEvent.Handle(false, &g)
+	g.NextEvent.Handle(false, &g)
 
-	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 	SpaceIs(ChainSpace{1, 5}, 0, g, "", t)
 	CoinsIs(13, 0, g, "", t)
 }
@@ -126,7 +126,7 @@ func TestStarSwapViaHappening(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 3)
-	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition == ytiRightIslandStar {
@@ -161,17 +161,17 @@ func TestMushroomSpace(t *testing.T) {
 	}
 
 	g.MovePlayer(0, 4)
-	EventIs(MushroomEvent{0}, g.ExtraEvent, "", t)
+	EventIs(MushroomEvent{0}, g.NextEvent, "", t)
 
 	//Received red mushroom
 	gRed := g
-	gRed.ExtraEvent.Handle(true, &gRed)
-	EventIs(NormalDiceBlock{0}, gRed.ExtraEvent, "", t)
+	gRed.NextEvent.Handle(true, &gRed)
+	EventIs(NormalDiceBlock{0}, gRed.NextEvent, "", t)
 
 	//Received poison mushroom
 	gPoison := g
-	gPoison.ExtraEvent.Handle(false, &gPoison)
-	EventIs(NormalDiceBlock{1}, gPoison.ExtraEvent, "", t)
+	gPoison.NextEvent.Handle(false, &gPoison)
+	EventIs(NormalDiceBlock{1}, gPoison.NextEvent, "", t)
 	if !gPoison.Players[0].SkipTurn {
 		t.Errorf("SkipTurn not set")
 	}
@@ -186,32 +186,32 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 7}),
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 7}),
 		},
-		ExtraEvent: NormalDiceBlock{0},
-		Config:     GameConfig{MaxTurns: 20},
+		NextEvent: NormalDiceBlock{0},
+		Config:    GameConfig{MaxTurns: 20},
 	}
 
 	//All players recieve poison mushroom
-	g.ExtraEvent.Handle(4, &g)
-	g.ExtraEvent.Handle(false, &g)
-	g.ExtraEvent.Handle(4, &g)
-	g.ExtraEvent.Handle(false, &g)
-	g.ExtraEvent.Handle(4, &g)
-	g.ExtraEvent.Handle(false, &g)
-	g.ExtraEvent.Handle(4, &g)
-	g.ExtraEvent.Handle(false, &g)
+	g.NextEvent.Handle(4, &g)
+	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(4, &g)
+	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(4, &g)
+	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(4, &g)
+	g.NextEvent.Handle(false, &g)
 
 	//Perform FFA Minigame
-	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
-	g.ExtraEvent.Handle(0, &g)
+	g.NextEvent.Handle(MinigameFFAMusicalMushroom, &g)
+	g.NextEvent.Handle(0, &g)
 
 	//Should recieve 2nd minigame as all players were poisoned
-	EventIs(MinigameFFASelector{}, g.ExtraEvent, "Minigame", t)
+	EventIs(MinigameFFASelector{}, g.NextEvent, "Minigame", t)
 
 	//Perform 2nd minigame
-	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
-	g.ExtraEvent.Handle(0, &g)
+	g.NextEvent.Handle(MinigameFFAMusicalMushroom, &g)
+	g.NextEvent.Handle(0, &g)
 	IntIs(2, int(g.Turn), "Turn #", t)
-	EventIs(NormalDiceBlock{0}, g.ExtraEvent, "", t)
+	EventIs(NormalDiceBlock{0}, g.NextEvent, "", t)
 }
 
 func TestSkipTurnViaCharacterTurn(t *testing.T) {
@@ -224,28 +224,28 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 			NewPlayer("Mario", 0, 10, ChainSpace{0, 7}),
 		},
 		CurrentPlayer: 2,
-		ExtraEvent:    NormalDiceBlock{2},
+		NextEvent:     NormalDiceBlock{2},
 		Config:        GameConfig{MaxTurns: 20},
 	}
 	g.Players[0].LastSpaceType = Blue
 	g.Players[1].LastSpaceType = Blue
 
 	//Player 2 fails mushroom check
-	g.ExtraEvent.Handle(4, &g)
-	g.ExtraEvent.Handle(false, &g)
+	g.NextEvent.Handle(4, &g)
+	g.NextEvent.Handle(false, &g)
 
 	//Player 3 moves to blue space
-	g.ExtraEvent.Handle(1, &g)
+	g.NextEvent.Handle(1, &g)
 
 	//Handle Minigame
-	g.ExtraEvent.Handle(MinigameFFAMusicalMushroom, &g)
-	g.ExtraEvent.Handle(0, &g)
+	g.NextEvent.Handle(MinigameFFAMusicalMushroom, &g)
+	g.NextEvent.Handle(0, &g)
 
 	//Players 0 & 1 move to blue space
-	g.ExtraEvent.Handle(1, &g)
-	g.ExtraEvent.Handle(1, &g)
+	g.NextEvent.Handle(1, &g)
+	g.NextEvent.Handle(1, &g)
 
-	EventIs(NormalDiceBlock{3}, g.ExtraEvent, "", t)
+	EventIs(NormalDiceBlock{3}, g.NextEvent, "", t)
 }
 
 func TestStealCoinsViaBoo(t *testing.T) {
@@ -259,7 +259,7 @@ func TestStealCoinsViaBoo(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 4) //Land on happening
-	g.ExtraEvent.Handle(BooStealAction{0, 1, false}, &g)
+	g.NextEvent.Handle(BooStealAction{0, 1, false}, &g)
 	expectedEvent := BooCoinsEvent{
 		PayRangeEvent: PayRangeEvent{
 			Player: 1,
@@ -269,7 +269,7 @@ func TestStealCoinsViaBoo(t *testing.T) {
 		RecvPlayer: 0,
 		Moves:      4,
 	}
-	EventIs(expectedEvent, g.ExtraEvent, "", t)
+	EventIs(expectedEvent, g.NextEvent, "", t)
 
 	expectedEvent.Handle(5, &g)
 	CoinsIs(15, 0, g, "", t)
@@ -287,7 +287,7 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 4) //Want to land on happening
-	g.ExtraEvent.Handle(BooStealAction{0, 1, false}, &g)
+	g.NextEvent.Handle(BooStealAction{0, 1, false}, &g)
 	expectedEvent := BooCoinsEvent{
 		PayRangeEvent: PayRangeEvent{
 			Player: 1,
@@ -297,7 +297,7 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 		RecvPlayer: 0,
 		Moves:      4,
 	}
-	EventIs(expectedEvent, g.ExtraEvent, "", t)
+	EventIs(expectedEvent, g.NextEvent, "", t)
 
 	expectedEvent.Handle(4, &g)
 	CoinsIs(14, 0, g, "", t)
@@ -318,7 +318,7 @@ func TestPassEmptyBooSpace(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 4)
-	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 	SpaceIs(ChainSpace{1, 26}, 0, g, "", t)
 }
 

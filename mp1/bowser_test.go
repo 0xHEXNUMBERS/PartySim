@@ -42,8 +42,8 @@ func TestCoinsForBowser(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 1)
-	g.ExtraEvent.Handle(CoinsForBowser, &g)
-	EventIs(NormalDiceBlock{1}, g.ExtraEvent, "", t)
+	g.NextEvent.Handle(CoinsForBowser, &g)
+	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 	CoinsIs(15, 0, g, "", t)
 }
 
@@ -58,15 +58,15 @@ func TestBowserBalloonBurst(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 1)
-	g.ExtraEvent.Handle(BowserBalloonBurst, &g)
+	g.NextEvent.Handle(BowserBalloonBurst, &g)
 	gDraw := g
-	gDraw.ExtraEvent.Handle(4, &gDraw)
+	gDraw.NextEvent.Handle(4, &gDraw)
 	for i := range gDraw.Players {
 		CoinsIs(30, i, gDraw, "Draw", t)
 	}
 
 	gP1Win := g
-	gP1Win.ExtraEvent.Handle(0, &gP1Win)
+	gP1Win.NextEvent.Handle(0, &gP1Win)
 	CoinsIs(50, 0, gP1Win, "P1Win", t)
 	for i := 1; i < 4; i++ {
 		CoinsIs(40, i, gP1Win, "P1Win", t)
@@ -84,13 +84,13 @@ func TestBowsersFaceLift(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 1)
-	g.ExtraEvent.Handle(BowsersFaceLift, &g)
+	g.NextEvent.Handle(BowsersFaceLift, &g)
 	gDraw := g
-	gDraw.ExtraEvent.Handle(0b1111, &gDraw) //Draw
+	gDraw.NextEvent.Handle(0b1111, &gDraw) //Draw
 	CoinsIs(0, 0, gDraw, "Draw", t)
 
 	gP1Loss := g
-	gP1Loss.ExtraEvent.Handle(0b1110, &gP1Loss) //All players except Daisy
+	gP1Loss.NextEvent.Handle(0b1110, &gP1Loss) //All players except Daisy
 	CoinsIs(40, 0, gP1Loss, "P1Loss", t)
 }
 
@@ -105,21 +105,21 @@ func TestBowsersTugoWar(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 1)
-	g.ExtraEvent.Handle(BowsersTugoWar, &g)
+	g.NextEvent.Handle(BowsersTugoWar, &g)
 	gDraw := g
-	gDraw.ExtraEvent.Handle(BTWDraw, &gDraw)
+	gDraw.NextEvent.Handle(BTWDraw, &gDraw)
 	for i := range gDraw.Players {
 		CoinsIs(20, i, gDraw, "Draw", t)
 	}
 
 	g1TWin := g
-	g1TWin.ExtraEvent.Handle(BTW1TWin, &g1TWin)
+	g1TWin.NextEvent.Handle(BTW1TWin, &g1TWin)
 	for i := 1; i < 4; i++ {
 		CoinsIs(40, i, g1TWin, "1TWin", t)
 	}
 
 	g3TWin := g
-	g3TWin.ExtraEvent.Handle(BTW3TWin, &g3TWin)
+	g3TWin.NextEvent.Handle(BTW3TWin, &g3TWin)
 	CoinsIs(40, 0, g3TWin, "3TWin", t)
 }
 
@@ -134,17 +134,17 @@ func TestBashnCash(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 1)
-	g.ExtraEvent.Handle(BashnCash, &g)
+	g.NextEvent.Handle(BashnCash, &g)
 	gGE5 := g
-	gGE5.ExtraEvent.Handle(5, &gGE5) //Should lose 5 * 5 = 25 coins
+	gGE5.NextEvent.Handle(5, &gGE5) //Should lose 5 * 5 = 25 coins
 	CoinsIs(29, 0, gGE5, "GE5", t)
 
 	gE5 := g
-	gE5.ExtraEvent.Handle(10, &gE5) //Should lose 5 * 10 = 50 coins
+	gE5.NextEvent.Handle(10, &gE5) //Should lose 5 * 10 = 50 coins
 	CoinsIs(4, 0, gE5, "E5", t)
 
 	gLT5 := g
-	gLT5.ExtraEvent.Handle(13, &gLT5) //Should lose 5 * 10 + 3 = 53 coins
+	gLT5.NextEvent.Handle(13, &gLT5) //Should lose 5 * 10 + 3 = 53 coins
 	CoinsIs(1, 0, gLT5, "LT5", t)
 }
 
@@ -159,7 +159,7 @@ func TestBowserRevolution(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 1)
-	g.ExtraEvent.Handle(BowserRevolution, &g)
+	g.NextEvent.Handle(BowserRevolution, &g)
 	for i := range g.Players {
 		CoinsIs(62, i, g, "", t)
 	}
@@ -176,7 +176,7 @@ func TestBowsersChanceTime(t *testing.T) {
 		},
 	}
 	g.MovePlayer(0, 1)
-	g.ExtraEvent.Handle(BowsersChanceTime, &g)
-	g.ExtraEvent.Handle(BCTResponse{0, 20}, &g) //Daisy
+	g.NextEvent.Handle(BowsersChanceTime, &g)
+	g.NextEvent.Handle(BCTResponse{0, 20}, &g) //Daisy
 	CoinsIs(30, 0, g, "", t)
 }

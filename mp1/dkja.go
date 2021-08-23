@@ -28,7 +28,7 @@ func dkjaGetWhompDestination(g *Game, whomp int) ChainSpace {
 func dkjaCanPassWhomp(whomp int) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		if g.Players[player].Coins >= 10 {
-			g.ExtraEvent = dkjaWhompEvent{
+			g.NextEvent = dkjaWhompEvent{
 				player, moves, whomp,
 			}
 		} else {
@@ -45,7 +45,7 @@ func dkjaCanPassWhomp(whomp int) func(*Game, int, int) int {
 func dkjaCanPassCoinBlockade(blockade int) func(*Game, int, int) int {
 	return func(g *Game, player, moves int) int {
 		if g.Players[player].Coins >= 20 {
-			g.ExtraEvent = dkjaCoinBranchEvent{
+			g.NextEvent = dkjaCoinBranchEvent{
 				player, moves, blockade,
 			}
 		} else {

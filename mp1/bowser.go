@@ -14,7 +14,7 @@ func (g *Game) PreBowserCheck(player int) {
 		}
 		g.EndCharacterTurn()
 	} else {
-		g.ExtraEvent = BowserEvent{player}
+		g.NextEvent = BowserEvent{player}
 	}
 }
 
@@ -65,13 +65,13 @@ func (b BowserEvent) Handle(r Response, g *Game) {
 		g.AwardCoins(b.Player, -coinsLost, false)
 		g.EndCharacterTurn()
 	case BowserBalloonBurst:
-		g.ExtraEvent = BowserBalloonBurstEvent{}
+		g.NextEvent = BowserBalloonBurstEvent{}
 	case BowsersFaceLift:
-		g.ExtraEvent = BowsersFaceLiftEvent{b.Player}
+		g.NextEvent = BowsersFaceLiftEvent{b.Player}
 	case BowsersTugoWar:
-		g.ExtraEvent = BowsersTugoWarEvent{b.Player}
+		g.NextEvent = BowsersTugoWarEvent{b.Player}
 	case BashnCash:
-		g.ExtraEvent = BowsersBashnCash{b.Player, g.Players[b.Player].Coins}
+		g.NextEvent = BowsersBashnCash{b.Player, g.Players[b.Player].Coins}
 	case BowserRevolution:
 		coins := 0
 		for i := range g.Players {
@@ -83,7 +83,7 @@ func (b BowserEvent) Handle(r Response, g *Game) {
 		}
 		g.EndCharacterTurn()
 	case BowsersChanceTime:
-		g.ExtraEvent = BowsersChanceTimeEvent{}
+		g.NextEvent = BowsersChanceTimeEvent{}
 	}
 }
 

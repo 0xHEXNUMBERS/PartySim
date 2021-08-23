@@ -20,7 +20,7 @@ type Game struct {
 	Players       [4]Player
 	Turn          uint8
 	CurrentPlayer int
-	ExtraEvent    Event
+	NextEvent     Event
 
 	//Every 10 passes, Koopa rewards 20 coins to the passing player.
 	KoopaPasses int
@@ -31,9 +31,9 @@ type Game struct {
 //Otherwise, the next Event is set to the normal dice block.
 func (g *Game) SetDiceBlock() {
 	if g.Config.RedDice || g.Config.BlueDice || g.Config.WarpDice || g.Config.EventsDice {
-		g.ExtraEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
+		g.NextEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
 	} else {
-		g.ExtraEvent = NormalDiceBlock{g.CurrentPlayer}
+		g.NextEvent = NormalDiceBlock{g.CurrentPlayer}
 	}
 }
 
@@ -80,7 +80,7 @@ func InitializeGame(b Board, config GameConfig) *Game {
 	if g.StarSpaces.StarSpaceCount <= 1 {
 		g.SetDiceBlock()
 	} else {
-		g.ExtraEvent = StarLocationEvent{g.StarSpaces, 0, 0}
+		g.NextEvent = StarLocationEvent{g.StarSpaces, 0, 0}
 	}
 	return g
 }
@@ -131,7 +131,7 @@ func (g *Game) CheckLinks(player, chain, moves int) (branch bool) {
 		case 1:
 			g.Players[player].CurrentSpace = links[0]
 		default:
-			g.ExtraEvent = BranchEvent{
+			g.NextEvent = BranchEvent{
 				player,
 				moves - 1,
 				linksPtr,
@@ -178,20 +178,20 @@ func (g *Game) ActivateSpace(player int) {
 		}
 		g.EndCharacterTurn()
 	case Mushroom:
-		g.ExtraEvent = MushroomEvent{player}
+		g.NextEvent = MushroomEvent{player}
 	case Happening:
 		g.Players[player].HappeningCount++
-		g.ExtraEvent = nil
+		g.NextEvent = nil
 		curSpace.StoppingEvent(g, player)
-		if g.ExtraEvent == nil {
+		if g.NextEvent == nil {
 			g.EndCharacterTurn()
 		}
 	case Bowser:
 		g.PreBowserCheck(player)
 	case MinigameSpace:
-		g.ExtraEvent = Minigame1PSelector{player}
+		g.NextEvent = Minigame1PSelector{player}
 	case Chance:
-		g.ExtraEvent = ChanceTime{Player: player}
+		g.NextEvent = ChanceTime{Player: player}
 	}
 }
 
@@ -211,9 +211,9 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 		switch curSpace.Type {
 		case Invisible:
 			if curSpace.PassingEvent != nil {
-				g.ExtraEvent = nil
+				g.NextEvent = nil
 				moves = curSpace.PassingEvent(g, playerIdx, moves)
-				if g.ExtraEvent != nil {
+				if g.NextEvent != nil {
 					return
 				}
 			} else {
@@ -234,7 +234,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 				g.Players[playerIdx].Stars++
 				g.AwardCoins(playerIdx, -20, false)
 				if g.StarSpaces.StarSpaceCount > 1 {
-					g.ExtraEvent = StarLocationEvent{
+					g.NextEvent = StarLocationEvent{
 						g.StarSpaces,
 						playerIdx,
 						moves,
@@ -252,7 +252,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 					g.Players[playerIdx].Coins,
 				}
 				if len(booEvt.Responses()) != 0 {
-					g.ExtraEvent = booEvt
+					g.NextEvent = booEvt
 					return
 				}
 			}
@@ -266,7 +266,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	g.Players[playerIdx].LastSpaceType = curSpace.Type
 	if g.Config.EventsDice &&
 		(curSpace.Type == Blue || curSpace.HiddenBlock) {
-		g.ExtraEvent = HiddenBlockEvent{playerIdx}
+		g.NextEvent = HiddenBlockEvent{playerIdx}
 		return
 	}
 	g.ActivateSpace(playerIdx)
@@ -345,7 +345,7 @@ func (g *Game) EndGameTurn() {
 	if g.Turn == g.Config.MaxTurns {
 		g.AwardBonusStars()
 		//Game is over, no more events
-		g.ExtraEvent = nil
+		g.NextEvent = nil
 	} else {
 		if g.Players[g.CurrentPlayer].SkipTurn {
 			g.Players[g.CurrentPlayer].SkipTurn = false
