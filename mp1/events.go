@@ -14,7 +14,7 @@ type Event interface {
 	ControllingPlayer() int
 
 	//Handle handles the current event with the given response onto
-	//the given game. Handle must set the Game's ExtraEvent field.
+	//the given game. Handle must set the Game's NextEvent field.
 	Handle(Response, *Game)
 }
 
