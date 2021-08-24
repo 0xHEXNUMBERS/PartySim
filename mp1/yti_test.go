@@ -5,161 +5,80 @@ import (
 )
 
 func TestMove(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 23}
 	g.MovePlayer(0, 4)
 	SpaceIs(ChainSpace{1, 27}, 0, g, "", t)
 }
 
 func TestCanPayThwomp(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 23}
 	g.MovePlayer(0, 10)
 	EventIs(ytiThwompBranchEvent{0, 6, 1}, g.NextEvent, "", t)
 }
 
 func TestCanNotPayThwomp(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 0, ChainSpace{1, 23}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
-
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 23}
+	g.Players[0].Coins = 0
 	g.MovePlayer(0, 10)
 	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 }
 
 func TestGainCoins(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-		Config: GameConfig{
-			MaxTurns: 25,
-		},
-	}
-
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 23}
 	g.MovePlayer(0, 1)
 	CoinsIs(13, 0, g, "", t)
 }
 
 func TestPayThwompAndGainCoins(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-		Config: GameConfig{
-			MaxTurns: 25,
-		},
-	}
-
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 23}
 	//Move player to invisible space
 	g.MovePlayer(0, 10)
 	//Accept payment to thwomp 1
 	g.NextEvent.Handle(true, &g)
 	//Pay thwomp 3 coins, move and land on blue space
 	g.NextEvent.Handle(3, &g)
-
 	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 	SpaceIs(ChainSpace{0, 12}, 0, g, "", t)
 	CoinsIs(10, 0, g, "", t)
 }
 
 func TestIgnoreThwomp(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-		Config: GameConfig{
-			MaxTurns: 25,
-		},
-	}
-
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 23}
 	g.MovePlayer(0, 10)
 	g.NextEvent.Handle(false, &g)
-
 	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 	SpaceIs(ChainSpace{1, 5}, 0, g, "", t)
 	CoinsIs(13, 0, g, "", t)
 }
 
 func TestStarSwapViaHappening(t *testing.T) {
-	t.SkipNow()
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 23}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
-
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 23}
 	g.MovePlayer(0, 3)
 	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 
 	bd := g.Board.Data.(ytiBoardData)
-	if bd.StarPosition == ytiRightIslandStar {
+	if bd.StarPosition != ytiRightIslandStar {
 		t.Errorf("Expected star position: %#v, got: %#v", ytiRightIslandStar, bd.StarPosition)
 	}
 }
 
 func TestCoinsOnStart(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{0, 22}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
-
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 22}
 	g.MovePlayer(0, 1)
 	CoinsIs(20, 0, g, "", t)
 }
 
 func TestMushroomSpace(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{0, 7}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
-
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 7}
 	g.MovePlayer(0, 4)
 	EventIs(MushroomEvent{0}, g.NextEvent, "", t)
 
@@ -178,17 +97,11 @@ func TestMushroomSpace(t *testing.T) {
 }
 
 func TestSkipTurnViaMinigame(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{0, 7}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 7}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 7}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 7}),
-		},
-		NextEvent: NormalDiceBlock{0},
-		Config:    GameConfig{MaxTurns: 20},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 7}
+	g.Players[1].CurrentSpace = ChainSpace{0, 7}
+	g.Players[2].CurrentSpace = ChainSpace{0, 7}
+	g.Players[3].CurrentSpace = ChainSpace{0, 7}
 
 	//All players recieve poison mushroom
 	g.NextEvent.Handle(4, &g)
@@ -215,18 +128,13 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 }
 
 func TestSkipTurnViaCharacterTurn(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{0, 7}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 7}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 7}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 7}),
-		},
-		CurrentPlayer: 2,
-		NextEvent:     NormalDiceBlock{2},
-		Config:        GameConfig{MaxTurns: 20},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 7}
+	g.Players[1].CurrentSpace = ChainSpace{0, 7}
+	g.Players[2].CurrentSpace = ChainSpace{0, 7}
+	g.Players[3].CurrentSpace = ChainSpace{0, 7}
+	g.CurrentPlayer = 2
+	g.NextEvent = NormalDiceBlock{2}
 	g.Players[0].LastSpaceType = Blue
 	g.Players[1].LastSpaceType = Blue
 
@@ -249,15 +157,9 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 }
 
 func TestStealCoinsViaBoo(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 21}
+
 	g.MovePlayer(0, 4) //Land on happening
 	g.NextEvent.Handle(BooStealAction{0, 1, false}, &g)
 	expectedEvent := BooCoinsEvent{
@@ -277,15 +179,9 @@ func TestStealCoinsViaBoo(t *testing.T) {
 }
 
 func TestStealTooManyCoinsViaBoo(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
-			NewPlayer("Luigi", 0, 4, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 21}
+	g.Players[1].Coins = 4
 	g.MovePlayer(0, 4) //Want to land on happening
 	g.NextEvent.Handle(BooStealAction{0, 1, false}, &g)
 	expectedEvent := BooCoinsEvent{
@@ -305,39 +201,18 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 }
 
 func TestPassEmptyBooSpace(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
-			NewPlayer("Luigi", 0, 4, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-		Config: GameConfig{
-			NoBoo: true,
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20, NoBoo: true})
+	g.Players[0].CurrentSpace = ChainSpace{1, 21}
 	g.MovePlayer(0, 4)
 	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
 	SpaceIs(ChainSpace{1, 26}, 0, g, "", t)
 }
 
 func TestBuyStar(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 20, ChainSpace{0, 18}),
-			NewPlayer("Luigi", 0, 4, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-		Config: GameConfig{
-			MaxTurns: 25,
-		},
-	}
-
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 18}
+	g.Players[0].Coins = 20
 	g.MovePlayer(0, 1) //Land on blue space
-
 	SpaceIs(ChainSpace{0, 20}, 0, g, "", t)
 	CoinsIs(3, 0, g, "", t)
 	StarsIs(1, 0, g, "", t)

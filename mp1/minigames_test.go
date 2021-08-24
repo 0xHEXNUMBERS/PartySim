@@ -5,15 +5,7 @@ import (
 )
 
 func Test4V4Minigame(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
 	g.Players[0].LastSpaceType = Blue
 	g.Players[1].LastSpaceType = Blue
 	g.Players[2].LastSpaceType = Blue
@@ -33,15 +25,7 @@ func Test4V4Minigame(t *testing.T) {
 }
 
 func Test1V3Minigame(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
 	g.Players[0].LastSpaceType = Blue
 	g.Players[1].LastSpaceType = Blue
 	g.Players[2].LastSpaceType = Blue
@@ -62,15 +46,7 @@ func Test1V3Minigame(t *testing.T) {
 }
 
 func Test2V2Minigame(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
 	g.Players[0].LastSpaceType = Blue
 	g.Players[1].LastSpaceType = Red
 	g.Players[2].LastSpaceType = Blue
@@ -92,15 +68,7 @@ func Test2V2Minigame(t *testing.T) {
 }
 
 func TestGreenToBlue(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 21}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
 	g.Players[0].LastSpaceType = Blue
 	g.Players[1].LastSpaceType = Blue
 	g.Players[2].LastSpaceType = Happening
@@ -114,15 +82,8 @@ func TestGreenToBlue(t *testing.T) {
 }
 
 func TestLandOnMinigameSpace(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 20}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 20}
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(Minigame1PShellGame, &g)
 	gLose := g
@@ -135,15 +96,8 @@ func TestLandOnMinigameSpace(t *testing.T) {
 }
 
 func TestPlayer4MinigameSpace(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{1, 20}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{1, 20}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[3].CurrentSpace = ChainSpace{1, 20}
 	g.Players[0].LastSpaceType = Blue
 	g.Players[1].LastSpaceType = Blue
 	g.Players[2].LastSpaceType = Blue

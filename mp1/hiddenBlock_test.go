@@ -3,16 +3,8 @@ package mp1
 import "testing"
 
 func TestHiddenBlock(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 10, ChainSpace{0, 21}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-		Config: GameConfig{MaxTurns: 20, EventsDice: true},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20, EventsDice: true})
+	g.Players[0].CurrentSpace = ChainSpace{0, 21}
 	g.MovePlayer(0, 1) //Blue Space
 	EventIs(HiddenBlockEvent{0}, g.NextEvent, "", t)
 

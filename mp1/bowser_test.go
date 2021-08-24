@@ -3,44 +3,30 @@ package mp1
 import "testing"
 
 func TestBowser10CoinsForStar(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 1, 0, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 0
+	g.Players[0].Stars = 1
+
 	g.MovePlayer(0, 1)
 	StarsIs(0, 0, g, "", t)
 	CoinsIs(10, 0, g, "", t)
 }
 
 func TestBowserGain20Coins(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 0, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 0
+
 	g.MovePlayer(0, 1)
 	CoinsIs(20, 0, g, "", t)
 }
 
 func TestCoinsForBowser(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 25, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 25
+
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(CoinsForBowser, &g)
 	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
@@ -48,15 +34,13 @@ func TestCoinsForBowser(t *testing.T) {
 }
 
 func TestBowserBalloonBurst(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 50, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 50, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 50
+	g.Players[1].Coins = 50
+	g.Players[2].Coins = 50
+	g.Players[3].Coins = 50
+
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(BowserBalloonBurst, &g)
 	gDraw := g
@@ -74,15 +58,13 @@ func TestBowserBalloonBurst(t *testing.T) {
 }
 
 func TestBowsersFaceLift(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 50, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 50, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 50
+	g.Players[1].Coins = 50
+	g.Players[2].Coins = 50
+	g.Players[3].Coins = 50
+
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(BowsersFaceLift, &g)
 	gDraw := g
@@ -95,15 +77,12 @@ func TestBowsersFaceLift(t *testing.T) {
 }
 
 func TestBowsersTugoWar(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 50, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 50, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 50
+	g.Players[1].Coins = 50
+	g.Players[2].Coins = 50
+	g.Players[3].Coins = 50
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(BowsersTugoWar, &g)
 	gDraw := g
@@ -124,15 +103,12 @@ func TestBowsersTugoWar(t *testing.T) {
 }
 
 func TestBashnCash(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 54, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 50, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 54
+	g.Players[1].Coins = 50
+	g.Players[2].Coins = 50
+	g.Players[3].Coins = 50
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(BashnCash, &g)
 	gGE5 := g
@@ -149,15 +125,12 @@ func TestBashnCash(t *testing.T) {
 }
 
 func TestBowserRevolution(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 75, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 25, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 99, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 50, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 75
+	g.Players[1].Coins = 25
+	g.Players[2].Coins = 99
+	g.Players[3].Coins = 50
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(BowserRevolution, &g)
 	for i := range g.Players {
@@ -166,15 +139,12 @@ func TestBowserRevolution(t *testing.T) {
 }
 
 func TestBowsersChanceTime(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 0, 50, ChainSpace{1, 14}),
-			NewPlayer("Luigi", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 50, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 50, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g.Players[0].Coins = 50
+	g.Players[1].Coins = 50
+	g.Players[2].Coins = 50
+	g.Players[3].Coins = 50
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(BowsersChanceTime, &g)
 	g.NextEvent.Handle(BCTResponse{0, 20}, &g) //Daisy

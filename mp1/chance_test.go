@@ -3,15 +3,14 @@ package mp1
 import "testing"
 
 func TestChanceTime(t *testing.T) {
-	g := Game{
-		Board: YTI,
-		Players: [4]Player{
-			NewPlayer("Daisy", 4, 10, ChainSpace{0, 14}),
-			NewPlayer("Luigi", 9, 25, ChainSpace{0, 0}),
-			NewPlayer("Donkey Kong", 0, 10, ChainSpace{0, 0}),
-			NewPlayer("Mario", 0, 10, ChainSpace{0, 0}),
-		},
-	}
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 14}
+	g.Players[0].Coins = 10
+	g.Players[1].Coins = 25
+	g.Players[0].Stars = 4
+	g.Players[1].Stars = 9
+
+	//Land on Chance
 	g.MovePlayer(0, 1)
 	//Steal from Luigi
 	g.NextEvent.Handle(ChanceTimeResponse{CTBLeft, 1}, &g)
