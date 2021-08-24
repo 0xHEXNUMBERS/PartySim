@@ -33,11 +33,11 @@ There are 2 ways to download this package, `git` and `go get`.
 
 ### git
 
-To download the core for all games, use `git clone https://github.com/0xhexnumbers/partysim`.
+To download the latest core for all games, use `git clone https://github.com/0xhexnumbers/partysim`.
 
 ### go get
 
-To download the core for all games, use `go get github.com/0xhexnumbers/partysim@v0.0.1`.
+To download the stable core for all games, use `go get github.com/0xhexnumbers/partysim@v0.0.1`.
 
 ## Control Flow
 
