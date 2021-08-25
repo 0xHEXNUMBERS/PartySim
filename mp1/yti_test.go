@@ -103,7 +103,7 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 	g.Players[2].CurrentSpace = ChainSpace{0, 7}
 	g.Players[3].CurrentSpace = ChainSpace{0, 7}
 
-	//All players recieve poison mushroom
+	//All players receive poison mushroom
 	g.NextEvent.Handle(4, &g)
 	g.NextEvent.Handle(false, &g)
 	g.NextEvent.Handle(4, &g)
@@ -117,7 +117,7 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 	g.NextEvent.Handle(MinigameFFAMusicalMushroom, &g)
 	g.NextEvent.Handle(0, &g)
 
-	//Should recieve 2nd minigame as all players were poisoned
+	//Should receive 2nd minigame as all players were poisoned
 	EventIs(MinigameFFASelector{}, g.NextEvent, "Minigame", t)
 
 	//Perform 2nd minigame

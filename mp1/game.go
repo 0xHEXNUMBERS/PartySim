@@ -102,7 +102,7 @@ func (g *Game) LastFiveTurns() bool {
 
 //AwardCoins awards a player with coins. It handles min/maxing
 //of coins values and Coin/Minigame bonus stars. It returns the
-//number of coins the player recieved.
+//number of coins the player received.
 func (g *Game) AwardCoins(player, coins int, minigame bool) int {
 	coins0 := g.Players[player].Coins
 	g.Players[player].Coins += coins

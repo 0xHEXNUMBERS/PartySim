@@ -20,10 +20,10 @@ func pbcVisitSeed(g *Game, player, moves int) int {
 		data.BowserSeedPlanted = false
 	}
 	g.Board.Data = data
-	if data.BowserSeedPlanted { //Can't recieve bowser, goto star
+	if data.BowserSeedPlanted { //Can't receive bowser, goto star
 		g.Players[player].CurrentSpace = ChainSpace{0, 0}
 	} else {
-		if data.SeedCount == 4 { //Can't recieve toad, goto bowser
+		if data.SeedCount == 4 { //Can't receive toad, goto bowser
 			g.Players[player].CurrentSpace = ChainSpace{1, 0}
 		} else { //Could be either or
 			g.NextEvent = pbcSeedCheck{player, moves}

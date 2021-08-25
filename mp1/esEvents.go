@@ -18,7 +18,7 @@ func (e esBranchEvent) ControllingPlayer() int {
 	return e.Player
 }
 
-//Handle executes based on r. If r is true, the player's new positon is set
+//Handle executes based on r. If r is true, the player's new position is set
 //based on the current gate (setting the next event to set the gate if
 //the gate is unknown). If r is false, the player continues down their
 //current chain.

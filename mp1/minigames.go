@@ -1,7 +1,7 @@
 package mp1
 
 //MinigameFFAReward handles Free-For-All minigame rewards. One player
-//will gain coins from this event. It contians a CoinMinigame if extra
+//will gain coins from this event. It contains a CoinMinigame if extra
 //coins can be gained by any player.
 type MinigameFFAReward struct {
 	IsCoinMinigame bool
@@ -9,7 +9,7 @@ type MinigameFFAReward struct {
 }
 
 //DrawableFFAReward handles drawable Free-For-All minigame rewards. One
-//player may gain coins from this event. It contians a CoinMinigame if
+//player may gain coins from this event. It contains a CoinMinigame if
 //extra coins can be gained by any player.
 type DrawableFFAReward struct {
 	MinigameFFAReward

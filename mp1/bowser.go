@@ -98,7 +98,7 @@ func GetBowserMinigameCoinLoss(turn uint8) int {
 	return 40
 }
 
-//BowserBalloonBurstEvent holds the imlpementation for Bowser's Balloon Burst.
+//BowserBalloonBurstEvent holds the implementation for Bowser's Balloon Burst.
 type BowserBalloonBurstEvent struct{}
 
 //Responses returns a slice of ints from [0, 4].
