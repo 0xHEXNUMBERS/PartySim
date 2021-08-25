@@ -51,12 +51,6 @@ type ChainSpace struct {
 //specific function calls may manipulate this data.
 type ExtraBoardData interface{}
 
-type Movement struct {
-	Player int
-	Moves  int
-	Skip   bool
-}
-
 //Board holds all data specifc to an MP1 board.
 type Board struct {
 	//Chains is a list  of chains on the board.
