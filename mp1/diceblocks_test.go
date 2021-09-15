@@ -4,8 +4,10 @@ import (
 	"testing"
 )
 
+var MinigameBoard = MakeRepeatedBoard(MinigameSpace, 15)
+
 func TestRedDiceBlock(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g := *InitializeGame(MinigameBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = ChainSpace{}
 	g.NextEvent = RedDiceBlock{0}
 	g.NextEvent.Handle(9, &g) //Land on minigame space
@@ -14,7 +16,7 @@ func TestRedDiceBlock(t *testing.T) {
 }
 
 func TestBlueDiceBlock(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g := *InitializeGame(MinigameBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = ChainSpace{}
 	g.NextEvent = BlueDiceBlock{0}
 	g.NextEvent.Handle(9, &g) //Land on minigame space
@@ -23,18 +25,18 @@ func TestBlueDiceBlock(t *testing.T) {
 }
 
 func TestWarpDiceBlock(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 23}
+	g := *InitializeGame(MinigameBoard, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 5}
 	g.Players[1].CurrentSpace = ChainSpace{}
 	g.NextEvent = WarpDiceBlock{0}
 	g.NextEvent.Handle(1, &g) //Swap with Luigi
 	SpaceIs(ChainSpace{0, 0}, 0, g, "", t)
-	SpaceIs(ChainSpace{1, 23}, 1, g, "", t)
+	SpaceIs(ChainSpace{0, 5}, 1, g, "", t)
 }
 
 func TestEventDiceBlock(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 23}
+	g := *InitializeGame(MinigameBoard, GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = ChainSpace{0, 5}
 	g.NextEvent = EventDiceBlock{0}
 	gBoo := g
 	gBoo.NextEvent.Handle(BooEventBlock, &gBoo)
@@ -43,7 +45,7 @@ func TestEventDiceBlock(t *testing.T) {
 
 	gBoo.NextEvent.Handle(BooStealAction{0, 1, false}, &gBoo)
 	gBoo.NextEvent.Handle(10, &gBoo)
-	SpaceIs(ChainSpace{1, 23}, 0, gBoo, "Boo", t)
+	SpaceIs(ChainSpace{0, 5}, 0, gBoo, "Boo", t)
 
 	gBowser := g
 	gBowser.NextEvent.Handle(BowserEventBlock, &gBowser)
@@ -57,7 +59,7 @@ func TestEventDiceBlock(t *testing.T) {
 }
 
 func TestPickDiceBlock(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20, RedDice: true, BlueDice: true})
+	g := *InitializeGame(MinigameBoard, GameConfig{MaxTurns: 20, RedDice: true, BlueDice: true})
 	expected := []Response{NormalDiceBlock{0}, RedDiceBlock{0}, BlueDiceBlock{0}}
 	ResIs(expected, g, "", t)
 }

@@ -2,9 +2,10 @@ package mp1
 
 import "testing"
 
+var ChanceBoard = MakeSimpleBoard(Chance)
+
 func TestChanceTime(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{0, 14}
+	g := *InitializeGame(ChanceBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 10
 	g.Players[1].Coins = 25
 	g.Players[0].Stars = 4

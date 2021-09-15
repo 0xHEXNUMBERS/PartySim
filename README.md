@@ -21,11 +21,15 @@ PartySim is a simulator for the Mario Party series of games.
 
 ## Documentation
 
-Documentation for any simulator is available at https://pkg.go.dev/github.com/0xhexnumbers/partysim/[game abbr].
+Documentation for any game simulator is available at https://pkg.go.dev/github.com/0xhexnumbers/partysim/[game abbr].
+
+Documentation for any board implementation is available at https://pkg.go.dev/github.com/0xhexnumbers/partysim/[game abbr]/board.
 
 ### Mario Party 1
 
 https://pkg.go.dev/github.com/0xhexnumbers/partysim/mp1
+
+https://pkg.go.dev/github.com/0xhexnumbers/partysim/mp1/board
 
 ## Getting Started
 
@@ -48,8 +52,20 @@ The simulator runs events, and each event sets the next event to be run. An even
 This sample code simulates a random game of Mario Party 1 on Eternal Star.
 
 ```go
+package main
+
+import (
+	"github.com/0xhexnumbers/mp1"
+	"github.com/0xhexnumbers/mp1/board"
+)
+
+func PrintPlayer(p mp1.Player) {
+        fmt.Printf("%s: %d Stars -- %d Coins\n",
+		p.Char, p.Stars, p.Coins)
+}
+
 func SimulateGame(r *rand.Rand) {
-        g := mp1.InitializeGame(mp1.ES, mp1.GameConfig{MaxTurns: 20})
+        g := mp1.InitializeGame(board.ES, mp1.GameConfig{MaxTurns: 20})
         g.Players[0].Char = "Mario"
         g.Players[1].Char = "Luigi"
         g.Players[2].Char = "Peach"
@@ -61,12 +77,13 @@ func SimulateGame(r *rand.Rand) {
                 //fmt.Printf("%#v\n%#v\n\n", g.ExtraEvent, res[randInt])
                 g.HandleEvent(res[randInt])
         }
- 
+
+	//Print results of match 
         fmt.Println()
-        fmt.Printf("P1: %#v\n", g.Players[0])
-        fmt.Printf("P2: %#v\n", g.Players[1])
-        fmt.Printf("P3: %#v\n", g.Players[2])
-        fmt.Printf("P4: %#v\n", g.Players[3])
+	PrintPlayer(g.Players[0])
+	PrintPlayer(g.Players[1])
+	PrintPlayer(g.Players[2])
+	PrintPlayer(g.Players[3])
  }
 ```
 

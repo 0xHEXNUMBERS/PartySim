@@ -1,10 +1,13 @@
 package mp1
 
-import "testing"
+import (
+	"testing"
+)
+
+var BowserBoard = MakeSimpleBoard(Bowser)
 
 func TestBowser10CoinsForStar(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 0
 	g.Players[0].Stars = 1
 
@@ -14,8 +17,7 @@ func TestBowser10CoinsForStar(t *testing.T) {
 }
 
 func TestBowserGain20Coins(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 0
 
 	g.MovePlayer(0, 1)
@@ -23,8 +25,7 @@ func TestBowserGain20Coins(t *testing.T) {
 }
 
 func TestCoinsForBowser(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 25
 
 	g.MovePlayer(0, 1)
@@ -34,8 +35,7 @@ func TestCoinsForBowser(t *testing.T) {
 }
 
 func TestBowserBalloonBurst(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 50
 	g.Players[1].Coins = 50
 	g.Players[2].Coins = 50
@@ -58,8 +58,7 @@ func TestBowserBalloonBurst(t *testing.T) {
 }
 
 func TestBowsersFaceLift(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 50
 	g.Players[1].Coins = 50
 	g.Players[2].Coins = 50
@@ -77,8 +76,7 @@ func TestBowsersFaceLift(t *testing.T) {
 }
 
 func TestBowsersTugoWar(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 50
 	g.Players[1].Coins = 50
 	g.Players[2].Coins = 50
@@ -103,8 +101,7 @@ func TestBowsersTugoWar(t *testing.T) {
 }
 
 func TestBashnCash(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 54
 	g.Players[1].Coins = 50
 	g.Players[2].Coins = 50
@@ -125,8 +122,7 @@ func TestBashnCash(t *testing.T) {
 }
 
 func TestBowserRevolution(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 75
 	g.Players[1].Coins = 25
 	g.Players[2].Coins = 99
@@ -139,8 +135,7 @@ func TestBowserRevolution(t *testing.T) {
 }
 
 func TestBowsersChanceTime(t *testing.T) {
-	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{1, 14}
+	g := *InitializeGame(BowserBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].Coins = 50
 	g.Players[1].Coins = 50
 	g.Players[2].Coins = 50

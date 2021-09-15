@@ -5,20 +5,7 @@ import (
 	"testing"
 )
 
-var multipleStarBoard = Board{
-	Chains: &[]Chain{
-		{
-			{Type: Start},
-			{Type: Star},
-			{Type: Star},
-			{Type: Star},
-			{Type: Star},
-			{Type: Star},
-		},
-	},
-	Links: nil,
-	Data:  nil,
-}
+var multipleStarBoard = MakeRepeatedBoard(Star, 5)
 
 var singleStarBoard = Board{
 	Chains: &[]Chain{
@@ -31,8 +18,6 @@ var singleStarBoard = Board{
 			{Type: Blue},
 		},
 	},
-	Links: nil,
-	Data:  nil,
 }
 
 func TestMultipleStarSpaces(t *testing.T) {

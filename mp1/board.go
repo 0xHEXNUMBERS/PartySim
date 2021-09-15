@@ -46,6 +46,10 @@ type ChainSpace struct {
 	Space int
 }
 
+func NewChainSpace(chain, space int) ChainSpace {
+	return ChainSpace{chain, space}
+}
+
 //ExtraBoardData is any *comparable* piece of data that the Board holds
 //onto. The engine does not manipulate this data directly, but board
 //specific function calls may manipulate this data.

@@ -1,13 +1,17 @@
-package mp1
+package board
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/0xhexnumbers/partysim/mp1"
+)
 
 func TestSeedCheckAutoStar(t *testing.T) {
-	g := *InitializeGame(PBC, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{0, 46}
-	g.Players[1].CurrentSpace = ChainSpace{0, 46}
-	g.Players[2].CurrentSpace = ChainSpace{0, 46}
-	g.Players[3].CurrentSpace = ChainSpace{0, 46}
+	g := *mp1.InitializeGame(PBC, mp1.GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = mp1.NewChainSpace(0, 46)
+	g.Players[1].CurrentSpace = mp1.NewChainSpace(0, 46)
+	g.Players[2].CurrentSpace = mp1.NewChainSpace(0, 46)
+	g.Players[3].CurrentSpace = mp1.NewChainSpace(0, 46)
 
 	g.NextEvent.Handle(2, &g)    //Move
 	g.NextEvent.Handle(true, &g) //Picked Bowser
@@ -15,9 +19,9 @@ func TestSeedCheckAutoStar(t *testing.T) {
 	g.NextEvent.Handle(2, &g)    //Move: Toad
 	g.NextEvent.Handle(2, &g)    //Move: Toad
 
-	SpaceIs(ChainSpace{1, 1}, 0, g, "0", t)
+	SpaceIs(mp1.NewChainSpace(1, 1), 0, g, "0", t)
 	for i := 1; i < 4; i++ {
-		expectedPos := ChainSpace{0, 1}
+		expectedPos := mp1.NewChainSpace(0, 1)
 		gotPos := g.Players[i].CurrentSpace
 		if expectedPos != gotPos {
 			t.Errorf("Expected %d pos: %#v, got: %#v",
@@ -35,11 +39,11 @@ func TestSeedCheckAutoStar(t *testing.T) {
 }
 
 func TestSeedCheckAutoBowser(t *testing.T) {
-	g := *InitializeGame(PBC, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{0, 46}
-	g.Players[1].CurrentSpace = ChainSpace{0, 46}
-	g.Players[2].CurrentSpace = ChainSpace{0, 46}
-	g.Players[3].CurrentSpace = ChainSpace{0, 46}
+	g := *mp1.InitializeGame(PBC, mp1.GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = mp1.NewChainSpace(0, 46)
+	g.Players[1].CurrentSpace = mp1.NewChainSpace(0, 46)
+	g.Players[2].CurrentSpace = mp1.NewChainSpace(0, 46)
+	g.Players[3].CurrentSpace = mp1.NewChainSpace(0, 46)
 
 	g.NextEvent.Handle(2, &g)     //Move
 	g.NextEvent.Handle(false, &g) //Picked Toad
@@ -50,20 +54,20 @@ func TestSeedCheckAutoBowser(t *testing.T) {
 	g.NextEvent.Handle(2, &g)     //Move: Bowser
 
 	for i := 0; i < 3; i++ {
-		SpaceIs(ChainSpace{0, 1}, i, g, "", t)
+		SpaceIs(mp1.NewChainSpace(0, 1), i, g, "", t)
 	}
-	SpaceIs(ChainSpace{1, 1}, 3, g, "", t)
+	SpaceIs(mp1.NewChainSpace(1, 1), 3, g, "", t)
 	for i := 0; i < 4; i++ {
 		CoinsIs(3, i, g, "", t)
 	}
 }
 
 func TestPiranha(t *testing.T) {
-	g := *InitializeGame(PBC, GameConfig{MaxTurns: 20})
-	g.Players[0].CurrentSpace = ChainSpace{0, 18}
-	g.Players[1].CurrentSpace = ChainSpace{0, 18}
-	g.Players[2].CurrentSpace = ChainSpace{0, 18}
-	g.Players[3].CurrentSpace = ChainSpace{0, 18}
+	g := *mp1.InitializeGame(PBC, mp1.GameConfig{MaxTurns: 20})
+	g.Players[0].CurrentSpace = mp1.NewChainSpace(0, 18)
+	g.Players[1].CurrentSpace = mp1.NewChainSpace(0, 18)
+	g.Players[2].CurrentSpace = mp1.NewChainSpace(0, 18)
+	g.Players[3].CurrentSpace = mp1.NewChainSpace(0, 18)
 	g.Players[0].Coins = 30
 	g.Players[3].Stars = 1
 

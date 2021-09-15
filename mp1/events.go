@@ -243,3 +243,7 @@ func (c CPURangeEvent) Responses() []Response {
 func (c CPURangeEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
+
+func NewRange(min, max int) []Response {
+	return CPURangeEvent{min, max}.Responses()
+}
