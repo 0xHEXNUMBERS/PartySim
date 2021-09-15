@@ -41,7 +41,7 @@ To download the latest core for all games, use `git clone https://github.com/0xh
 
 ### go get
 
-To download the stable core for all games, use `go get github.com/0xhexnumbers/partysim@v0.0.1`.
+To download the stable core for all games, use `go get github.com/0xhexnumbers/partysim@v0.0.2`.
 
 ## Control Flow
 
