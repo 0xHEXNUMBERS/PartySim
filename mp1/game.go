@@ -40,7 +40,7 @@ func (g *Game) HandleEvent(r Response) {
 //dice in play. If there are, the next Event is set to pick a dice block.
 //Otherwise, the next Event is set to the normal dice block.
 func (g *Game) SetDiceBlock() {
-	if g.Config.RedDice || g.Config.BlueDice || g.Config.WarpDice || g.Config.EventsDice {
+	if g.Turn != 0 && (g.Config.RedDice || g.Config.BlueDice || g.Config.WarpDice || g.Config.EventsDice) {
 		g.NextEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
 	} else {
 		g.NextEvent = NormalDiceBlock{g.CurrentPlayer}

@@ -92,6 +92,9 @@ func TestHiddenBlockOnInvisibleSpace(t *testing.T) {
 	g := *mp1.InitializeGame(BMM, mp1.GameConfig{MaxTurns: 20, EventsDice: true})
 	g.NextEvent.Handle(uint8(0), &g) //Star
 
+	g.Turn = 1
+	g.SetDiceBlock()
+
 	g.NextEvent.Handle(mp1.NormalDiceBlock{Player: 0}, &g)
 	g.NextEvent.Handle(1, &g)     //Move
 	g.NextEvent.Handle(false, &g) //No hidden block here

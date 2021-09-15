@@ -60,6 +60,13 @@ func TestEventDiceBlock(t *testing.T) {
 
 func TestPickDiceBlock(t *testing.T) {
 	g := *InitializeGame(MinigameBoard, GameConfig{MaxTurns: 20, RedDice: true, BlueDice: true})
+
+	//Engine always sets first diceblock for all players to normal dice
+	//block. We must tell the engine we're not on the first turn to test
+	//hidden block behavior.
+	g.Turn = 1
+	g.SetDiceBlock()
+
 	expected := []Response{NormalDiceBlock{0}, RedDiceBlock{0}, BlueDiceBlock{0}}
 	ResIs(expected, g, "", t)
 }
