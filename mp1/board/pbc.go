@@ -28,7 +28,7 @@ func pbcVisitSeed(g *mp1.Game, player, moves int) int {
 		if data.SeedCount == 4 { //Can't receive toad, goto bowser
 			g.Players[player].CurrentSpace = mp1.NewChainSpace(1, 0)
 		} else { //Could be either or
-			g.NextEvent = PBCSeedCheck{player, moves}
+			g.NextEvent = PBCSeedCheck{mp1.Boolean{}, player, moves}
 		}
 	}
 	return moves - 1
@@ -49,7 +49,7 @@ func pbcVisitPiranha(piranha int) func(*mp1.Game, int) {
 				g.Players[owner].Stars++
 			}
 		} else if g.Players[player].Coins >= 30 {
-			g.NextEvent = PBCPiranhaDecision{player, piranha}
+			g.NextEvent = PBCPiranhaDecision{mp1.Boolean{}, player, piranha}
 		}
 	}
 }

@@ -32,13 +32,9 @@ func (l LERRedFork) Handle(r mp1.Response, g *mp1.Game) {
 
 //LERRobot let's the player decide to either pay and raise/lower gates or ignore the robot.
 type LERRobot struct {
+	mp1.Boolean
 	Player int
 	Moves  int
-}
-
-//Responses returns a slice of bools (true/false).
-func (l LERRobot) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (l LERRobot) ControllingPlayer() int {

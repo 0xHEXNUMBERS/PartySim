@@ -75,7 +75,7 @@ func TestGreenToBlue(t *testing.T) {
 	g.Players[3].LastSpaceType = Blue
 
 	g.FindGreenPlayer()
-	EventIs(DeterminePlayerTeamEvent{2}, g.NextEvent, "", t)
+	EventIs(DeterminePlayerTeamEvent{Boolean{}, 2}, g.NextEvent, "", t)
 
 	g.NextEvent.Handle(true, &g)
 	SpaceTypeIs(Blue, g.Players[2].LastSpaceType, "", t)

@@ -94,6 +94,7 @@ func esWarpSpace(dest1, dest2, dest3 mp1.ChainSpace) func(*mp1.Game, int, int) i
 func esBranchWithWarp(dest1, dest2, dest3 mp1.ChainSpace) func(*mp1.Game, int, int) int {
 	return func(g *mp1.Game, player, moves int) int {
 		g.NextEvent = ESBranchEvent{
+			mp1.Boolean{},
 			player,
 			moves,
 			dest1,
@@ -126,6 +127,7 @@ func esPassStarSpace(i int) func(*mp1.Game, int, int) int {
 		if !bd.StarTaken[i] {
 			if g.Players[player].Coins >= 20 {
 				g.NextEvent = ESVisitBabyBowser{
+					mp1.Boolean{},
 					player,
 					moves,
 					i,

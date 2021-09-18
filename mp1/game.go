@@ -43,7 +43,7 @@ func (g *Game) SetDiceBlock() {
 	if g.Turn != 0 && (g.Config.RedDice || g.Config.BlueDice || g.Config.WarpDice || g.Config.EventsDice) {
 		g.NextEvent = PickDiceBlock{g.CurrentPlayer, g.Config}
 	} else {
-		g.NextEvent = NormalDiceBlock{g.CurrentPlayer}
+		g.NextEvent = NormalDiceBlock{Range{1, 10}, g.CurrentPlayer}
 	}
 }
 
@@ -188,7 +188,7 @@ func (g *Game) ActivateSpace(player int) {
 		}
 		g.EndCharacterTurn()
 	case Mushroom:
-		g.NextEvent = MushroomEvent{player}
+		g.NextEvent = MushroomEvent{Boolean{}, player}
 	case Happening:
 		g.Players[player].HappeningCount++
 		g.NextEvent = nil

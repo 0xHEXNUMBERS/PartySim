@@ -4,16 +4,12 @@ import "github.com/0xhexnumbers/partysim/mp1"
 
 //ESBranchEvent let's the player decide if they want to take the warp.
 type ESBranchEvent struct {
+	mp1.Boolean
 	Player int
 	Moves  int
 	Warp1  mp1.ChainSpace
 	Warp2  mp1.ChainSpace
 	Warp3  mp1.ChainSpace
-}
-
-//Responses returns a slice of bools (true/false).
-func (e ESBranchEvent) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (e ESBranchEvent) ControllingPlayer() int {
@@ -55,14 +51,10 @@ func (e ESBranchEvent) Handle(r mp1.Response, g *mp1.Game) {
 //ESVisitBabyBowser let's the player decide if they want to play baby
 //bowser's minigame to win a star.
 type ESVisitBabyBowser struct {
+	mp1.Boolean
 	Player int
 	Moves  int
 	Index  int
-}
-
-//Responses return a slice of bools (true/false).
-func (e ESVisitBabyBowser) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (e ESVisitBabyBowser) ControllingPlayer() int {
@@ -76,7 +68,7 @@ func (e ESVisitBabyBowser) Handle(r mp1.Response, g *mp1.Game) {
 	if battle {
 		g.AwardCoins(e.Player, -20, false)
 		g.NextEvent = ESBattleBabyBowser{
-			e.Player, e.Moves, e.Index,
+			mp1.Boolean{}, e.Player, e.Moves, e.Index,
 		}
 	} else {
 		g.MovePlayer(e.Player, e.Moves)
@@ -85,14 +77,10 @@ func (e ESVisitBabyBowser) Handle(r mp1.Response, g *mp1.Game) {
 
 //ESBattleBabyBowser decides if the player wins the minigame.
 type ESBattleBabyBowser struct {
+	mp1.Boolean
 	Player int
 	Moves  int
 	Index  int
-}
-
-//Responses return a slice of bools (true/false).
-func (e ESBattleBabyBowser) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (e ESBattleBabyBowser) ControllingPlayer() int {

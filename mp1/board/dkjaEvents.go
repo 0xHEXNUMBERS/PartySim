@@ -5,14 +5,10 @@ import "github.com/0xhexnumbers/partysim/mp1"
 //DKJAWhompEvent let's the player decide to go and pay the whomp 10 coins
 //or ignore the whomp.
 type DKJAWhompEvent struct {
+	mp1.Boolean
 	Player int
 	Moves  int
 	Whomp  int
-}
-
-//mp1.Responses return a slice of bools (true/false).
-func (d DKJAWhompEvent) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (d DKJAWhompEvent) ControllingPlayer() int {
@@ -39,14 +35,10 @@ func (d DKJAWhompEvent) Handle(r mp1.Response, g *mp1.Game) {
 //DKJACoinBranchEvent let's the player decide to go through the coin
 //blockade or not.
 type DKJACoinBranchEvent struct {
+	mp1.Boolean
 	Player   int
 	Moves    int
 	Blockade int
-}
-
-//mp1.Responses return a slice of bools (true/false).
-func (d DKJACoinBranchEvent) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (d DKJACoinBranchEvent) ControllingPlayer() int {

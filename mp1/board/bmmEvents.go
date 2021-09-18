@@ -5,15 +5,11 @@ import "github.com/0xhexnumbers/partysim/mp1"
 //BMMBranchPay is a custom branch event for the player to decide if they
 //want to pay 10 coins to take a chance at taking the star path.
 type BMMBranchPay struct {
+	mp1.Boolean
 	Player     int
 	Moves      int
 	BowserPath mp1.ChainSpace
 	StarPath   mp1.ChainSpace
-}
-
-//Responses returns a slice of bools (true/false).
-func (b BMMBranchPay) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (b BMMBranchPay) ControllingPlayer() int {
@@ -62,13 +58,9 @@ func (b BMMBranchDecision) Handle(r mp1.Response, g *mp1.Game) {
 
 //BMMBowserRoulette decides if bowser steals a star or 20 coins.
 type BMMBowserRoulette struct {
+	mp1.Boolean
 	Player int
 	Moves  int
-}
-
-//Responses returns a slice of bools (true/false).
-func (b BMMBowserRoulette) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (b BMMBowserRoulette) ControllingPlayer() int {

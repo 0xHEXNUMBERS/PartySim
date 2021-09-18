@@ -81,7 +81,7 @@ func lerGotoIsland(space int) func(*mp1.Game, int) {
 //has >= 20 coins.
 func lerVisitRobot(g *mp1.Game, player, moves int) int {
 	if g.Players[player].Coins >= 20 {
-		g.NextEvent = LERRobot{player, moves}
+		g.NextEvent = LERRobot{mp1.Boolean{}, player, moves}
 	}
 	return moves
 }

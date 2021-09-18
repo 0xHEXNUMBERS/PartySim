@@ -2,12 +2,8 @@ package mp1
 
 //NormalDiceBlock holds the implementation of a regular dice block.
 type NormalDiceBlock struct {
+	Range
 	Player int
-}
-
-//Responses returns a slice of ints from [1, 10].
-func (m NormalDiceBlock) Responses() []Response {
-	return CPURangeEvent{1, 10}.Responses()
 }
 
 func (m NormalDiceBlock) ControllingPlayer() int {
@@ -22,12 +18,8 @@ func (m NormalDiceBlock) Handle(r Response, g *Game) {
 
 //RedDiceBlock holds the implementation of a red dice block.
 type RedDiceBlock struct {
+	Range
 	Player int
-}
-
-//Responses returns a slice of ints from [1, 10].
-func (r RedDiceBlock) Responses() []Response {
-	return CPURangeEvent{1, 10}.Responses()
 }
 
 func (r RedDiceBlock) ControllingPlayer() int {
@@ -43,12 +35,8 @@ func (r RedDiceBlock) Handle(res Response, g *Game) {
 
 //BlueDiceBlock holds the implementation of a blue dice block.
 type BlueDiceBlock struct {
+	Range
 	Player int
-}
-
-//Responses returns a slice of ints from [1, 10].
-func (b BlueDiceBlock) Responses() []Response {
-	return CPURangeEvent{1, 10}.Responses()
 }
 
 func (b BlueDiceBlock) ControllingPlayer() int {
@@ -159,12 +147,12 @@ type PickDiceBlock struct {
 //Responses returns a slice of the available dice blocks that can appear
 //based on the game's configuration.
 func (p PickDiceBlock) Responses() []Response {
-	res := []Response{NormalDiceBlock{p.Player}}
+	res := []Response{NormalDiceBlock{Range{1, 10}, p.Player}}
 	if p.Config.RedDice {
-		res = append(res, RedDiceBlock{p.Player})
+		res = append(res, RedDiceBlock{Range{1, 10}, p.Player})
 	}
 	if p.Config.BlueDice {
-		res = append(res, BlueDiceBlock{p.Player})
+		res = append(res, BlueDiceBlock{Range{1, 10}, p.Player})
 	}
 	if p.Config.WarpDice {
 		res = append(res, WarpDiceBlock{p.Player})

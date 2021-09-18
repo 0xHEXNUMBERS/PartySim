@@ -52,14 +52,8 @@ func (b BranchEvent) ControllingPlayer() int {
 //range. It is mostly contained by other events that need a player to
 //pay some amount of coins.
 type PayRangeEvent struct {
+	Range
 	Player int
-	Min    int
-	Max    int
-}
-
-//Responses return a slice of ints from [p.Min,p.Max].
-func (p PayRangeEvent) Responses() []Response {
-	return CPURangeEvent{p.Min, p.Max}.Responses()
 }
 
 //Handle takes the given number of coins away from the player.
@@ -74,12 +68,8 @@ func (p PayRangeEvent) ControllingPlayer() int {
 
 //MushroomEvent occurs when a player lands on a Mushroom Space.
 type MushroomEvent struct {
+	Boolean
 	Player int
-}
-
-//Responses returns a slice of bools (true/false).
-func (m MushroomEvent) Responses() []Response {
-	return []Response{false, true}
 }
 
 //Handle sets next players turn. If r == true, then player m.Player goes
@@ -178,7 +168,7 @@ func (b BooEvent) Handle(r Response, g *Game) {
 			maxCoins = b.Players[steal.GivingPlayer].Coins
 		}
 		g.NextEvent = BooCoinsEvent{
-			PayRangeEvent{steal.GivingPlayer, 1, maxCoins},
+			PayRangeEvent{Range{1, maxCoins}, steal.GivingPlayer},
 			steal.RecvPlayer,
 			b.Moves,
 		}
@@ -198,12 +188,8 @@ func (b BooEvent) ControllingPlayer() int {
 //DeterminePlayerTeamEvent handles deciding which minigame team a player
 //is if said player landed on a *green* space.
 type DeterminePlayerTeamEvent struct {
+	Boolean
 	Player int
-}
-
-//Responses returns a slice of bools (true/false).
-func (d DeterminePlayerTeamEvent) Responses() []Response {
-	return []Response{true, false}
 }
 
 //Handle sets d.Player's team. If r is true, d.Player's team is blue. If r
@@ -223,16 +209,20 @@ func (d DeterminePlayerTeamEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
 
-//CPURangeEvent is a partial event that generates a range from [Min,Max]
+//Range is a partial event that generates a range from [Min,Max]
 //that the CPU player can respond to. It is mostly used to generate the
 //[Min,Max] range for other events.
-type CPURangeEvent struct {
+type Range struct {
 	Min int
 	Max int
 }
 
+func NewRange(min, max int) []Response {
+	return Range{min, max}.Responses()
+}
+
 //Responses returns a list of ints from [c.Min,c.Max].
-func (c CPURangeEvent) Responses() []Response {
+func (c Range) Responses() []Response {
 	var ret []Response
 	for i := c.Min; i <= c.Max; i++ {
 		ret = append(ret, i)
@@ -240,10 +230,11 @@ func (c CPURangeEvent) Responses() []Response {
 	return ret
 }
 
-func (c CPURangeEvent) ControllingPlayer() int {
-	return CPU_PLAYER
-}
+//Boolean is a partial event used to make true/false events.
+type Boolean struct{}
 
-func NewRange(min, max int) []Response {
-	return CPURangeEvent{min, max}.Responses()
+var BooleanResponse = []Response{false, true}
+
+func (b Boolean) Responses() []Response {
+	return BooleanResponse
 }

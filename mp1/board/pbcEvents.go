@@ -4,13 +4,9 @@ import "github.com/0xhexnumbers/partysim/mp1"
 
 //PBCSeedCheck decides if the player got a toad seed or a bowser seed.
 type PBCSeedCheck struct {
+	mp1.Boolean
 	Player int
 	Moves  int
-}
-
-//Responses returns a slice of bools (true/false).
-func (p PBCSeedCheck) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (p PBCSeedCheck) ControllingPlayer() int {
@@ -35,13 +31,9 @@ func (p PBCSeedCheck) Handle(r mp1.Response, g *mp1.Game) {
 //PBCPiranhaDecision decides if the player wants to pay 30 coins for a
 //piranha.
 type PBCPiranhaDecision struct {
+	mp1.Boolean
 	Player  int
 	Piranha int
-}
-
-//Responses returns a slice of bools (true/false).
-func (p PBCPiranhaDecision) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (p PBCPiranhaDecision) ControllingPlayer() int {

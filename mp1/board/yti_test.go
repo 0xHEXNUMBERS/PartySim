@@ -17,7 +17,7 @@ func TestCanPayThwomp(t *testing.T) {
 	g := *mp1.InitializeGame(YTI, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 23)
 	g.MovePlayer(0, 10)
-	EventIs(YTIThwompBranchEvent{0, 6, 1}, g.NextEvent, "", t)
+	EventIs(YTIThwompBranchEvent{mp1.Boolean{}, 0, 6, 1}, g.NextEvent, "", t)
 }
 
 func TestCanNotPayThwomp(t *testing.T) {
@@ -25,7 +25,10 @@ func TestCanNotPayThwomp(t *testing.T) {
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 23)
 	g.Players[0].Coins = 0
 	g.MovePlayer(0, 10)
-	EventIs(mp1.NormalDiceBlock{Player: 1}, g.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 1,
+	}, g.NextEvent, "", t)
 }
 
 func TestGainCoins(t *testing.T) {
@@ -44,7 +47,10 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	g.NextEvent.Handle(true, &g)
 	//Pay thwomp 3 coins, move and land on blue space
 	g.NextEvent.Handle(3, &g)
-	EventIs(mp1.NormalDiceBlock{Player: 1}, g.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 1,
+	}, g.NextEvent, "", t)
 	SpaceIs(mp1.NewChainSpace(0, 12), 0, g, "", t)
 	CoinsIs(10, 0, g, "", t)
 }
@@ -54,7 +60,7 @@ func TestIgnoreThwomp(t *testing.T) {
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 23)
 	g.MovePlayer(0, 10)
 	g.NextEvent.Handle(false, &g)
-	EventIs(mp1.NormalDiceBlock{Player: 1}, g.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{Range: mp1.Range{Min: 1, Max: 10}, Player: 1}, g.NextEvent, "", t)
 	SpaceIs(mp1.NewChainSpace(1, 5), 0, g, "", t)
 	CoinsIs(13, 0, g, "", t)
 }
@@ -63,7 +69,10 @@ func TestStarSwapViaHappening(t *testing.T) {
 	g := *mp1.InitializeGame(YTI, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 23)
 	g.MovePlayer(0, 3)
-	EventIs(mp1.NormalDiceBlock{Player: 1}, g.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 1,
+	}, g.NextEvent, "", t)
 
 	bd := g.Board.Data.(ytiBoardData)
 	if bd.StarPosition != ytiRightIslandStar {
@@ -87,12 +96,18 @@ func TestMushroomSpace(t *testing.T) {
 	//Received red mushroom
 	gRed := g
 	gRed.NextEvent.Handle(true, &gRed)
-	EventIs(mp1.NormalDiceBlock{Player: 0}, gRed.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 0,
+	}, gRed.NextEvent, "", t)
 
 	//Received poison mushroom
 	gPoison := g
 	gPoison.NextEvent.Handle(false, &gPoison)
-	EventIs(mp1.NormalDiceBlock{Player: 1}, gPoison.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 1,
+	}, gPoison.NextEvent, "", t)
 	if !gPoison.Players[0].SkipTurn {
 		t.Errorf("SkipTurn not set")
 	}
@@ -126,7 +141,10 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 	g.NextEvent.Handle(mp1.MinigameFFAMusicalMushroom, &g)
 	g.NextEvent.Handle(0, &g)
 	IntIs(2, int(g.Turn), "Turn #", t)
-	EventIs(mp1.NormalDiceBlock{Player: 0}, g.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 0,
+	}, g.NextEvent, "", t)
 }
 
 func TestSkipTurnViaCharacterTurn(t *testing.T) {
@@ -136,7 +154,10 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 	g.Players[2].CurrentSpace = mp1.NewChainSpace(0, 7)
 	g.Players[3].CurrentSpace = mp1.NewChainSpace(0, 7)
 	g.CurrentPlayer = 2
-	g.NextEvent = mp1.NormalDiceBlock{Player: 2}
+	g.NextEvent = mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 2,
+	}
 	g.Players[0].LastSpaceType = mp1.Blue
 	g.Players[1].LastSpaceType = mp1.Blue
 
@@ -155,7 +176,10 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 	g.NextEvent.Handle(1, &g)
 	g.NextEvent.Handle(1, &g)
 
-	EventIs(mp1.NormalDiceBlock{Player: 3}, g.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 3,
+	}, g.NextEvent, "", t)
 }
 
 func TestStealCoinsViaBoo(t *testing.T) {
@@ -168,9 +192,8 @@ func TestStealCoinsViaBoo(t *testing.T) {
 	}, &g)
 	expectedEvent := mp1.BooCoinsEvent{
 		PayRangeEvent: mp1.PayRangeEvent{
+			Range:  mp1.Range{Min: 1, Max: 10},
 			Player: 1,
-			Min:    1,
-			Max:    10, //Max of 10 coins
 		},
 		RecvPlayer: 0,
 		Moves:      4,
@@ -192,9 +215,8 @@ func TestStealTooManyCoinsViaBoo(t *testing.T) {
 	}, &g)
 	expectedEvent := mp1.BooCoinsEvent{
 		PayRangeEvent: mp1.PayRangeEvent{
+			Range:  mp1.Range{Min: 1, Max: 4},
 			Player: 1,
-			Min:    1,
-			Max:    4, //Max of 4 coins
 		},
 		RecvPlayer: 0,
 		Moves:      4,
@@ -210,7 +232,10 @@ func TestPassEmptyBooSpace(t *testing.T) {
 	g := *mp1.InitializeGame(YTI, mp1.GameConfig{MaxTurns: 20, NoBoo: true})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 21)
 	g.MovePlayer(0, 4)
-	EventIs(mp1.NormalDiceBlock{Player: 1}, g.NextEvent, "", t)
+	EventIs(mp1.NormalDiceBlock{
+		Range:  mp1.Range{Min: 1, Max: 10},
+		Player: 1,
+	}, g.NextEvent, "", t)
 	SpaceIs(mp1.NewChainSpace(1, 26), 0, g, "", t)
 }
 

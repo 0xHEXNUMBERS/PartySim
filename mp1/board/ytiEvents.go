@@ -5,14 +5,10 @@ import "github.com/0xhexnumbers/partysim/mp1"
 //YTIThwompBranchEvent let's the player decide to go and pay the thwomp an
 //amount of coins or ignore the thwomp.
 type YTIThwompBranchEvent struct {
+	mp1.Boolean
 	Player int
 	Moves  int
 	Thwomp int
-}
-
-//Responses returns a slice of bools (true/false).
-func (y YTIThwompBranchEvent) Responses() []mp1.Response {
-	return []mp1.Response{true, false}
 }
 
 func (y YTIThwompBranchEvent) ControllingPlayer() int {
@@ -29,9 +25,11 @@ func (y YTIThwompBranchEvent) Handle(r mp1.Response, g *mp1.Game) {
 	if pay {
 		g.NextEvent = YTIPayThwompEvent{
 			mp1.PayRangeEvent{
+				Range: mp1.Range{
+					Min: bd.Thwomps[y.Thwomp],
+					Max: min(50, g.Players[y.Player].Coins),
+				},
 				Player: y.Player,
-				Min:    bd.Thwomps[y.Thwomp],
-				Max:    min(50, g.Players[y.Player].Coins),
 			},
 			y.Moves,
 			y.Thwomp,

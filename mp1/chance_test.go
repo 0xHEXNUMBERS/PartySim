@@ -47,5 +47,5 @@ func TestChanceTime(t *testing.T) {
 	gSwapStars.NextEvent.Handle(ChanceTimeResponse{CTBMiddle, int(SwapStars)}, &gSwapStars)
 	StarsIs(9, 0, gSwapStars, "Swap", t)
 	StarsIs(4, 1, gSwapStars, "Swap", t)
-	EventIs(NormalDiceBlock{1}, gSwapStars.NextEvent, "", t)
+	EventIs(NormalDiceBlock{Range{1, 10}, 1}, gSwapStars.NextEvent, "", t)
 }

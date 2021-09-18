@@ -9,7 +9,7 @@ var MinigameBoard = MakeRepeatedBoard(MinigameSpace, 15)
 func TestRedDiceBlock(t *testing.T) {
 	g := *InitializeGame(MinigameBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = ChainSpace{}
-	g.NextEvent = RedDiceBlock{0}
+	g.NextEvent = RedDiceBlock{Range{1, 10}, 0}
 	g.NextEvent.Handle(9, &g) //Land on minigame space
 	SpaceIs(ChainSpace{0, 9}, 0, g, "", t)
 	CoinsIs(1, 0, g, "", t)
@@ -18,7 +18,7 @@ func TestRedDiceBlock(t *testing.T) {
 func TestBlueDiceBlock(t *testing.T) {
 	g := *InitializeGame(MinigameBoard, GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = ChainSpace{}
-	g.NextEvent = BlueDiceBlock{0}
+	g.NextEvent = BlueDiceBlock{Range{1, 10}, 0}
 	g.NextEvent.Handle(9, &g) //Land on minigame space
 	SpaceIs(ChainSpace{0, 9}, 0, g, "", t)
 	CoinsIs(19, 0, g, "", t)
@@ -49,12 +49,12 @@ func TestEventDiceBlock(t *testing.T) {
 
 	gBowser := g
 	gBowser.NextEvent.Handle(BowserEventBlock, &gBowser)
-	EventIs(NormalDiceBlock{1}, gBowser.NextEvent, "Bowser", t)
+	EventIs(NormalDiceBlock{Range{1, 10}, 1}, gBowser.NextEvent, "Bowser", t)
 	CoinsIs(0, 0, gBowser, "Bowser", t)
 
 	gKoopa := g
 	gKoopa.NextEvent.Handle(KoopaEventBlock, &gKoopa)
-	EventIs(NormalDiceBlock{1}, gKoopa.NextEvent, "Koopa", t)
+	EventIs(NormalDiceBlock{Range{1, 10}, 1}, gKoopa.NextEvent, "Koopa", t)
 	CoinsIs(20, 0, gKoopa, "Koopa", t)
 }
 
@@ -67,6 +67,10 @@ func TestPickDiceBlock(t *testing.T) {
 	g.Turn = 1
 	g.SetDiceBlock()
 
-	expected := []Response{NormalDiceBlock{0}, RedDiceBlock{0}, BlueDiceBlock{0}}
+	expected := []Response{
+		NormalDiceBlock{Range{1, 10}, 0},
+		RedDiceBlock{Range{1, 10}, 0},
+		BlueDiceBlock{Range{1, 10}, 0},
+	}
 	ResIs(expected, g, "", t)
 }

@@ -65,13 +65,13 @@ func (b BowserEvent) Handle(r Response, g *Game) {
 		g.AwardCoins(b.Player, -coinsLost, false)
 		g.EndCharacterTurn()
 	case BowserBalloonBurst:
-		g.NextEvent = BowserBalloonBurstEvent{}
+		g.NextEvent = BowserBalloonBurstEvent{Range{0, 4}}
 	case BowsersFaceLift:
-		g.NextEvent = BowsersFaceLiftEvent{b.Player}
+		g.NextEvent = BowsersFaceLiftEvent{Range{0, 15}, b.Player}
 	case BowsersTugoWar:
 		g.NextEvent = BowsersTugoWarEvent{b.Player}
 	case BashnCash:
-		g.NextEvent = BowsersBashnCash{b.Player, g.Players[b.Player].Coins}
+		g.NextEvent = NewBowsersBashnCash(b.Player, g.Players[b.Player].Coins)
 	case BowserRevolution:
 		coins := 0
 		for i := range g.Players {
@@ -99,12 +99,7 @@ func GetBowserMinigameCoinLoss(turn uint8) int {
 }
 
 //BowserBalloonBurstEvent holds the implementation for Bowser's Balloon Burst.
-type BowserBalloonBurstEvent struct{}
-
-//Responses returns a slice of ints from [0, 4].
-func (b BowserBalloonBurstEvent) Responses() []Response {
-	return CPURangeEvent{0, 4}.Responses()
-}
+type BowserBalloonBurstEvent struct{ Range }
 
 func (b BowserBalloonBurstEvent) ControllingPlayer() int {
 	return CPU_PLAYER
@@ -132,12 +127,8 @@ func (b BowserBalloonBurstEvent) Handle(r Response, g *Game) {
 
 //BowsersFaceLiftEvent holds the implementation for Bowser's Face Lift.
 type BowsersFaceLiftEvent struct {
+	Range
 	Player int
-}
-
-//Responses returns a slice of ints from [1, 15].
-func (b BowsersFaceLiftEvent) Responses() []Response {
-	return CPURangeEvent{1, 15}.Responses()
 }
 
 func (b BowsersFaceLiftEvent) ControllingPlayer() int {
@@ -216,17 +207,19 @@ func (b BowsersTugoWarEvent) Handle(r Response, g *Game) {
 
 //BowsersBashnCash holds the implementation of Bowser's BashnCash.
 type BowsersBashnCash struct {
+	Range
 	Player int
 	Coins  int
 }
 
-//Responses returns a slice of ints from [1, max], where max is the
-//maximum number of hits the solo player can take before losing all of
-//their coins.
-func (b BowsersBashnCash) Responses() []Response {
-	max := b.Coins / 5
-	max += b.Coins % 5
-	return CPURangeEvent{1, max}.Responses()
+func NewBowsersBashnCash(player, coins int) BowsersBashnCash {
+	max := coins / 5
+	max += coins % 5
+	return BowsersBashnCash{
+		Range{1, max},
+		player,
+		coins,
+	}
 }
 
 func (b BowsersBashnCash) ControllingPlayer() int {

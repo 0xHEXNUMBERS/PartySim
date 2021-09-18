@@ -31,7 +31,7 @@ func dkjaCanPassWhomp(whomp int) func(*mp1.Game, int, int) int {
 	return func(g *mp1.Game, player, moves int) int {
 		if g.Players[player].Coins >= 10 {
 			g.NextEvent = DKJAWhompEvent{
-				player, moves, whomp,
+				mp1.Boolean{}, player, moves, whomp,
 			}
 		} else {
 			pos := dkjaGetWhompDestination(g, whomp)
@@ -48,7 +48,7 @@ func dkjaCanPassCoinBlockade(blockade int) func(*mp1.Game, int, int) int {
 	return func(g *mp1.Game, player, moves int) int {
 		if g.Players[player].Coins >= 20 {
 			g.NextEvent = DKJACoinBranchEvent{
-				player, moves, blockade,
+				mp1.Boolean{}, player, moves, blockade,
 			}
 		} else {
 			data := g.Board.Data.(dkjaBoardData)

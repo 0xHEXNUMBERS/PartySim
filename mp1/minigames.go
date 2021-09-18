@@ -50,13 +50,8 @@ func (m MinigameFFAReward) Handle(r Response, g *Game) {
 
 //CoinMinigameFFAReward distributes coins gained from coin minigames.
 type CoinMinigameFFAReward struct {
+	Range
 	Player int
-	Max    int
-}
-
-//Responses returns a slice of ints from [0, c.Max].
-func (c CoinMinigameFFAReward) Responses() []Response {
-	return CPURangeEvent{0, c.Max}.Responses()
 }
 
 func (c CoinMinigameFFAReward) ControllingPlayer() int {
@@ -87,7 +82,7 @@ type MinigameFFAMultiWinReward struct {
 
 //Responses returns a slice of ints from [0, 15].
 func (m MinigameFFAMultiWinReward) Responses() []Response {
-	return CPURangeEvent{0, 15}.Responses()
+	return Range{0, 15}.Responses()
 }
 
 func (m MinigameFFAMultiWinReward) ControllingPlayer() int {
@@ -120,9 +115,11 @@ func (m MinigameFFAMultiWinReward) Handle(r Response, g *Game) {
 //gives the other 3 5 coins each, or all players win 10 coins.
 type MinigameFFA1Loser struct{}
 
+var FFA1LoserPlayers = DrawableFFAPlayers
+
 //Responses returns a slice of ints from [0, 4].
 func (m MinigameFFA1Loser) Responses() []Response {
-	return CPURangeEvent{0, 4}.Responses()
+	return FFA1LoserPlayers
 }
 
 func (m MinigameFFA1Loser) ControllingPlayer() int {
@@ -151,12 +148,7 @@ func (m MinigameFFA1Loser) Handle(r Response, g *Game) {
 
 //MinigameFFACoop handles Free-For-All cooperative minigame rewards.
 //Players either win 10 coins each or lose 5 coins each.
-type MinigameFFACoop struct{}
-
-//Responses returns a slice of bools (true/false).
-func (m MinigameFFACoop) Responses() []Response {
-	return []Response{true, false}
-}
+type MinigameFFACoop struct{ Boolean }
 
 func (m MinigameFFACoop) ControllingPlayer() int {
 	return CPU_PLAYER
@@ -179,14 +171,9 @@ func (m MinigameFFACoop) Handle(r Response, g *Game) {
 //MinigameGrabBag handles the grab bag FFA minigame. Players steal coins
 //from each other in the duration of this minigame.
 type MinigameGrabBag struct {
-	Player   int
-	Acc      int
-	MaxCoins int
-}
-
-//Responses returns a slice of ints from [-m.MaxCoins,m.MaxCoins]
-func (m MinigameGrabBag) Responses() []Response {
-	return CPURangeEvent{-m.MaxCoins, m.MaxCoins}.Responses()
+	Range
+	Player int
+	Acc    int
 }
 
 func (m MinigameGrabBag) ControllingPlayer() int {
@@ -284,7 +271,7 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 	case MinigameFFABurriedTreasure:
 		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFATreasureDivers:
-		g.NextEvent = CoinMinigameFFAReward{0, 50}
+		g.NextEvent = CoinMinigameFFAReward{Range{0, 50}, 0}
 	case MinigameFFAHotBobomb:
 		g.NextEvent = MinigameFFA1Loser{}
 	case MinigameFFAMusicalMushroom:
@@ -296,22 +283,22 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 	case MinigameFFABalloonBurst:
 		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFACoinBlockBlitz:
-		g.NextEvent = CoinMinigameFFAReward{0, 40}
+		g.NextEvent = CoinMinigameFFAReward{Range{0, 40}, 0}
 	case MinigameFFASkateboardScamper:
 		//TODO: Separate coin from coinbag
-		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{0, 10}}
+		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{Range{0, 10}, 0}}
 	case MinigameFFABoxMountainMayhem:
-		g.NextEvent = CoinMinigameFFAReward{0, 25}
+		g.NextEvent = CoinMinigameFFAReward{Range{0, 25}, 0}
 	case MinigameFFAPlatformPeril:
 		//TODO: Separate coin from coinbag
-		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{0, 10}}
+		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{Range{0, 10}, 0}}
 	case MinigameFFAMushroomMixup:
 		g.NextEvent = DrawableFFAReward{}
 	case MinigameFFAGrabBag:
 		//TODO: I'm not sure how I feel about max of 50.
 		//Theoritically, players can steal > 50 coins, but probably not
 		//feasible
-		g.NextEvent = MinigameGrabBag{0, 0, 50}
+		g.NextEvent = MinigameGrabBag{Range{-50, 50}, 0, 0}
 	case MinigameFFABumperBalls:
 		g.NextEvent = DrawableFFAReward{}
 	case MinigameFFATipsyTourney:
@@ -325,7 +312,7 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFACastAways:
 		//TODO: Should optimize; ask for chests/bags/coins
-		g.NextEvent = CoinMinigameFFAReward{0, 80}
+		g.NextEvent = CoinMinigameFFAReward{Range{0, 80}, 0}
 	case MinigameFFAKeypaWay:
 		g.NextEvent = MinigameFFACoop{}
 	case MinigameFFARunningoftheBulb:
@@ -333,7 +320,7 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 	case MinigameFFAHotRopeJump:
 		g.NextEvent = MinigameFFA1Loser{}
 	case MinigameFFAHammerDrop:
-		g.NextEvent = CoinMinigameFFAReward{0, 20}
+		g.NextEvent = CoinMinigameFFAReward{Range{0, 20}, 0}
 	case MinigameFFASlotCarDerby:
 		g.NextEvent = MinigameFFAReward{}
 	}
@@ -388,15 +375,10 @@ func (m Minigame2V2Reward) Handle(r Response, g *Game) {
 
 //CoinMinigame2V2Reward distributes coins gained from 2v2 coin minigames.
 type CoinMinigame2V2Reward struct {
+	Range
 	BlueTeam [2]int
 	RedTeam  [2]int
 	Team     int
-	Max      int
-}
-
-//Responses returns a slice of ints from [0,c.Max].
-func (c CoinMinigame2V2Reward) Responses() []Response {
-	return CPURangeEvent{0, c.Max}.Responses()
 }
 
 func (c CoinMinigame2V2Reward) ControllingPlayer() int {
@@ -474,7 +456,7 @@ func (m Minigame2V2Selector) Handle(r Response, g *Game) {
 		}
 	case Minigame2V2DeepSeaDivers:
 		g.NextEvent = CoinMinigame2V2Reward{
-			m.Team1, m.Team2, 0, 50,
+			Range{0, 50}, m.Team1, m.Team2, 0,
 		}
 	}
 }
@@ -533,13 +515,9 @@ func (m Minigame1V3Reward) Handle(r Response, g *Game) {
 //Throwable1V3Minigame is a minigame that the Solo player may choose to
 //lose, causing no one to gain coins.
 type Throwable1V3Minigame struct {
+	Boolean
 	Player   int
 	Minigame Event
-}
-
-//Responses returns a slice of bools (true/false).
-func (t Throwable1V3Minigame) Responses() []Response {
-	return []Response{false, true}
 }
 
 func (t Throwable1V3Minigame) ControllingPlayer() int {
@@ -607,7 +585,7 @@ func (m MinigameBashnCash) Handle(r Response, g *Game) {
 		coinsLost += timesHit * 5
 	}
 	g.AwardCoins(m.Player, -coinsLost, true)
-	nextEvent := MinigameBashnCashCoinAwards{0, m.Player, coinsLost}
+	nextEvent := MinigameBashnCashCoinAwards{Range{0, coinsLost}, 0, m.Player}
 	if m.Player == 0 {
 		nextEvent.CurrentPlayer = 1
 	}
@@ -617,14 +595,9 @@ func (m MinigameBashnCash) Handle(r Response, g *Game) {
 //MinigameBashnCashCoinAwards distributes a set of coins from a player to
 //the other 3 players.
 type MinigameBashnCashCoinAwards struct {
+	Range
 	CurrentPlayer int
 	LosingPlayer  int
-	Coins         int
-}
-
-//Responses returns a slice of ints from [0, m.Coins].
-func (m MinigameBashnCashCoinAwards) Responses() []Response {
-	return CPURangeEvent{0, m.Coins}.Responses()
 }
 
 func (m MinigameBashnCashCoinAwards) ControllingPlayer() int {
@@ -786,7 +759,7 @@ type MinigamePaddleBattle struct {
 
 //Responses return a slice of int from [-10, 10].
 func (m MinigamePaddleBattle) Responses() []Response {
-	return CPURangeEvent{-10, 10}.Responses() //TODO: Find out max number hits possible
+	return Range{-10, 10}.Responses() //TODO: Find out max number hits possible
 }
 
 func (m MinigamePaddleBattle) ControllingPlayer() int {
@@ -872,11 +845,11 @@ func (m Minigame1V3Selector) Handle(r Response, g *Game) {
 		g.NextEvent = MinigamePipeMaze{m.Player}
 	case Minigame1V3BashnCash:
 		coins := g.Players[m.Player].Coins
-		g.NextEvent = MinigameBashnCash{BowsersBashnCash{m.Player, coins}}
+		g.NextEvent = MinigameBashnCash{NewBowsersBashnCash(m.Player, coins)}
 	case Minigame1V3BowlOver:
 		g.NextEvent = MinigameBowlOver{m.Player}
 	case Minigame1V3CoinBlockBash:
-		g.NextEvent = CoinMinigameFFAReward{0, 30}
+		g.NextEvent = CoinMinigameFFAReward{Range{0, 30}, 0}
 	case Minigame1V3TightropeTreachery:
 		g.NextEvent = Minigame1V3Reward{m.Player}
 	case Minigame1V3CraneGame:
@@ -888,7 +861,11 @@ func (m Minigame1V3Selector) Handle(r Response, g *Game) {
 	case Minigame1V3PaddleBattle:
 		g.NextEvent = MinigamePaddleBattle{m.Player}
 	case Minigame1V3CoinShowerFlower:
-		g.NextEvent = Throwable1V3Minigame{m.Player, CoinMinigameFFAReward{0, 30}}
+		g.NextEvent = Throwable1V3Minigame{
+			Boolean{},
+			m.Player,
+			CoinMinigameFFAReward{Range{0, 30}, 0},
+		}
 	}
 }
 
@@ -941,7 +918,7 @@ type MinigameWhackaPlant struct {
 
 //Responses returns a slice of ints from [0, 36].
 func (m MinigameWhackaPlant) Responses() []Response {
-	return CPURangeEvent{0, 36}.Responses()
+	return Range{0, 36}.Responses()
 }
 
 //MinigameTeeteringTowers holds the implementation for Teetering Towers.

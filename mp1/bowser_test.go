@@ -30,7 +30,7 @@ func TestCoinsForBowser(t *testing.T) {
 
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(CoinsForBowser, &g)
-	EventIs(NormalDiceBlock{1}, g.NextEvent, "", t)
+	EventIs(NormalDiceBlock{Range{1, 10}, 1}, g.NextEvent, "", t)
 	CoinsIs(15, 0, g, "", t)
 }
 
