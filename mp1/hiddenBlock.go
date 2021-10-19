@@ -2,12 +2,8 @@ package mp1
 
 //HiddenBlockEvent holds the implementation for hidden blocks.
 type HiddenBlockEvent struct {
+	Boolean
 	Player int
-}
-
-//Responses returns a slice of bools (true/false).
-func (h HiddenBlockEvent) Responses() []Response {
-	return []Response{true, false}
 }
 
 func (h HiddenBlockEvent) ControllingPlayer() int {

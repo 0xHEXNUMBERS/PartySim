@@ -1,6 +1,10 @@
 package board
 
-import "github.com/0xhexnumbers/partysim/mp1"
+import (
+	"fmt"
+
+	"github.com/0xhexnumbers/partysim/mp1"
+)
 
 //ESBranchEvent let's the player decide if they want to take the warp.
 type ESBranchEvent struct {
@@ -113,6 +117,10 @@ type ESWarpCDest struct {
 	Moves  int
 }
 
+func (e ESWarpCDest) Type() mp1.EventType {
+	return mp1.CHAINSPACE_EVT_TYPE
+}
+
 //Resopnses returns a slice of the 2 possible spaces the player can warp
 //to.
 func (e ESWarpCDest) Responses() []mp1.Response {
@@ -140,12 +148,6 @@ func (e ESWarpCDest) Handle(r mp1.Response, g *mp1.Game) {
 	g.MovePlayer(e.Player, e.Moves)
 }
 
-//esWarpDestResponse is a response that can be made to a esWarpDest Event.
-type ESWarpDestResponse struct {
-	Dest mp1.ChainSpace
-	Gate int
-}
-
 //ESWarpDest decides which gate the board is playing under currently.
 type ESWarpDest struct {
 	Player   int
@@ -156,13 +158,17 @@ type ESWarpDest struct {
 	Island3  mp1.ChainSpace
 }
 
+func (e ESWarpDest) Type() mp1.EventType {
+	return mp1.CHAINSPACE_EVT_TYPE
+}
+
 //Responses returns the list of possible ChainSpaces that the player can
 //warp to.
 func (e ESWarpDest) Responses() []mp1.Response {
 	ret := []mp1.Response{
-		ESWarpDestResponse{e.Island1, 1},
-		ESWarpDestResponse{e.Island2, 2},
-		ESWarpDestResponse{e.Island3, 3},
+		e.Island1,
+		e.Island2,
+		e.Island3,
 	}
 	if e.Gate2or3 {
 		ret = ret[1:]
@@ -177,11 +183,20 @@ func (e ESWarpDest) ControllingPlayer() int {
 //Handle moves the player to the ChainSpace in r and set's the current
 //gate the board is under in r.
 func (e ESWarpDest) Handle(r mp1.Response, g *mp1.Game) {
-	dest := r.(ESWarpDestResponse)
+	dest := r.(mp1.ChainSpace)
 	bd := g.Board.Data.(esBoardData)
-	bd.Gate = dest.Gate
+
+	//Set Gate
+	switch dest {
+	case e.Island1:
+		bd.Gate = 1
+	case e.Island2:
+		bd.Gate = 2
+	case e.Island3:
+		bd.Gate = 3
+	}
 	g.Board.Data = bd
-	g.Players[e.Player].CurrentSpace = dest.Dest
+	g.Players[e.Player].CurrentSpace = dest
 	g.MovePlayer(e.Player, e.Moves)
 }
 
@@ -192,10 +207,20 @@ type ESChangeGates struct {
 	Current int
 }
 
+type Gate int
+
+func (g Gate) String() string {
+	return fmt.Sprintf("Gate %d", int(g))
+}
+
 var esChangeGatesResponses = [3][]mp1.Response{
-	{2, 3},
-	{1, 3},
-	{1, 2},
+	{Gate(2), Gate(3)},
+	{Gate(1), Gate(3)},
+	{Gate(1), Gate(2)},
+}
+
+func (e ESChangeGates) Type() mp1.EventType {
+	return mp1.ENUM_EVT_TYPE
 }
 
 //Responses returns the gates that can be switched to.
@@ -210,9 +235,9 @@ func (e ESChangeGates) ControllingPlayer() int {
 //Handle switches the current gate configuration to r, moves the player to
 //the starting space, and moves the player their remaining spaces.
 func (e ESChangeGates) Handle(r mp1.Response, g *mp1.Game) {
-	gate := r.(int)
+	gate := r.(Gate)
 	bd := g.Board.Data.(esBoardData)
-	bd.Gate = gate
+	bd.Gate = int(gate)
 	bd.Gate2or3 = (gate != 1)
 	g.Board.Data = bd
 	g.Players[e.Player].CurrentSpace = esEntrance1

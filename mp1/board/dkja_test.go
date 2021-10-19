@@ -8,8 +8,8 @@ import (
 
 func TestWhompPayment(t *testing.T) {
 	g := *mp1.InitializeGame(DKJA, mp1.GameConfig{MaxTurns: 20})
-	g.NextEvent.Handle(uint8(0), &g) //Star
-	g.NextEvent.Handle(5, &g)        //Move
+	g.NextEvent.Handle(mp1.NewChainSpace(0, 7), &g) //Star
+	g.NextEvent.Handle(5, &g)                       //Move
 
 	gPay := g
 	gPay.NextEvent.Handle(true, &gPay) //Pay Whomp
@@ -32,7 +32,7 @@ func TestCoinBlockade(t *testing.T) {
 	g := *mp1.InitializeGame(DKJA, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 3)
 	g.Players[0].Coins = 20
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(0, 7), &g) //Star
 
 	gPass := g
 	gPass.NextEvent.Handle(1, &gPass)    //Move
@@ -55,7 +55,7 @@ func TestCoinBlockade(t *testing.T) {
 
 func TestBoulder(t *testing.T) {
 	g := *mp1.InitializeGame(DKJA, mp1.GameConfig{MaxTurns: 20})
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(0, 7), &g) //Star
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(5, 1)
 	g.Players[1].CurrentSpace = mp1.NewChainSpace(5, 0)
 	g.Players[2].CurrentSpace = mp1.NewChainSpace(7, 0)

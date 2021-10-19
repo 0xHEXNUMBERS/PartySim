@@ -1,11 +1,20 @@
 package mp1
 
+import (
+	"fmt"
+	"strconv"
+)
+
 //MinigameFFAReward handles Free-For-All minigame rewards. One player
 //will gain coins from this event. It contains a CoinMinigame if extra
 //coins can be gained by any player.
 type MinigameFFAReward struct {
 	IsCoinMinigame bool
 	Coin           CoinMinigameFFAReward
+}
+
+func (m MinigameFFAReward) Type() EventType {
+	return PLAYER_EVT_TYPE
 }
 
 //DrawableFFAReward handles drawable Free-For-All minigame rewards. One
@@ -50,7 +59,7 @@ func (m MinigameFFAReward) Handle(r Response, g *Game) {
 
 //CoinMinigameFFAReward distributes coins gained from coin minigames.
 type CoinMinigameFFAReward struct {
-	Range
+	CoinRange
 	Player int
 }
 
@@ -61,8 +70,8 @@ func (c CoinMinigameFFAReward) ControllingPlayer() int {
 //Handle gives r coins to c.Player. The games next event is either set to
 //the same event with c.Player incremented, or ends the game's turn.
 func (c CoinMinigameFFAReward) Handle(r Response, g *Game) {
-	coins := r.(int)
-	g.AwardCoins(c.Player, coins, true)
+	coins := r.(Coins)
+	g.AwardCoins(c.Player, int(coins), true)
 	if c.Player == 3 {
 		g.EndGameTurn()
 	} else {
@@ -80,9 +89,13 @@ type MinigameFFAMultiWinReward struct {
 	CoinsIfNoWinner int
 }
 
+func (m MinigameFFAMultiWinReward) Type() EventType {
+	return MULTIWIN_PLAYER_EVT_TYPE
+}
+
 //Responses returns a slice of ints from [0, 15].
 func (m MinigameFFAMultiWinReward) Responses() []Response {
-	return Range{0, 15}.Responses()
+	return NewRange(0, 15)
 }
 
 func (m MinigameFFAMultiWinReward) ControllingPlayer() int {
@@ -116,6 +129,10 @@ func (m MinigameFFAMultiWinReward) Handle(r Response, g *Game) {
 type MinigameFFA1Loser struct{}
 
 var FFA1LoserPlayers = DrawableFFAPlayers
+
+func (m MinigameFFA1Loser) Type() EventType {
+	return PLAYER_EVT_TYPE
+}
 
 //Responses returns a slice of ints from [0, 4].
 func (m MinigameFFA1Loser) Responses() []Response {
@@ -171,7 +188,7 @@ func (m MinigameFFACoop) Handle(r Response, g *Game) {
 //MinigameGrabBag handles the grab bag FFA minigame. Players steal coins
 //from each other in the duration of this minigame.
 type MinigameGrabBag struct {
-	Range
+	CoinRange
 	Player int
 	Acc    int
 }
@@ -185,9 +202,9 @@ func (m MinigameGrabBag) ControllingPlayer() int {
 //coins. Otherwise, the next event is set to this event with m.Player
 //incremented.
 func (m MinigameGrabBag) Handle(r Response, g *Game) {
-	coins := r.(int)
-	m.Acc += coins
-	g.AwardCoins(m.Player, coins, true)
+	coins := r.(Coins)
+	m.Acc += int(coins)
+	g.AwardCoins(m.Player, int(coins), true)
 	m.Player++
 	if m.Player >= 3 {
 		g.AwardCoins(3, m.Acc, true)
@@ -227,8 +244,66 @@ const (
 	MinigameFFASlotCarDerby
 )
 
+func (m MinigameFFAGame) String() string {
+	switch m {
+	case MinigameFFABurriedTreasure:
+		return "Burried Treasure"
+	case MinigameFFATreasureDivers:
+		return "Treasure Divers"
+	case MinigameFFAHotBobomb:
+		return "Hot Bobomb"
+	case MinigameFFAMusicalMushroom:
+		return "Musical Mushroom"
+	case MinigameFFACrazyCutter:
+		return "Crazy Cutter"
+	case MinigameFFAFaceLift:
+		return "Face Lift"
+	case MinigameFFABalloonBurst:
+		return "Balloon Burst"
+	case MinigameFFACoinBlockBlitz:
+		return "Coin Block Blitz"
+	case MinigameFFASkateboardScamper:
+		return "Skateboard Scamper"
+	case MinigameFFABoxMountainMayhem:
+		return "Box Mountain Mayhem"
+	case MinigameFFAPlatformPeril:
+		return "Platform Peril"
+	case MinigameFFAMushroomMixup:
+		return "Mushroom Mixup"
+	case MinigameFFAGrabBag:
+		return "Grab Bag"
+	case MinigameFFABumperBalls:
+		return "Bumper Balls"
+	case MinigameFFATipsyTourney:
+		return "Tipsy Tourney"
+	case MinigameFFABombsAway:
+		return "Bombs Away"
+	case MinigameFFAMarioBandstand:
+		return "Mario Bandstand"
+	case MinigameFFAShyGuySays:
+		return "Shy Guy Says"
+	case MinigameFFACastAways:
+		return "Cast Aways"
+	case MinigameFFAKeypaWay:
+		return "Key Pa Way"
+	case MinigameFFARunningoftheBulb:
+		return "Running of the Bulb"
+	case MinigameFFAHotRopeJump:
+		return "Hot Rope Jump"
+	case MinigameFFAHammerDrop:
+		return "Hammer Drop"
+	case MinigameFFASlotCarDerby:
+		return "Slot Car Derby"
+	}
+	return ""
+}
+
 //MinigameFFASelector selects which FFA minigame to play.
 type MinigameFFASelector struct{}
+
+func (m MinigameFFASelector) Type() EventType {
+	return ENUM_EVT_TYPE
+}
 
 //Responses returns a slice of all MinigameFFAGame enumerations.
 func (m MinigameFFASelector) Responses() []Response {
@@ -271,7 +346,7 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 	case MinigameFFABurriedTreasure:
 		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFATreasureDivers:
-		g.NextEvent = CoinMinigameFFAReward{Range{0, 50}, 0}
+		g.NextEvent = CoinMinigameFFAReward{CoinRange{0, 50}, 0}
 	case MinigameFFAHotBobomb:
 		g.NextEvent = MinigameFFA1Loser{}
 	case MinigameFFAMusicalMushroom:
@@ -283,22 +358,22 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 	case MinigameFFABalloonBurst:
 		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFACoinBlockBlitz:
-		g.NextEvent = CoinMinigameFFAReward{Range{0, 40}, 0}
+		g.NextEvent = CoinMinigameFFAReward{CoinRange{0, 40}, 0}
 	case MinigameFFASkateboardScamper:
 		//TODO: Separate coin from coinbag
-		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{Range{0, 10}, 0}}
+		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{CoinRange{0, 10}, 0}}
 	case MinigameFFABoxMountainMayhem:
-		g.NextEvent = CoinMinigameFFAReward{Range{0, 25}, 0}
+		g.NextEvent = CoinMinigameFFAReward{CoinRange{0, 25}, 0}
 	case MinigameFFAPlatformPeril:
 		//TODO: Separate coin from coinbag
-		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{Range{0, 10}, 0}}
+		g.NextEvent = MinigameFFAReward{true, CoinMinigameFFAReward{CoinRange{0, 10}, 0}}
 	case MinigameFFAMushroomMixup:
 		g.NextEvent = DrawableFFAReward{}
 	case MinigameFFAGrabBag:
 		//TODO: I'm not sure how I feel about max of 50.
 		//Theoritically, players can steal > 50 coins, but probably not
 		//feasible
-		g.NextEvent = MinigameGrabBag{Range{-50, 50}, 0, 0}
+		g.NextEvent = MinigameGrabBag{CoinRange{-50, 50}, 0, 0}
 	case MinigameFFABumperBalls:
 		g.NextEvent = DrawableFFAReward{}
 	case MinigameFFATipsyTourney:
@@ -312,7 +387,7 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 		g.NextEvent = MinigameFFAReward{}
 	case MinigameFFACastAways:
 		//TODO: Should optimize; ask for chests/bags/coins
-		g.NextEvent = CoinMinigameFFAReward{Range{0, 80}, 0}
+		g.NextEvent = CoinMinigameFFAReward{CoinRange{0, 80}, 0}
 	case MinigameFFAKeypaWay:
 		g.NextEvent = MinigameFFACoop{}
 	case MinigameFFARunningoftheBulb:
@@ -320,7 +395,7 @@ func (m MinigameFFASelector) Handle(r Response, g *Game) {
 	case MinigameFFAHotRopeJump:
 		g.NextEvent = MinigameFFA1Loser{}
 	case MinigameFFAHammerDrop:
-		g.NextEvent = CoinMinigameFFAReward{Range{0, 20}, 0}
+		g.NextEvent = CoinMinigameFFAReward{CoinRange{0, 20}, 0}
 	case MinigameFFASlotCarDerby:
 		g.NextEvent = MinigameFFAReward{}
 	}
@@ -337,12 +412,39 @@ type Minigame2V2Reward struct {
 //gain coins from this event, while the other team may lose coins.
 type DrawableMinigame2V2Reward Minigame2V2Reward
 
-var Drawable2V2Players = []Response{0, 1, 2}
+var Drawable2V2Players = []Response{
+	Minigame2V2BlueWin, Minigame2V2RedWin, Minigame2V2Draw,
+}
+
 var Minigame2V2Players = Drawable2V2Players[:2]
+
+type Minigame2V2Result int
+
+const (
+	Minigame2V2BlueWin Minigame2V2Result = iota
+	Minigame2V2RedWin
+	Minigame2V2Draw
+)
+
+func (m Minigame2V2Result) String() string {
+	switch m {
+	case Minigame2V2BlueWin:
+		return "Blue Team Wins"
+	case Minigame2V2RedWin:
+		return "Red Team Wins"
+	case Minigame2V2Draw:
+		return "Draw"
+	}
+	return ""
+}
 
 //Responses returns a slice of ints from [0, 2]
 func (d DrawableMinigame2V2Reward) Responses() []Response {
 	return Drawable2V2Players
+}
+
+func (m Minigame2V2Reward) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns a slice of ints from [0, 1]
@@ -358,13 +460,13 @@ func (m Minigame2V2Reward) ControllingPlayer() int {
 //blue team takes coins from the red team. If r == 1, then the red team
 //takes coins from the blue team. Otherwise, it is considered a draw.
 func (m Minigame2V2Reward) Handle(r Response, g *Game) {
-	team := r.(int)
-	if team == 0 {
+	team := r.(Minigame2V2Result)
+	if team == Minigame2V2BlueWin {
 		g.AwardCoins(m.BlueTeam[0], 10, true)
 		g.AwardCoins(m.BlueTeam[1], 10, true)
 		g.AwardCoins(m.RedTeam[0], -10, true)
 		g.AwardCoins(m.RedTeam[1], -10, true)
-	} else if team == 1 {
+	} else if team == Minigame2V2RedWin {
 		g.AwardCoins(m.RedTeam[0], 10, true)
 		g.AwardCoins(m.RedTeam[1], 10, true)
 		g.AwardCoins(m.BlueTeam[0], -10, true)
@@ -375,7 +477,7 @@ func (m Minigame2V2Reward) Handle(r Response, g *Game) {
 
 //CoinMinigame2V2Reward distributes coins gained from 2v2 coin minigames.
 type CoinMinigame2V2Reward struct {
-	Range
+	CoinRange
 	BlueTeam [2]int
 	RedTeam  [2]int
 	Team     int
@@ -387,13 +489,13 @@ func (c CoinMinigame2V2Reward) ControllingPlayer() int {
 
 //Handle gives r coins to team c.Team (0 == Blue, 1 == Red).
 func (c CoinMinigame2V2Reward) Handle(r Response, g *Game) {
-	coins := r.(int)
+	coins := r.(Coins)
 	if c.Team == 0 {
-		g.AwardCoins(c.BlueTeam[0], coins, true)
-		g.AwardCoins(c.BlueTeam[1], coins, true)
+		g.AwardCoins(c.BlueTeam[0], int(coins), true)
+		g.AwardCoins(c.BlueTeam[1], int(coins), true)
 	} else if c.Team == 1 {
-		g.AwardCoins(c.RedTeam[0], coins, true)
-		g.AwardCoins(c.RedTeam[1], coins, true)
+		g.AwardCoins(c.RedTeam[0], int(coins), true)
+		g.AwardCoins(c.RedTeam[1], int(coins), true)
 	} else if c.Team == 2 {
 		g.EndGameTurn()
 		return
@@ -413,10 +515,30 @@ const (
 	Minigame2V2DeepSeaDivers
 )
 
+func (m Minigame2V2Game) String() string {
+	switch m {
+	case Minigame2V2BobsledRun:
+		return "Bobsled Run"
+	case Minigame2V2DesertDash:
+		return "Desert Dash"
+	case Minigame2V2Bombsketball:
+		return "Bombsketball"
+	case Minigame2V2HandcarHavoc:
+		return "Handcar Havoc"
+	case Minigame2V2DeepSeaDivers:
+		return "Deep Sea Divers"
+	}
+	return ""
+}
+
 //Minigame2V2Selector selects which 2V2 minigame to play.
 type Minigame2V2Selector struct {
 	Team1 [2]int
 	Team2 [2]int
+}
+
+func (m Minigame2V2Selector) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns a slice of all Minigame2V2Game enumerations.
@@ -456,7 +578,7 @@ func (m Minigame2V2Selector) Handle(r Response, g *Game) {
 		}
 	case Minigame2V2DeepSeaDivers:
 		g.NextEvent = CoinMinigame2V2Reward{
-			Range{0, 50}, m.Team1, m.Team2, 0,
+			CoinRange{0, 50}, m.Team1, m.Team2, 0,
 		}
 	}
 }
@@ -467,16 +589,42 @@ type Minigame1V3Reward struct {
 	SingleTeam int
 }
 
+type Minigame1V3Result int
+
+const (
+	Minigame1V3SingleWin Minigame1V3Result = iota
+	Minigame1V3TeamWin
+	Minigame1V3Draw
+)
+
+func (m Minigame1V3Result) String() string {
+	switch m {
+	case Minigame1V3SingleWin:
+		return "Single Player Wins"
+	case Minigame1V3TeamWin:
+		return "Team of 3 Wins"
+	case Minigame1V3Draw:
+		return "Draw"
+	}
+	return ""
+}
+
 //Drawable1V3Reward handles 1v3 minigame rewards. Zero or One team will
 //gain coins from this event, while the other team may lose coins.
 type Drawable1V3Reward Minigame1V3Reward
 
-var Drawable1V3Players = []Response{0, 1, 2}
+var Drawable1V3Players = []Response{
+	Minigame1V3SingleWin, Minigame1V3TeamWin, Minigame1V3Draw,
+}
 var Minigame1V3Players = Drawable1V3Players[:2]
+
+func (m Minigame1V3Reward) Type() EventType {
+	return ENUM_EVT_TYPE
+}
 
 //Responses returns a slice of ints from [0, 2]
 func (d Drawable1V3Reward) Responses() []Response {
-	return Minigame1V3Players
+	return Drawable1V3Players
 }
 
 //Responses returns a slice of ints from [0, 1]
@@ -493,15 +641,15 @@ func (m Minigame1V3Reward) ControllingPlayer() int {
 //3player takes coins from the solo player. Otherwise, it is considered a
 //draw.
 func (m Minigame1V3Reward) Handle(r Response, g *Game) {
-	team := r.(int)
-	if team == 0 {
+	team := r.(Minigame1V3Result)
+	if team == Minigame1V3SingleWin {
 		g.AwardCoins(m.SingleTeam, 15, true)
 		for i := 0; i < 4; i++ {
 			if i != m.SingleTeam {
 				g.AwardCoins(i, -5, true)
 			}
 		}
-	} else if team == 1 {
+	} else if team == Minigame1V3TeamWin {
 		g.AwardCoins(m.SingleTeam, -15, true)
 		for i := 0; i < 4; i++ {
 			if i != m.SingleTeam {
@@ -541,6 +689,10 @@ func (t Throwable1V3Minigame) Handle(r Response, g *Game) {
 //MinigamePipeMaze holds the implementation for Pipe Maze.
 type MinigamePipeMaze struct {
 	Player int
+}
+
+func (m MinigamePipeMaze) Type() EventType {
+	return PLAYER_EVT_TYPE
 }
 
 //Responses returns a slice of ints from [0,3].
@@ -585,7 +737,7 @@ func (m MinigameBashnCash) Handle(r Response, g *Game) {
 		coinsLost += timesHit * 5
 	}
 	g.AwardCoins(m.Player, -coinsLost, true)
-	nextEvent := MinigameBashnCashCoinAwards{Range{0, coinsLost}, 0, m.Player}
+	nextEvent := MinigameBashnCashCoinAwards{CoinRange{0, coinsLost}, 0, m.Player}
 	if m.Player == 0 {
 		nextEvent.CurrentPlayer = 1
 	}
@@ -595,7 +747,7 @@ func (m MinigameBashnCash) Handle(r Response, g *Game) {
 //MinigameBashnCashCoinAwards distributes a set of coins from a player to
 //the other 3 players.
 type MinigameBashnCashCoinAwards struct {
-	Range
+	CoinRange
 	CurrentPlayer int
 	LosingPlayer  int
 }
@@ -608,8 +760,8 @@ func (m MinigameBashnCashCoinAwards) ControllingPlayer() int {
 //next player to receive coins, or ends the Game's turn if all players
 //have received coins.
 func (m MinigameBashnCashCoinAwards) Handle(r Response, g *Game) {
-	coins := r.(int)
-	g.AwardCoins(m.CurrentPlayer, coins, true)
+	coins := r.(Coins)
+	g.AwardCoins(m.CurrentPlayer, int(coins), true)
 	m.CurrentPlayer++
 	if m.CurrentPlayer == m.LosingPlayer {
 		m.CurrentPlayer++
@@ -628,40 +780,66 @@ type MinigameBowlOver struct {
 
 //MinigameBowlOverResponse is an ending result of the Bowl Over minigame.
 type MinigameBowlOverResponse struct {
-	Pins     int
-	CharPins [3]bool
+	SinglePlayer int
+	Pins         int
+	CharPins     [3]bool
 }
 
-var MinigameBowlOverResponses = []Response{
-	MinigameBowlOverResponse{0, [3]bool{false, false, false}},
-	MinigameBowlOverResponse{1, [3]bool{false, false, false}},
-	MinigameBowlOverResponse{2, [3]bool{false, false, false}},
-	MinigameBowlOverResponse{0, [3]bool{false, false, true}},
-	MinigameBowlOverResponse{1, [3]bool{false, false, true}},
-	MinigameBowlOverResponse{2, [3]bool{false, false, true}},
-	MinigameBowlOverResponse{0, [3]bool{false, true, false}},
-	MinigameBowlOverResponse{1, [3]bool{false, true, false}},
-	MinigameBowlOverResponse{2, [3]bool{false, true, false}},
-	MinigameBowlOverResponse{0, [3]bool{false, true, true}},
-	MinigameBowlOverResponse{1, [3]bool{false, true, true}},
-	MinigameBowlOverResponse{2, [3]bool{false, true, true}},
-	MinigameBowlOverResponse{0, [3]bool{true, false, false}},
-	MinigameBowlOverResponse{1, [3]bool{true, false, false}},
-	MinigameBowlOverResponse{2, [3]bool{true, false, false}},
-	MinigameBowlOverResponse{0, [3]bool{true, false, true}},
-	MinigameBowlOverResponse{1, [3]bool{true, false, true}},
-	MinigameBowlOverResponse{2, [3]bool{true, false, true}},
-	MinigameBowlOverResponse{0, [3]bool{true, true, false}},
-	MinigameBowlOverResponse{1, [3]bool{true, true, false}},
-	MinigameBowlOverResponse{2, [3]bool{true, true, false}},
-	MinigameBowlOverResponse{0, [3]bool{true, true, true}},
-	MinigameBowlOverResponse{1, [3]bool{true, true, true}},
-	MinigameBowlOverResponse{2, [3]bool{true, true, true}},
+func (m MinigameBowlOverResponse) String() string {
+	str := fmt.Sprintf("%d regular pins knocked over, and", m.Pins)
+	if m.CharPins == [3]bool{} {
+		str += " no character pins knocked down"
+	} else {
+		str += " players "
+		i := 0
+		for p := 0; p < 4; p++ {
+			if m.SinglePlayer == p {
+				continue
+			}
+
+			if m.CharPins[i] {
+				playerNum := strconv.Itoa(p + 1)
+				str += playerNum + " "
+			}
+			i++
+		}
+		str += "pins knocked over"
+	}
+	return str
+}
+
+func (m MinigameBowlOver) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns all valid Bowl Over minigame endings.
 func (m MinigameBowlOver) Responses() []Response {
-	return MinigameBowlOverResponses
+	return []Response{
+		MinigameBowlOverResponse{m.Player, 0, [3]bool{false, false, false}},
+		MinigameBowlOverResponse{m.Player, 1, [3]bool{false, false, false}},
+		MinigameBowlOverResponse{m.Player, 2, [3]bool{false, false, false}},
+		MinigameBowlOverResponse{m.Player, 0, [3]bool{false, false, true}},
+		MinigameBowlOverResponse{m.Player, 1, [3]bool{false, false, true}},
+		MinigameBowlOverResponse{m.Player, 2, [3]bool{false, false, true}},
+		MinigameBowlOverResponse{m.Player, 0, [3]bool{false, true, false}},
+		MinigameBowlOverResponse{m.Player, 1, [3]bool{false, true, false}},
+		MinigameBowlOverResponse{m.Player, 2, [3]bool{false, true, false}},
+		MinigameBowlOverResponse{m.Player, 0, [3]bool{false, true, true}},
+		MinigameBowlOverResponse{m.Player, 1, [3]bool{false, true, true}},
+		MinigameBowlOverResponse{m.Player, 2, [3]bool{false, true, true}},
+		MinigameBowlOverResponse{m.Player, 0, [3]bool{true, false, false}},
+		MinigameBowlOverResponse{m.Player, 1, [3]bool{true, false, false}},
+		MinigameBowlOverResponse{m.Player, 2, [3]bool{true, false, false}},
+		MinigameBowlOverResponse{m.Player, 0, [3]bool{true, false, true}},
+		MinigameBowlOverResponse{m.Player, 1, [3]bool{true, false, true}},
+		MinigameBowlOverResponse{m.Player, 2, [3]bool{true, false, true}},
+		MinigameBowlOverResponse{m.Player, 0, [3]bool{true, true, false}},
+		MinigameBowlOverResponse{m.Player, 1, [3]bool{true, true, false}},
+		MinigameBowlOverResponse{m.Player, 2, [3]bool{true, true, false}},
+		MinigameBowlOverResponse{m.Player, 0, [3]bool{true, true, true}},
+		MinigameBowlOverResponse{m.Player, 1, [3]bool{true, true, true}},
+		MinigameBowlOverResponse{m.Player, 2, [3]bool{true, true, true}},
+	}
 }
 
 func (m MinigameBowlOver) ControllingPlayer() int {
@@ -691,9 +869,19 @@ type MinigameCraneGameCoins struct {
 	Player int
 }
 
+type Coins int
+
+func (c Coins) String() string {
+	return fmt.Sprintf("%d coins", int(c))
+}
+
+func (m MinigameCraneGameCoins) Type() EventType {
+	return ENUM_EVT_TYPE
+}
+
 //Responses returns a slice of ints: {0, 1, 5, 10}.
 func (m MinigameCraneGameCoins) Responses() []Response {
-	return []Response{0, 1, 5, 10}
+	return []Response{Coins(0), Coins(1), Coins(5), Coins(10)}
 }
 
 func (m MinigameCraneGameCoins) ControllingPlayer() int {
@@ -704,9 +892,9 @@ func (m MinigameCraneGameCoins) ControllingPlayer() int {
 //to go after one of the 3 other players, and the next event is set to
 //MinigameCraneGamePlayers.
 func (m MinigameCraneGameCoins) Handle(r Response, g *Game) {
-	coins := r.(int)
+	coins := r.(Coins)
 	if coins > 0 {
-		g.AwardCoins(m.Player, coins, true)
+		g.AwardCoins(m.Player, int(coins), true)
 		g.EndGameTurn()
 	} else {
 		groupPlayers := [3]int{}
@@ -731,8 +919,12 @@ type MinigameCraneGamePlayers struct {
 	Team       [3]int
 }
 
+func (m MinigameCraneGamePlayers) Type() EventType {
+	return PLAYER_EVT_TYPE
+}
+
 //Responses returns a slice of ints containing the indexes of the 3 other
-//players, and 4.
+//players, and 4 for failing to pick up any object.
 func (m MinigameCraneGamePlayers) Responses() []Response {
 	return []Response{m.Team[0], m.Team[1], m.Team[2], 4}
 }
@@ -754,12 +946,8 @@ func (m MinigameCraneGamePlayers) Handle(r Response, g *Game) {
 
 //MinigamePaddleBattle holds the implementation for Paddle Battle
 type MinigamePaddleBattle struct {
+	Range
 	Player int
-}
-
-//Responses return a slice of int from [-10, 10].
-func (m MinigamePaddleBattle) Responses() []Response {
-	return Range{-10, 10}.Responses() //TODO: Find out max number hits possible
 }
 
 func (m MinigamePaddleBattle) ControllingPlayer() int {
@@ -797,10 +985,40 @@ const (
 	Minigame1V3CoinShowerFlower
 )
 
+func (m Minigame1V3Game) String() string {
+	switch m {
+	case Minigame1V3PipeMaze:
+		return "Pipe Maze"
+	case Minigame1V3BashnCash:
+		return "Bash n Cash"
+	case Minigame1V3BowlOver:
+		return "Bowl Over"
+	case Minigame1V3CoinBlockBash:
+		return "Coin Block Bash"
+	case Minigame1V3TightropeTreachery:
+		return "Tightrope Treachery"
+	case Minigame1V3CraneGame:
+		return "Crane Game"
+	case Minigame1V3PiranhaPursuit:
+		return "Piranha Pursuit"
+	case Minigame1V3TugoWar:
+		return "Tug o War"
+	case Minigame1V3PaddleBattle:
+		return "Paddle Battle"
+	case Minigame1V3CoinShowerFlower:
+		return "Coin Shower Flower"
+	}
+	return ""
+}
+
 //Minigame1V3Selector selects which 1V3 minigame to play.
 type Minigame1V3Selector struct {
 	Player    int
 	SoloCoins int
+}
+
+func (m Minigame1V3Selector) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns a slice of all Minigame1V3Game enumerations. If the
@@ -849,7 +1067,7 @@ func (m Minigame1V3Selector) Handle(r Response, g *Game) {
 	case Minigame1V3BowlOver:
 		g.NextEvent = MinigameBowlOver{m.Player}
 	case Minigame1V3CoinBlockBash:
-		g.NextEvent = CoinMinigameFFAReward{Range{0, 30}, 0}
+		g.NextEvent = CoinMinigameFFAReward{CoinRange{0, 30}, 0}
 	case Minigame1V3TightropeTreachery:
 		g.NextEvent = Minigame1V3Reward{m.Player}
 	case Minigame1V3CraneGame:
@@ -859,12 +1077,12 @@ func (m Minigame1V3Selector) Handle(r Response, g *Game) {
 	case Minigame1V3TugoWar:
 		g.NextEvent = Minigame1V3Reward{m.Player}
 	case Minigame1V3PaddleBattle:
-		g.NextEvent = MinigamePaddleBattle{m.Player}
+		g.NextEvent = MinigamePaddleBattle{Range{-10, 10}, m.Player}
 	case Minigame1V3CoinShowerFlower:
 		g.NextEvent = Throwable1V3Minigame{
 			Boolean{},
 			m.Player,
-			CoinMinigameFFAReward{Range{0, 30}, 0},
+			CoinMinigameFFAReward{CoinRange{0, 30}, 0},
 		}
 	}
 }
@@ -875,9 +1093,13 @@ type Minigame1PRewards struct {
 	Player int
 }
 
+func (m Minigame1PRewards) Type() EventType {
+	return ENUM_EVT_TYPE
+}
+
 //Responses returns a slice of ints, {-5, 10}.
 func (m Minigame1PRewards) Responses() []Response {
-	return []Response{-5, 10}
+	return []Response{Coins(-5), Coins(10)}
 }
 
 func (m Minigame1PRewards) ControllingPlayer() int {
@@ -886,8 +1108,8 @@ func (m Minigame1PRewards) ControllingPlayer() int {
 
 //Handle gives m.Player r coins.
 func (m Minigame1PRewards) Handle(r Response, g *Game) {
-	coins := r.(int)
-	g.AwardCoins(m.Player, coins, true)
+	coins := r.(Coins)
+	g.AwardCoins(m.Player, int(coins), true)
 	g.EndCharacterTurn()
 }
 
@@ -898,7 +1120,7 @@ type MinigameMemoryMatch struct {
 
 //Responses returns a slice of ints, {0, 2, 4, 6, 10}.
 func (m MinigameMemoryMatch) Responses() []Response {
-	return []Response{0, 2, 4, 6, 10}
+	return []Response{Coins(0), Coins(2), Coins(4), Coins(6), Coins(10)}
 }
 
 //MinigameSlotMachine hodls the implementation for Slot Machine.
@@ -908,7 +1130,10 @@ type MinigameSlotMachine struct {
 
 //Responses returns a slice of ints, {0, 1, 3, 5, 6, 8, 10, 20}.
 func (m MinigameSlotMachine) Responses() []Response {
-	return []Response{0, 1, 3, 5, 6, 8, 10, 20}
+	return []Response{
+		Coins(0), Coins(1), Coins(3), Coins(5),
+		Coins(6), Coins(8), Coins(10), Coins(20),
+	}
 }
 
 //MinigameWhackaPlant holds the implementation for Whack a Plant.
@@ -916,9 +1141,9 @@ type MinigameWhackaPlant struct {
 	Minigame1PRewards
 }
 
-//Responses returns a slice of ints from [0, 36].
+//Responses returns a slice of Coins from [0, 36].
 func (m MinigameWhackaPlant) Responses() []Response {
-	return Range{0, 36}.Responses()
+	return NewCoinRange(0, 36)
 }
 
 //MinigameTeeteringTowers holds the implementation for Teetering Towers.
@@ -928,7 +1153,9 @@ type MinigameTeeteringTowers struct {
 
 //Responses returns a slice of ints, {-5, 10, 11, 15, 16}.
 func (m MinigameTeeteringTowers) Responses() []Response {
-	return []Response{-5, 10, 11, 15, 16} //Mix of coin and coinbag
+	return []Response{ //Mix of coin and coinbag
+		Coins(-5), Coins(10), Coins(11), Coins(15), Coins(16),
+	}
 }
 
 //Minigame1PGame is a enumeration of the available 1P minigames.
@@ -947,9 +1174,39 @@ const (
 	Minigame1PLimboDance
 )
 
+func (m Minigame1PGame) String() string {
+	switch m {
+	case Minigame1PMemoryMatch:
+		return "Memory Match"
+	case Minigame1PSlotMachine:
+		return "Slot Machine"
+	case Minigame1PShellGame:
+		return "Shell Game"
+	case Minigame1PGhostGuess:
+		return "Ghost Guess"
+	case Minigame1PPedalPower:
+		return "Pedal Power"
+	case Minigame1PWhackaPlant:
+		return "Whack a Plant"
+	case Minigame1PGroundPound:
+		return "Ground Pound"
+	case Minigame1PTeeteringTowers:
+		return "Teetering Towers"
+	case Minigame1PKnockBlockTower:
+		return "Knock Block Tower"
+	case Minigame1PLimboDance:
+		return "Limbo Dance"
+	}
+	return ""
+}
+
 //Minigame1PSelector selects which 1P minigame to play.
 type Minigame1PSelector struct {
 	Player int
+}
+
+func (m Minigame1PSelector) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns a slice of all Minigame1PGame enumerations.

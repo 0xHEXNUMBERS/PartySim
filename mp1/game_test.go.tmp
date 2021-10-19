@@ -1,0 +1,55 @@
+package mp1
+
+import (
+	"bytes"
+	"encoding/gob"
+	"testing"
+)
+
+func TestMain(m *testing.M) {
+	gob.Register(ytiBoardData{})
+	gob.Register(PickDiceBlock{})
+
+	m.Run()
+}
+
+func TestGameHash(t *testing.T) {
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].Char = "Mario"
+	g.Players[1].Char = "Luigi"
+	g.Players[2].Char = "Peach"
+	g.Players[3].Char = "Daisy"
+
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	dec := gob.NewDecoder(&buf)
+	enc.Encode(g)
+
+	var g2 Game
+	dec.Decode(&g2)
+	//We do not save board data, as it contains function pointers
+	//We do save board data though, so we have to manually copy it
+	boardData := g2.Board.Data
+	g2.Board = YTI
+	g2.Board.Data = boardData
+
+	if g != g2 {
+		t.Errorf("Expected game:\n%#v\ngot:\n%#v", g, g2)
+	}
+}
+
+func BenchmarkGameHash(b *testing.B) {
+	g := *InitializeGame(YTI, GameConfig{MaxTurns: 20})
+	g.Players[0].Char = "Mario"
+	g.Players[1].Char = "Luigi"
+	g.Players[2].Char = "Peach"
+	g.Players[3].Char = "Daisy"
+
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+
+	for n := 0; n < b.N; n++ {
+		enc.Encode(g)
+		buf.Reset()
+	}
+}

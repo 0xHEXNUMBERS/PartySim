@@ -14,6 +14,10 @@ var lerRedForkDestinations = []mp1.Response{
 	mp1.NewChainSpace(11, 0),
 }
 
+func (l LERRedFork) Type() mp1.EventType {
+	return mp1.CHAINSPACE_EVT_TYPE
+}
+
 //Responses returns the 2 destinations from the fork.
 func (l LERRedFork) Responses() []mp1.Response {
 	return lerRedForkDestinations

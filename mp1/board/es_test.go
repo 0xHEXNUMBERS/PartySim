@@ -34,9 +34,7 @@ func TestWarpCDeterminization(t *testing.T) {
 
 	gGate2or3.Players[1].CurrentSpace = mp1.NewChainSpace(4, 4)
 	gGate2or3.NextEvent.Handle(1, &gGate2or3)
-	gGate2or3.NextEvent.Handle(ESWarpDestResponse{
-		esEntrance6, 3,
-	}, &gGate2or3)
+	gGate2or3.NextEvent.Handle(esEntrance6, &gGate2or3)
 	g23bd = gGate2or3.Board.Data.(esBoardData)
 	IntIs(3, g23bd.Gate, "G2o3 Gate", t)
 	SpaceIs(mp1.NewChainSpace(9, 1), 1, gGate2or3, "G2o3", t)
@@ -128,23 +126,22 @@ func TestWarpG(t *testing.T) {
 
 	g1 := g
 	g1.Board.Data = esBoardData{Gate: 1}
-	g1.NextEvent.Handle(1, &g1)    //Move
-	g1.NextEvent.Handle(true, &g1) //Goto Warp G
-	g1.NextEvent.Handle(2, &g1)    //Set to Gate 2
+	g1.NextEvent.Handle(1, &g1)       //Move
+	g1.NextEvent.Handle(true, &g1)    //Goto Warp G
+	g1.NextEvent.Handle(Gate(2), &g1) //Set to Gate 2
 	SpaceIs(esStartingSpace, 0, g1, "G1", t)
 
 	g2 := g
 	g2.Board.Data = esBoardData{Gate: 2}
-	g2.NextEvent.Handle(1, &g2)    //Move
-	g2.NextEvent.Handle(true, &g2) //Goto Warp G
-	g2.NextEvent.Handle(3, &g2)    //Set to Gate 3
+	g2.NextEvent.Handle(1, &g2)       //Move
+	g2.NextEvent.Handle(true, &g2)    //Goto Warp G
+	g2.NextEvent.Handle(Gate(3), &g2) //Set to Gate 3
 	SpaceIs(esStartingSpace, 0, g2, "G2", t)
 
 	g3 := g
 	g3.Board.Data = esBoardData{Gate: 3}
 	g3.NextEvent.Handle(1, &g3)    //Move
 	g3.NextEvent.Handle(true, &g3) //Goto Warp G
-	g2.NextEvent.Handle(1, &g3)    //Set to Gate 1
 	SpaceIs(mp1.NewChainSpace(11, 1), 0, g3, "G3", t)
 }
 
@@ -194,16 +191,16 @@ func TestWarpJ(t *testing.T) {
 
 	g1 := g
 	g1.Board.Data = esBoardData{Gate: 1}
-	g1.NextEvent.Handle(1, &g1)    //Move
-	g1.NextEvent.Handle(true, &g1) //Goto warp J
-	g1.NextEvent.Handle(2, &g1)    //Set to gate 2
+	g1.NextEvent.Handle(1, &g1)       //Move
+	g1.NextEvent.Handle(true, &g1)    //Goto warp J
+	g1.NextEvent.Handle(Gate(2), &g1) //Set to gate 2
 	SpaceIs(esStartingSpace, 0, g1, "G1", t)
 
 	g2 := g
 	g2.Board.Data = esBoardData{Gate: 2}
-	g2.NextEvent.Handle(1, &g2)    //Move
-	g2.NextEvent.Handle(true, &g2) //Goto warp J
-	g2.NextEvent.Handle(3, &g2)    //Set to gate 3
+	g2.NextEvent.Handle(1, &g2)       //Move
+	g2.NextEvent.Handle(true, &g2)    //Goto warp J
+	g2.NextEvent.Handle(Gate(3), &g2) //Set to gate 3
 	SpaceIs(esStartingSpace, 0, g2, "G2", t)
 
 	g3 := g
@@ -303,14 +300,14 @@ func TestVisitBowser(t *testing.T) {
 	g.Players[0].Coins = 30
 
 	gCoins := g
-	gCoins.NextEvent.Handle(1, &gCoins) //Move
-	gCoins.NextEvent.Handle(1, &gCoins) //Set to gate 1
+	gCoins.NextEvent.Handle(1, &gCoins)       //Move
+	gCoins.NextEvent.Handle(Gate(1), &gCoins) //Set to gate 1
 	CoinsIs(13, 0, gCoins, "CoinsTaken", t)
 
 	gStars := g
 	gStars.Players[0].Stars = 2
-	gStars.NextEvent.Handle(1, &gStars) //Move
-	gStars.NextEvent.Handle(1, &gStars) //Set to gate 1
+	gStars.NextEvent.Handle(1, &gStars)       //Move
+	gStars.NextEvent.Handle(Gate(1), &gStars) //Set to gate 1
 	CoinsIs(33, 0, gStars, "StarTaken", t)
 	StarsIs(1, 0, gStars, "StarTaken", t)
 }

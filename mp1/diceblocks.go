@@ -6,6 +6,10 @@ type NormalDiceBlock struct {
 	Player int
 }
 
+func (m NormalDiceBlock) String() string {
+	return "Normal Dice Block"
+}
+
 func (m NormalDiceBlock) ControllingPlayer() int {
 	return CPU_PLAYER
 }
@@ -20,6 +24,10 @@ func (m NormalDiceBlock) Handle(r Response, g *Game) {
 type RedDiceBlock struct {
 	Range
 	Player int
+}
+
+func (r RedDiceBlock) String() string {
+	return "Red Dice Block"
 }
 
 func (r RedDiceBlock) ControllingPlayer() int {
@@ -39,6 +47,10 @@ type BlueDiceBlock struct {
 	Player int
 }
 
+func (b BlueDiceBlock) String() string {
+	return "Blue Dice Block"
+}
+
 func (b BlueDiceBlock) ControllingPlayer() int {
 	return CPU_PLAYER
 }
@@ -53,6 +65,14 @@ func (b BlueDiceBlock) Handle(r Response, g *Game) {
 //WarpDiceBlock holds the implementation of a warp dice block.
 type WarpDiceBlock struct {
 	Player int
+}
+
+func (w WarpDiceBlock) String() string {
+	return "Warp Dice Block"
+}
+
+func (w WarpDiceBlock) Type() EventType {
+	return PLAYER_EVT_TYPE
 }
 
 //Responses returns a slice of ints containing the indexes of the other
@@ -99,10 +119,30 @@ const (
 	KoopaEventBlock
 )
 
+func (e EventBlockEvent) String() string {
+	switch e {
+	case BooEventBlock:
+		return "Boo"
+	case BowserEventBlock:
+		return "Bowser"
+	case KoopaEventBlock:
+		return "Koopa"
+	}
+	return ""
+}
+
 var EventBlockResponses = []Response{
 	BooEventBlock,
 	BowserEventBlock,
 	KoopaEventBlock,
+}
+
+func (e EventDiceBlock) String() string {
+	return "Event Dice Block"
+}
+
+func (e EventDiceBlock) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns a slice of the possible event dice block actions.
@@ -142,6 +182,10 @@ func (e EventDiceBlock) Handle(r Response, g *Game) {
 type PickDiceBlock struct {
 	Player int
 	Config GameConfig
+}
+
+func (p PickDiceBlock) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns a slice of the available dice blocks that can appear

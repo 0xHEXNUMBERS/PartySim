@@ -30,8 +30,8 @@ func wbcReverseCannons(g *mp1.Game, player int) {
 	g.Board.Data = data
 }
 
-//wbcLoadPlayerInBowserCannon sets the next event to choosing a chain for
-//the player to land on.
+//wbcLoadPlayerInBowserCannon sets the next event to choosing a random position
+//for the player to land on.
 func wbcLoadPlayerInBowserCannon(g *mp1.Game, player, moves int) int {
 	g.NextEvent = WBCBowserCannon{player, moves}
 	return moves

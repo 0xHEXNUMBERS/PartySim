@@ -86,11 +86,11 @@ func TestLandOnMinigameSpace(t *testing.T) {
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(Minigame1PShellGame, &g)
 	gLose := g
-	gLose.NextEvent.Handle(-5, &gLose) //lose 5 coins
+	gLose.NextEvent.Handle(Coins(-5), &gLose) //lose 5 coins
 	CoinsIs(5, 0, gLose, "Lose", t)
 
 	gWin := g
-	gWin.NextEvent.Handle(10, &gWin) //won WAP
+	gWin.NextEvent.Handle(Coins(10), &gWin) //won WAP
 	CoinsIs(20, 0, gWin, "Win", t)
 }
 
@@ -104,6 +104,6 @@ func TestPlayer4MinigameSpace(t *testing.T) {
 
 	g.MovePlayer(3, 1)
 	g.NextEvent.Handle(Minigame1PShellGame, &g)
-	g.NextEvent.Handle(-5, &g)
+	g.NextEvent.Handle(Coins(-5), &g)
 	EventIs(MinigameFFASelector{}, g.NextEvent, "", t)
 }

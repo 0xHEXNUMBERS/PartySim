@@ -9,7 +9,7 @@ import (
 func TestRBRFork(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 4)
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 	gBlueUpLeft := g
 	gBlueUpLeft.Board.Data = lerBoardData{true}
 	gBlueUpRight := gBlueUpLeft
@@ -33,7 +33,7 @@ func TestRBRFork(t *testing.T) {
 func TestRBFork(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(3, 8)
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 	gBlueUp := g
 	gBlueUp.Board.Data = lerBoardData{true}
 
@@ -47,7 +47,7 @@ func TestRBFork(t *testing.T) {
 func TestBRFork1(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(5, 3)
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 	gBlueUp := g
 	gBlueUp.Board.Data = lerBoardData{true}
 
@@ -61,7 +61,7 @@ func TestBRFork1(t *testing.T) {
 func TestBRFork2(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(6, 12)
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 	gBlueUp := g
 	gBlueUp.Board.Data = lerBoardData{true}
 
@@ -75,7 +75,7 @@ func TestBRFork2(t *testing.T) {
 func TestBRFork3(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(9, 8)
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 	gBlueUp := g
 	gBlueUp.Board.Data = lerBoardData{true}
 
@@ -90,7 +90,7 @@ func TestSwapGatesViaHappening(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(3, 7)
 	g.Players[0].Coins = 20
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 
 	g.NextEvent.Handle(1, &g) //Move
 	bd := g.Board.Data.(lerBoardData)
@@ -103,7 +103,7 @@ func TestSwapGatesTwice(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(11, 5)
 	g.Players[0].Coins = 20
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 
 	g.NextEvent.Handle(1, &g)    //Move
 	g.NextEvent.Handle(true, &g) //Swap Gates
@@ -117,7 +117,7 @@ func TestSwapGatesInsufficientCoins(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(2, 3)
 	g.Players[0].Coins = 0
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 
 	g.NextEvent.Handle(1, &g)
 
@@ -127,7 +127,7 @@ func TestSwapGatesInsufficientCoins(t *testing.T) {
 func TestNormalBranch(t *testing.T) {
 	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(0, 10)
-	g.NextEvent.Handle(uint8(0), &g)
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g)
 
 	g.NextEvent.Handle(1, &g)                       //Move
 	g.NextEvent.Handle(mp1.NewChainSpace(1, 0), &g) //Branch

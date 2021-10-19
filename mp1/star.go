@@ -31,14 +31,18 @@ type StarLocationEvent struct {
 	Moves  int
 }
 
+func (s StarLocationEvent) Type() EventType {
+	return CHAINSPACE_EVT_TYPE
+}
+
 //Responses returns a slice of the available indexes of the available star
 //spaces.
 func (s StarLocationEvent) Responses() []Response {
-	var i uint8
+	var i int
 	res := []Response{}
-	for i = 0; i < s.StarSpaceCount; i++ {
-		if s.RelativeVisited&(1<<i) == 0 && i != s.StarSpaceCount {
-			res = append(res, i)
+	for i = 0; i < int(s.StarSpaceCount); i++ {
+		if s.RelativeVisited&(1<<i) == 0 {
+			res = append(res, (*s.IndexToPosition)[i])
 		}
 	}
 	return res
@@ -52,10 +56,15 @@ func (s StarLocationEvent) ControllingPlayer() int {
 //r is the last available star space, then the list of star spaces already
 //landed on is reset.
 func (s StarLocationEvent) Handle(r Response, g *Game) {
-	i := r.(uint8)
+	c := r.(ChainSpace)
+	i := s.GetIndex(c)
+	if i < 0 { //Error
+		return
+	}
+
 	s.AbsoluteVisited |= (1 << i)
 	s.RelativeVisited |= (1 << i)
-	s.CurrentStarSpace = (*s.IndexToPosition)[i]
+	s.CurrentStarSpace = c
 
 	if s.RelativeVisited == (1<<s.StarSpaceCount)-1 { //Clear relative count if all star spaces are visited
 		s.RelativeVisited = 0

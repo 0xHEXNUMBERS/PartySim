@@ -1,5 +1,7 @@
 package mp1
 
+import "strconv"
+
 //PreBowserCheck is a check that happens before the player visits bowser.
 //If certain conditions are met, bowser will perform different actions
 //instead of picking one of his normal actions.
@@ -37,6 +39,32 @@ const (
 	BowsersChanceTime
 	StarPresent
 )
+
+func (b BowserResponse) String() string {
+	switch b {
+	case CoinsForBowser:
+		return "Coins For Bowser"
+	case BowserBalloonBurst:
+		return "Bowser's Balloon Burst"
+	case BowsersFaceLift:
+		return "Bowser's Face Lift"
+	case BowsersTugoWar:
+		return "Bowser's Tug o' War"
+	case BashnCash:
+		return "Bowser's Bash n' Cash"
+	case BowserRevolution:
+		return "Bowser Revolution"
+	case BowsersChanceTime:
+		return "Bowser's Chance Time"
+	case StarPresent:
+		return "Star Present"
+	}
+	return ""
+}
+
+func (b BowserEvent) Type() EventType {
+	return ENUM_EVT_TYPE
+}
 
 //Responses returns a slice of all of Bowser's actions.
 func (b BowserEvent) Responses() []Response {
@@ -169,10 +197,26 @@ const (
 	BTW3TWin
 )
 
+func (b BowsersTugoWarResult) String() string {
+	switch b {
+	case BTWDraw:
+		return "Draw"
+	case BTW1TWin:
+		return "Single Player Wins"
+	case BTW3TWin:
+		return "Team of 3 Wins"
+	}
+	return ""
+}
+
 var BTWResults = []Response{
 	BTWDraw,
 	BTW1TWin,
 	BTW3TWin,
+}
+
+func (b BowsersTugoWarEvent) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns a slice of the valid end results of Bowser's Tug o War.
@@ -251,6 +295,12 @@ type BCTResponse struct {
 	Coins  int
 }
 
+func (b BCTResponse) String() string {
+	givingPlayer := strconv.Itoa(b.Player + 1)
+	coins := strconv.Itoa(b.Coins)
+	return "Player " + givingPlayer + " loses " + coins + " coins"
+}
+
 var BCTResponses = []Response{
 	BCTResponse{0, 10},
 	BCTResponse{0, 20},
@@ -261,6 +311,10 @@ var BCTResponses = []Response{
 	BCTResponse{2, 10},
 	BCTResponse{2, 20},
 	BCTResponse{2, 30},
+}
+
+func (b BowsersChanceTimeEvent) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses return the valid responses to Bowser's Chance Time Event.

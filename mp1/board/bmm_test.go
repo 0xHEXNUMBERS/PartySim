@@ -8,8 +8,8 @@ import (
 
 func TestBMMMovement(t *testing.T) {
 	g := *mp1.InitializeGame(BMM, mp1.GameConfig{MaxTurns: 20})
-	g.NextEvent.Handle(uint8(0), &g) //Star
-	g.NextEvent.Handle(3, &g)        //Move
+	g.NextEvent.Handle(mp1.NewChainSpace(0, 4), &g) //Star
+	g.NextEvent.Handle(3, &g)                       //Move
 
 	SpaceIs(mp1.NewChainSpace(0, 15), 0, g, "", t)
 	CoinsIs(13, 0, g, "", t)
@@ -17,7 +17,7 @@ func TestBMMMovement(t *testing.T) {
 
 func TestBMMFork(t *testing.T) {
 	g := *mp1.InitializeGame(BMM, mp1.GameConfig{MaxTurns: 20})
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(0, 4), &g) //Star
 
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(0, 17)
 	g.NextEvent.Handle(1, &g)
@@ -49,7 +49,7 @@ func TestBMMFork(t *testing.T) {
 
 func TestBMMVolcano(t *testing.T) {
 	g := *mp1.InitializeGame(BMM, mp1.GameConfig{MaxTurns: 20})
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(0, 4), &g) //Star
 
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 5)
 	g.NextEvent.Handle(1, &g) //Move P0 to Happening
@@ -90,7 +90,7 @@ func TestBMMVolcano(t *testing.T) {
 
 func TestHiddenBlockOnInvisibleSpace(t *testing.T) {
 	g := *mp1.InitializeGame(BMM, mp1.GameConfig{MaxTurns: 20, EventsDice: true})
-	g.NextEvent.Handle(uint8(0), &g) //Star
+	g.NextEvent.Handle(mp1.NewChainSpace(0, 4), &g) //Star
 
 	g.Turn = 1
 	g.SetDiceBlock()

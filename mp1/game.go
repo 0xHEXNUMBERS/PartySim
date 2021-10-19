@@ -276,7 +276,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	g.Players[playerIdx].LastSpaceType = curSpace.Type
 	if g.Config.EventsDice &&
 		(curSpace.Type == Blue || curSpace.HiddenBlock) {
-		g.NextEvent = HiddenBlockEvent{playerIdx}
+		g.NextEvent = HiddenBlockEvent{Boolean{}, playerIdx}
 		return
 	}
 	g.ActivateSpace(playerIdx)

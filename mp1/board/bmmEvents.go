@@ -40,6 +40,10 @@ type BMMBranchDecision struct {
 	StarPath   mp1.ChainSpace
 }
 
+func (b BMMBranchDecision) Type() mp1.EventType {
+	return mp1.CHAINSPACE_EVT_TYPE
+}
+
 //Responses returns a slice of the 2 paths the player can take.
 func (b BMMBranchDecision) Responses() []mp1.Response {
 	return []mp1.Response{b.BowserPath, b.StarPath}

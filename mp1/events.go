@@ -1,7 +1,50 @@
 package mp1
 
+import "strconv"
+
 //Response is a response to any Event.
 type Response interface{}
+
+//TODO: Update each event to have Type() method
+
+type EventType int
+
+const (
+	//ENUM_EVT_TYPE is the default for responses that are not classified as
+	//Ranges, Booleans, Players or ChainSpaces. Responses of this type are typically
+	//implement fmt.Stringer to give a verbose definition of what they are,
+	//but that is not required.
+	ENUM_EVT_TYPE EventType = iota
+
+	//RANGE_EVT_TYPE specifies that responses are integers between a given
+	//range. The 0th index of Responses will hold the minimum integer
+	//value, while the last index of Responses will hold the maximum
+	//integer value.
+	RANGE_EVT_TYPE
+
+	//BOOLEAN_EVT_TYPE specifies that the event accepts 1 of 2 responses:
+	//either true or false.
+	BOOLEAN_EVT_TYPE
+
+	//PLAYER_EVT_TYPE specifies that responses are integers that correspond
+	//to player indicies (0 == Player 1, 1 == Player 2, etc.). A response
+	//of 4 is only used in Drawable FFA Minigames to indicate that a draw
+	//will occur.
+	PLAYER_EVT_TYPE
+
+	//MULTIWIN_PLAYER_EVT_TYPE specifies that responses are integers that
+	//correspond to a player mask. The nth bit of the integer represents
+	//whether player n+1 has won the minigame.
+	//Examples:
+	//0b0011 --> Players 1 and 2 have won
+	//0b1010 --> Players 2 and 4 have won
+	//0b0000 --> All players lost
+	MULTIWIN_PLAYER_EVT_TYPE
+
+	//CHAINSPACE_EVT_TYPE specifies that responses are chainspaces on the
+	//board.
+	CHAINSPACE_EVT_TYPE
+)
 
 //Event is an action that can be responded to via a Response.
 type Event interface {
@@ -16,6 +59,10 @@ type Event interface {
 	//Handle handles the current event with the given response onto
 	//the given game. Handle must set the Game's NextEvent field.
 	Handle(Response, *Game)
+
+	//Type returns what types of responses the caller should expect. Must
+	//be one of ENUM_EVT_TYPE, RANGE_EVT_TYPE, or CHAINSPACE_EVT_TYPE.
+	Type() EventType
 }
 
 //BranchEvent lets the player decide where to branch off to.
@@ -23,6 +70,10 @@ type BranchEvent struct {
 	Player int
 	Moves  int
 	Links  *[]ChainSpace
+}
+
+func (b BranchEvent) Type() EventType {
+	return CHAINSPACE_EVT_TYPE
 }
 
 //Responses return a slice of landable ChainSpaces that the player can move
@@ -131,6 +182,19 @@ type BooStealAction struct {
 	Star         bool
 }
 
+func (b BooStealAction) String() string {
+	givingPlayer := strconv.Itoa(b.GivingPlayer + 1)
+	if b.Star {
+		return "Steal 1 star from player " + givingPlayer + " for 50 coins"
+	} else {
+		return "Steal coins from player " + givingPlayer
+	}
+}
+
+func (b BooEvent) Type() EventType {
+	return ENUM_EVT_TYPE
+}
+
 //Responses returns a slice of BooStealActions that b.Player can take.
 func (b BooEvent) Responses() []Response {
 	res := make([]Response, 0)
@@ -221,11 +285,41 @@ func NewRange(min, max int) []Response {
 	return Range{min, max}.Responses()
 }
 
+func (r Range) Type() EventType {
+	return RANGE_EVT_TYPE
+}
+
 //Responses returns a list of ints from [c.Min,c.Max].
-func (c Range) Responses() []Response {
+func (r Range) Responses() []Response {
 	var ret []Response
-	for i := c.Min; i <= c.Max; i++ {
+	for i := r.Min; i <= r.Max; i++ {
 		ret = append(ret, i)
+	}
+	return ret
+}
+
+//CoinRange is a partial event that generates a range from [Min,Max]
+//that the player can respond with. It is mostly used to generate the
+//[Min,Max] range for events where a range of coins may be collection
+//or spent.
+type CoinRange struct {
+	Min int
+	Max int
+}
+
+func NewCoinRange(min, max int) []Response {
+	return CoinRange{min, max}.Responses()
+}
+
+func (r CoinRange) Type() EventType {
+	return ENUM_EVT_TYPE
+}
+
+//Responses returns a list of ints from [c.Min,c.Max].
+func (r CoinRange) Responses() []Response {
+	var ret []Response
+	for i := r.Min; i <= r.Max; i++ {
+		ret = append(ret, Coins(i))
 	}
 	return ret
 }
@@ -234,6 +328,10 @@ func (c Range) Responses() []Response {
 type Boolean struct{}
 
 var BooleanResponse = []Response{false, true}
+
+func (b Boolean) Type() EventType {
+	return BOOLEAN_EVT_TYPE
+}
 
 func (b Boolean) Responses() []Response {
 	return BooleanResponse

@@ -1,5 +1,7 @@
 package mp1
 
+import "strconv"
+
 //ChanceMiddleBlock is an enumeration of the exchagne actions that can
 //occur during Chance Time.
 type ChanceMiddleBlock int
@@ -18,6 +20,32 @@ const (
 
 	CMBCount
 )
+
+func (c ChanceMiddleBlock) String() string {
+	switch c {
+	case LTRStar:
+		return "Star ->"
+	case LTR10:
+		return "10 Coins ->"
+	case LTR20:
+		return "20 Coins ->"
+	case LTR30:
+		return "30 Coins ->"
+	case RTLStar:
+		return "<- Star"
+	case RTL10:
+		return "<- 10 Coins"
+	case RTL20:
+		return "<- 20 Coins"
+	case RTL30:
+		return "<- 30 Coins"
+	case SwapCoins:
+		return "<- Coins ->"
+	case SwapStars:
+		return "<- Stars ->"
+	}
+	return ""
+}
 
 //ChanceTimeBlock is an enumeration of the Chance Time blocks.
 type ChanceTimeBlock int
@@ -45,6 +73,28 @@ type ChanceTime struct {
 type ChanceTimeResponse struct {
 	Block    ChanceTimeBlock
 	Position int
+}
+
+func (c ChanceTimeResponse) String() string {
+	var block string
+	switch c.Block {
+	case CTBLeft:
+		block = "Left"
+	case CTBMiddle:
+		block = "Middle"
+	case CTBRight:
+		block = "Right"
+	}
+
+	if c.Block == CTBMiddle {
+		return "Middle Block lands on " + ChanceMiddleBlock(c.Position).String()
+	} else {
+		return block + " Block lands on Player " + strconv.Itoa(c.Position+1)
+	}
+}
+
+func (c ChanceTime) Type() EventType {
+	return ENUM_EVT_TYPE
 }
 
 //Responses returns a slice of the remaining blocks and block positions

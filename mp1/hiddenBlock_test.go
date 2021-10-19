@@ -13,7 +13,7 @@ func TestHiddenBlock(t *testing.T) {
 	g.Turn = 1
 
 	g.MovePlayer(0, 1) //Blue Space
-	EventIs(HiddenBlockEvent{0}, g.NextEvent, "", t)
+	EventIs(HiddenBlockEvent{Boolean{}, 0}, g.NextEvent, "", t)
 
 	gHidden := g
 	gHidden.NextEvent.Handle(true, &gHidden)
