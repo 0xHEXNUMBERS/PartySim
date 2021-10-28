@@ -6,9 +6,25 @@ import (
 	"github.com/0xhexnumbers/partysim/mp1"
 )
 
+type ESBranchResponse int
+
+const (
+	ESBranchGotoWarp ESBranchResponse = iota
+	ESBranchContinue
+)
+
+func (e ESBranchResponse) String() string {
+	switch e {
+	case ESBranchGotoWarp:
+		return "Go to warp"
+	case ESBranchContinue:
+		return "Continue down main path"
+	}
+	return ""
+}
+
 //ESBranchEvent let's the player decide if they want to take the warp.
 type ESBranchEvent struct {
-	mp1.Boolean
 	Player int
 	Moves  int
 	Warp1  mp1.ChainSpace
@@ -16,8 +32,21 @@ type ESBranchEvent struct {
 	Warp3  mp1.ChainSpace
 }
 
+func (e ESBranchEvent) Question(g *mp1.Game) string {
+	return fmt.Sprintf("Does %s take the warp?",
+		g.Players[e.Player].Char)
+}
+
+func (e ESBranchEvent) Type() mp1.EventType {
+	return mp1.ENUM_EVT_TYPE
+}
+
 func (e ESBranchEvent) ControllingPlayer() int {
 	return e.Player
+}
+
+func (e ESBranchEvent) Responses() []mp1.Response {
+	return []mp1.Response{ESBranchGotoWarp, ESBranchContinue}
 }
 
 //Handle executes based on r. If r is true, the player's new position is set
@@ -25,9 +54,9 @@ func (e ESBranchEvent) ControllingPlayer() int {
 //the gate is unknown). If r is false, the player continues down their
 //current chain.
 func (e ESBranchEvent) Handle(r mp1.Response, g *mp1.Game) {
-	gotoWarp := r.(bool)
+	gotoWarp := r.(ESBranchResponse)
 	bd := g.Board.Data.(esBoardData)
-	if gotoWarp {
+	if gotoWarp == ESBranchGotoWarp {
 		switch bd.Gate {
 		case 0:
 			g.NextEvent = ESWarpDest{
@@ -52,51 +81,111 @@ func (e ESBranchEvent) Handle(r mp1.Response, g *mp1.Game) {
 	}
 }
 
+type ESVisitBabyBowserResponse int
+
+const (
+	ESVisitBabyBowserPlay ESVisitBabyBowserResponse = iota
+	ESVisitBabyBowserIgnore
+)
+
+func (e ESVisitBabyBowserResponse) String() string {
+	switch e {
+	case ESVisitBabyBowserPlay:
+		return "Pay 20 coins to play minigame"
+	case ESVisitBabyBowserIgnore:
+		return "Do not play minigame"
+	}
+	return ""
+}
+
 //ESVisitBabyBowser let's the player decide if they want to play baby
 //bowser's minigame to win a star.
 type ESVisitBabyBowser struct {
-	mp1.Boolean
 	Player int
 	Moves  int
 	Index  int
+}
+
+func (e ESVisitBabyBowser) Question(g *mp1.Game) string {
+	return fmt.Sprintf(
+		"Does %s pay 20 coins to play Baby Bowser's star minigame?",
+		g.Players[e.Player].Char,
+	)
+}
+
+func (e ESVisitBabyBowser) Type() mp1.EventType {
+	return mp1.ENUM_EVT_TYPE
 }
 
 func (e ESVisitBabyBowser) ControllingPlayer() int {
 	return e.Player
 }
 
+func (e ESVisitBabyBowser) Responses() []mp1.Response {
+	return []mp1.Response{ESVisitBabyBowserPlay, ESVisitBabyBowserIgnore}
+}
+
 //Handle sets the next event to the baby bowser minigame if r is true. If r
 //is false, then nothing happens.
 func (e ESVisitBabyBowser) Handle(r mp1.Response, g *mp1.Game) {
-	battle := r.(bool)
-	if battle {
+	battle := r.(ESVisitBabyBowserResponse)
+	if battle == ESVisitBabyBowserPlay {
 		g.AwardCoins(e.Player, -20, false)
 		g.NextEvent = ESBattleBabyBowser{
-			mp1.Boolean{}, e.Player, e.Moves, e.Index,
+			e.Player, e.Moves, e.Index,
 		}
 	} else {
 		g.MovePlayer(e.Player, e.Moves)
 	}
 }
 
+type ESBattleBabyBowserResponse int
+
+const (
+	ESBattleBabyBowserWin ESBattleBabyBowserResponse = iota
+	ESBattleBabyBowserLose
+)
+
+func (e ESBattleBabyBowserResponse) String() string {
+	switch e {
+	case ESBattleBabyBowserWin:
+		return "Baby Bowser loses the minigame"
+	case ESBattleBabyBowserLose:
+		return "Baby Bowser wins the minigame"
+	}
+	return ""
+}
+
 //ESBattleBabyBowser decides if the player wins the minigame.
 type ESBattleBabyBowser struct {
-	mp1.Boolean
 	Player int
 	Moves  int
 	Index  int
+}
+
+func (e ESBattleBabyBowser) Question(g *mp1.Game) string {
+	return fmt.Sprintf("Does %s win Baby Bowser's minigame?",
+		g.Players[e.Player].Char)
+}
+
+func (e ESBattleBabyBowser) Type() mp1.EventType {
+	return mp1.ENUM_EVT_TYPE
 }
 
 func (e ESBattleBabyBowser) ControllingPlayer() int {
 	return mp1.CPU_PLAYER
 }
 
+func (e ESBattleBabyBowser) Responses() []mp1.Response {
+	return []mp1.Response{ESBattleBabyBowserWin, ESBattleBabyBowserLose}
+}
+
 //Handle gives the player a star and sets the baby bowser's StarTaken flag
 //to true if r is true. If r is false, a star is taken from the plaeyr.
 func (e ESBattleBabyBowser) Handle(r mp1.Response, g *mp1.Game) {
-	star := r.(bool)
+	star := r.(ESBattleBabyBowserResponse)
 	bd := g.Board.Data.(esBoardData)
-	if star {
+	if star == ESBattleBabyBowserWin {
 		g.Players[e.Player].Stars++
 		bd.StarTaken[e.Index] = true
 		if esAllStarsCollected(bd) {
@@ -115,6 +204,10 @@ func (e ESBattleBabyBowser) Handle(r mp1.Response, g *mp1.Game) {
 type ESWarpCDest struct {
 	Player int
 	Moves  int
+}
+
+func (e ESWarpCDest) Question(g *mp1.Game) string {
+	return fmt.Sprintf("Where did %s warp to?", g.Players[e.Player].Char)
 }
 
 func (e ESWarpCDest) Type() mp1.EventType {
@@ -156,6 +249,10 @@ type ESWarpDest struct {
 	Island1  mp1.ChainSpace
 	Island2  mp1.ChainSpace
 	Island3  mp1.ChainSpace
+}
+
+func (e ESWarpDest) Question(g *mp1.Game) string {
+	return fmt.Sprintf("Where did %s warp to?", g.Players[e.Player].Char)
 }
 
 func (e ESWarpDest) Type() mp1.EventType {
@@ -217,6 +314,10 @@ var esChangeGatesResponses = [3][]mp1.Response{
 	{Gate(2), Gate(3)},
 	{Gate(1), Gate(3)},
 	{Gate(1), Gate(2)},
+}
+
+func (e ESChangeGates) Question(g *mp1.Game) string {
+	return "What warp gate number did Bowser set the course to?"
 }
 
 func (e ESChangeGates) Type() mp1.EventType {

@@ -1,9 +1,15 @@
 package mp1
 
+import "fmt"
+
 //NormalDiceBlock holds the implementation of a regular dice block.
 type NormalDiceBlock struct {
 	Range
 	Player int
+}
+
+func (m NormalDiceBlock) Question(g *Game) string {
+	return fmt.Sprintf("What did %s roll?", g.Players[m.Player].Char)
 }
 
 func (m NormalDiceBlock) String() string {
@@ -24,6 +30,10 @@ func (m NormalDiceBlock) Handle(r Response, g *Game) {
 type RedDiceBlock struct {
 	Range
 	Player int
+}
+
+func (m RedDiceBlock) Question(g *Game) string {
+	return fmt.Sprintf("What did %s roll?", g.Players[m.Player].Char)
 }
 
 func (r RedDiceBlock) String() string {
@@ -47,6 +57,10 @@ type BlueDiceBlock struct {
 	Player int
 }
 
+func (m BlueDiceBlock) Question(g *Game) string {
+	return fmt.Sprintf("What did %s roll?", g.Players[m.Player].Char)
+}
+
 func (b BlueDiceBlock) String() string {
 	return "Blue Dice Block"
 }
@@ -65,6 +79,10 @@ func (b BlueDiceBlock) Handle(r Response, g *Game) {
 //WarpDiceBlock holds the implementation of a warp dice block.
 type WarpDiceBlock struct {
 	Player int
+}
+
+func (m WarpDiceBlock) Question(g *Game) string {
+	return fmt.Sprintf("What did %s roll?", g.Players[m.Player].Char)
 }
 
 func (w WarpDiceBlock) String() string {
@@ -137,6 +155,10 @@ var EventBlockResponses = []Response{
 	KoopaEventBlock,
 }
 
+func (m EventDiceBlock) Question(g *Game) string {
+	return fmt.Sprintf("What did %s roll?", g.Players[m.Player].Char)
+}
+
 func (e EventDiceBlock) String() string {
 	return "Event Dice Block"
 }
@@ -182,6 +204,11 @@ func (e EventDiceBlock) Handle(r Response, g *Game) {
 type PickDiceBlock struct {
 	Player int
 	Config GameConfig
+}
+
+func (m PickDiceBlock) Question(g *Game) string {
+	return fmt.Sprintf("What dice block did %s receive?",
+		g.Players[m.Player].Char)
 }
 
 func (p PickDiceBlock) Type() EventType {

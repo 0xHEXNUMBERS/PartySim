@@ -13,14 +13,14 @@ func TestHiddenBlock(t *testing.T) {
 	g.Turn = 1
 
 	g.MovePlayer(0, 1) //Blue Space
-	EventIs(HiddenBlockEvent{Boolean{}, 0}, g.NextEvent, "", t)
+	EventIs(HiddenBlockEvent{0}, g.NextEvent, "", t)
 
 	gHidden := g
-	gHidden.NextEvent.Handle(true, &gHidden)
+	gHidden.NextEvent.Handle(HiddenBlockAppears, &gHidden)
 	EventIs(EventDiceBlock{0}, gHidden.NextEvent, "Dice", t)
 
 	gBlue := g
-	gBlue.NextEvent.Handle(false, &gBlue)
+	gBlue.NextEvent.Handle(HiddenBlockNotThere, &gBlue)
 	EventIs(PickDiceBlock{1, gBlue.Config}, gBlue.NextEvent, "Player", t)
 	CoinsIs(13, 0, gBlue, "", t)
 }

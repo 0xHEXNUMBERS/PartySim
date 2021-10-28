@@ -188,7 +188,7 @@ func (g *Game) ActivateSpace(player int) {
 		}
 		g.EndCharacterTurn()
 	case Mushroom:
-		g.NextEvent = MushroomEvent{Boolean{}, player}
+		g.NextEvent = MushroomEvent{player}
 	case Happening:
 		g.Players[player].HappeningCount++
 		g.NextEvent = nil
@@ -276,7 +276,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	g.Players[playerIdx].LastSpaceType = curSpace.Type
 	if g.Config.EventsDice &&
 		(curSpace.Type == Blue || curSpace.HiddenBlock) {
-		g.NextEvent = HiddenBlockEvent{Boolean{}, playerIdx}
+		g.NextEvent = HiddenBlockEvent{playerIdx}
 		return
 	}
 	g.ActivateSpace(playerIdx)

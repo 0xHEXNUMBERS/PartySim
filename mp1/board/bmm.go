@@ -49,7 +49,6 @@ func bmmReachFork(bowserPath, starPath mp1.ChainSpace) func(*mp1.Game, int, int)
 	return func(g *mp1.Game, player, moves int) int {
 		if g.Players[player].Coins >= 10 {
 			g.NextEvent = BMMBranchPay{
-				mp1.Boolean{},
 				player,
 				moves,
 				bowserPath,
@@ -74,7 +73,7 @@ func bmmFinalFork(g *mp1.Game, player, moves int) int {
 //steals 20 coins.
 func bmmVisitBowser(g *mp1.Game, player, moves int) int {
 	if g.Players[player].Stars > 0 {
-		g.NextEvent = BMMBowserRoulette{mp1.Boolean{}, player, moves}
+		g.NextEvent = BMMBowserRoulette{player, moves}
 	} else {
 		g.AwardCoins(player, -20, false)
 	}

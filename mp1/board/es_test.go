@@ -126,22 +126,22 @@ func TestWarpG(t *testing.T) {
 
 	g1 := g
 	g1.Board.Data = esBoardData{Gate: 1}
-	g1.NextEvent.Handle(1, &g1)       //Move
-	g1.NextEvent.Handle(true, &g1)    //Goto Warp G
-	g1.NextEvent.Handle(Gate(2), &g1) //Set to Gate 2
+	g1.NextEvent.Handle(1, &g1)                //Move
+	g1.NextEvent.Handle(ESBranchGotoWarp, &g1) //Goto Warp G
+	g1.NextEvent.Handle(Gate(2), &g1)          //Set to Gate 2
 	SpaceIs(esStartingSpace, 0, g1, "G1", t)
 
 	g2 := g
 	g2.Board.Data = esBoardData{Gate: 2}
-	g2.NextEvent.Handle(1, &g2)       //Move
-	g2.NextEvent.Handle(true, &g2)    //Goto Warp G
-	g2.NextEvent.Handle(Gate(3), &g2) //Set to Gate 3
+	g2.NextEvent.Handle(1, &g2)                //Move
+	g2.NextEvent.Handle(ESBranchGotoWarp, &g2) //Goto Warp G
+	g2.NextEvent.Handle(Gate(3), &g2)          //Set to Gate 3
 	SpaceIs(esStartingSpace, 0, g2, "G2", t)
 
 	g3 := g
 	g3.Board.Data = esBoardData{Gate: 3}
-	g3.NextEvent.Handle(1, &g3)    //Move
-	g3.NextEvent.Handle(true, &g3) //Goto Warp G
+	g3.NextEvent.Handle(1, &g3)                //Move
+	g3.NextEvent.Handle(ESBranchGotoWarp, &g3) //Goto Warp G
 	SpaceIs(mp1.NewChainSpace(11, 1), 0, g3, "G3", t)
 }
 
@@ -191,22 +191,22 @@ func TestWarpJ(t *testing.T) {
 
 	g1 := g
 	g1.Board.Data = esBoardData{Gate: 1}
-	g1.NextEvent.Handle(1, &g1)       //Move
-	g1.NextEvent.Handle(true, &g1)    //Goto warp J
-	g1.NextEvent.Handle(Gate(2), &g1) //Set to gate 2
+	g1.NextEvent.Handle(1, &g1)                //Move
+	g1.NextEvent.Handle(ESBranchGotoWarp, &g1) //Goto warp J
+	g1.NextEvent.Handle(Gate(2), &g1)          //Set to gate 2
 	SpaceIs(esStartingSpace, 0, g1, "G1", t)
 
 	g2 := g
 	g2.Board.Data = esBoardData{Gate: 2}
-	g2.NextEvent.Handle(1, &g2)       //Move
-	g2.NextEvent.Handle(true, &g2)    //Goto warp J
-	g2.NextEvent.Handle(Gate(3), &g2) //Set to gate 3
+	g2.NextEvent.Handle(1, &g2)                //Move
+	g2.NextEvent.Handle(ESBranchGotoWarp, &g2) //Goto warp J
+	g2.NextEvent.Handle(Gate(3), &g2)          //Set to gate 3
 	SpaceIs(esStartingSpace, 0, g2, "G2", t)
 
 	g3 := g
 	g3.Board.Data = esBoardData{Gate: 3}
-	g3.NextEvent.Handle(1, &g3)    //Move
-	g3.NextEvent.Handle(true, &g3) //Goto warp J
+	g3.NextEvent.Handle(1, &g3)                //Move
+	g3.NextEvent.Handle(ESBranchGotoWarp, &g3) //Goto warp J
 	SpaceIs(mp1.NewChainSpace(11, 1), 0, g3, "G3", t)
 }
 
@@ -241,9 +241,9 @@ func TestStarSpace(t *testing.T) {
 
 	gCoins := g
 	gCoins.Players[0].Coins = 20
-	gCoins.NextEvent.Handle(1, &gCoins)    //Move
-	gCoins.NextEvent.Handle(true, &gCoins) //Pay 20 coins
-	gCoins.NextEvent.Handle(true, &gCoins) //Won dice roll
+	gCoins.NextEvent.Handle(1, &gCoins)                     //Move
+	gCoins.NextEvent.Handle(ESVisitBabyBowserPlay, &gCoins) //Pay 20 coins
+	gCoins.NextEvent.Handle(ESBattleBabyBowserWin, &gCoins) //Won dice roll
 
 	StarsIs(1, 0, gCoins, "", t)
 	CoinsIs(3, 0, gCoins, "", t)
@@ -269,9 +269,9 @@ func TestStarSpaceReset(t *testing.T) {
 	g.Players[0].Coins = 20
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(4, 1)
 
-	g.NextEvent.Handle(1, &g)    //Move
-	g.NextEvent.Handle(true, &g) //Pay 20 coins
-	g.NextEvent.Handle(true, &g) //Won dice roll
+	g.NextEvent.Handle(1, &g)                     //Move
+	g.NextEvent.Handle(ESVisitBabyBowserPlay, &g) //Pay 20 coins
+	g.NextEvent.Handle(ESBattleBabyBowserWin, &g) //Won dice roll
 
 	bd = g.Board.Data.(esBoardData)
 	if bd.StarTaken != [7]bool{} {

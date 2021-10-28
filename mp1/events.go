@@ -1,6 +1,9 @@
 package mp1
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 //Response is a response to any Event.
 type Response interface{}
@@ -22,9 +25,9 @@ const (
 	//integer value.
 	RANGE_EVT_TYPE
 
-	//BOOLEAN_EVT_TYPE specifies that the event accepts 1 of 2 responses:
-	//either true or false.
-	BOOLEAN_EVT_TYPE
+	//COIN_EVT_TYPE specifies that responses are integers that correspond
+	//to a coin amount.
+	COIN_EVT_TYPE
 
 	//PLAYER_EVT_TYPE specifies that responses are integers that correspond
 	//to player indicies (0 == Player 1, 1 == Player 2, etc.). A response
@@ -63,6 +66,11 @@ type Event interface {
 	//Type returns what types of responses the caller should expect. Must
 	//be one of ENUM_EVT_TYPE, RANGE_EVT_TYPE, or CHAINSPACE_EVT_TYPE.
 	Type() EventType
+
+	//Question returns a representation of the struct in question form
+	//(e.g. What face did the die land on? Which path will Mario take?
+	//Does Yoshi pay 20 coins to perform x action?).
+	Question(*Game) string
 }
 
 //BranchEvent lets the player decide where to branch off to.
@@ -74,6 +82,11 @@ type BranchEvent struct {
 
 func (b BranchEvent) Type() EventType {
 	return CHAINSPACE_EVT_TYPE
+}
+
+func (b BranchEvent) Question(g *Game) string {
+	return fmt.Sprintf("Which path will the %s take?",
+		g.Players[b.Player].Char)
 }
 
 //Responses return a slice of landable ChainSpaces that the player can move
@@ -117,18 +130,47 @@ func (p PayRangeEvent) ControllingPlayer() int {
 	return p.Player
 }
 
+type MushroomEventResponse int
+
+const (
+	RedMushroom MushroomEventResponse = iota
+	PoisonMushroom
+)
+
+func (m MushroomEventResponse) String() string {
+	switch m {
+	case RedMushroom:
+		return "Red Mushroom"
+	case PoisonMushroom:
+		return "Poison Mushroom"
+	}
+	return ""
+}
+
 //MushroomEvent occurs when a player lands on a Mushroom Space.
 type MushroomEvent struct {
-	Boolean
 	Player int
+}
+
+func (m MushroomEvent) Question(g *Game) string {
+	return fmt.Sprintf("What mushroom did %s recieve?",
+		g.Players[m.Player].Char)
+}
+
+func (m MushroomEvent) Type() EventType {
+	return ENUM_EVT_TYPE
+}
+
+func (m MushroomEvent) Responses() []Response {
+	return []Response{RedMushroom, PoisonMushroom}
 }
 
 //Handle sets next players turn. If r == true, then player m.Player goes
 //again. If r == false, then m.Player's SkipTurn flag is set before ending
 //their turn.
 func (m MushroomEvent) Handle(r Response, g *Game) {
-	redMushroom := r.(bool)
-	if redMushroom {
+	redMushroom := r.(MushroomEventResponse)
+	if redMushroom == RedMushroom {
 		g.SetDiceBlock()
 		return
 	}
@@ -147,6 +189,12 @@ type BooCoinsEvent struct {
 	PayRangeEvent
 	RecvPlayer int
 	Moves      int
+}
+
+func (b BooCoinsEvent) Question(g *Game) string {
+	return fmt.Sprintf("How many coins will %s steal from %s",
+		g.Players[b.RecvPlayer].Char,
+		g.Players[b.PayRangeEvent.Player].Char)
 }
 
 func (b BooCoinsEvent) ControllingPlayer() int {
@@ -189,6 +237,11 @@ func (b BooStealAction) String() string {
 	} else {
 		return "Steal coins from player " + givingPlayer
 	}
+}
+
+func (b BooEvent) Question(g *Game) string {
+	return fmt.Sprintf("What will %s do with Boo?",
+		g.Players[b.Player].Char)
 }
 
 func (b BooEvent) Type() EventType {
@@ -252,16 +305,30 @@ func (b BooEvent) ControllingPlayer() int {
 //DeterminePlayerTeamEvent handles deciding which minigame team a player
 //is if said player landed on a *green* space.
 type DeterminePlayerTeamEvent struct {
-	Boolean
 	Player int
+}
+
+func (d DeterminePlayerTeamEvent) Question(g *Game) string {
+	return fmt.Sprintf("What team was %s chosen to be on?",
+		g.Players[d.Player].Char)
+}
+
+func (d DeterminePlayerTeamEvent) Type() EventType {
+	return ENUM_EVT_TYPE
+}
+
+//Responses returns BlueTeam and RedTeam, the two available teams a player
+//can be on.
+func (d DeterminePlayerTeamEvent) Responses() []Response {
+	return []Response{BlueTeam, RedTeam}
 }
 
 //Handle sets d.Player's team. If r is true, d.Player's team is blue. If r
 //is false, d.Player's team is Red.
 func (d DeterminePlayerTeamEvent) Handle(r Response, g *Game) {
-	isBlue := r.(bool)
+	team := r.(MinigameTeam)
 
-	if isBlue {
+	if team == BlueTeam {
 		g.Players[d.Player].LastSpaceType = Blue
 	} else {
 		g.Players[d.Player].LastSpaceType = Red
@@ -296,43 +363,4 @@ func (r Range) Responses() []Response {
 		ret = append(ret, i)
 	}
 	return ret
-}
-
-//CoinRange is a partial event that generates a range from [Min,Max]
-//that the player can respond with. It is mostly used to generate the
-//[Min,Max] range for events where a range of coins may be collection
-//or spent.
-type CoinRange struct {
-	Min int
-	Max int
-}
-
-func NewCoinRange(min, max int) []Response {
-	return CoinRange{min, max}.Responses()
-}
-
-func (r CoinRange) Type() EventType {
-	return ENUM_EVT_TYPE
-}
-
-//Responses returns a list of ints from [c.Min,c.Max].
-func (r CoinRange) Responses() []Response {
-	var ret []Response
-	for i := r.Min; i <= r.Max; i++ {
-		ret = append(ret, Coins(i))
-	}
-	return ret
-}
-
-//Boolean is a partial event used to make true/false events.
-type Boolean struct{}
-
-var BooleanResponse = []Response{false, true}
-
-func (b Boolean) Type() EventType {
-	return BOOLEAN_EVT_TYPE
-}
-
-func (b Boolean) Responses() []Response {
-	return BooleanResponse
 }

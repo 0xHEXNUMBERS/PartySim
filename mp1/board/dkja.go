@@ -31,7 +31,7 @@ func dkjaCanPassWhomp(whomp int) func(*mp1.Game, int, int) int {
 	return func(g *mp1.Game, player, moves int) int {
 		if g.Players[player].Coins >= 10 {
 			g.NextEvent = DKJAWhompEvent{
-				mp1.Boolean{}, player, moves, whomp,
+				player, moves, whomp,
 			}
 		} else {
 			pos := dkjaGetWhompDestination(g, whomp)
@@ -46,12 +46,17 @@ func dkjaCanPassWhomp(whomp int) func(*mp1.Game, int, int) int {
 //to make that decision.
 func dkjaCanPassCoinBlockade(blockade int) func(*mp1.Game, int, int) int {
 	return func(g *mp1.Game, player, moves int) int {
+		data := g.Board.Data.(dkjaBoardData)
 		if g.Players[player].Coins >= 20 {
-			g.NextEvent = DKJACoinBranchEvent{
-				mp1.Boolean{}, player, moves, blockade,
+			g.NextEvent = mp1.BranchEvent{
+				Player: player,
+				Moves:  moves,
+				Links: &[]mp1.ChainSpace{
+					data.CoinAcceptDestination[blockade],
+					data.CoinRejectDestination[blockade],
+				},
 			}
 		} else {
-			data := g.Board.Data.(dkjaBoardData)
 			g.Players[player].CurrentSpace = data.CoinRejectDestination[blockade]
 		}
 		return moves - 1

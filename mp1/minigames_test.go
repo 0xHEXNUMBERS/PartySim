@@ -40,7 +40,7 @@ func Test1V3Minigame(t *testing.T) {
 	IntIs(3, minigame.Player, "Solo Player", t)
 
 	g.NextEvent.Handle(Minigame1V3TightropeTreachery, &g)
-	g.NextEvent.Handle(0, &g) //Mario wins
+	g.NextEvent.Handle(Minigame1V3SingleWin, &g)
 	CoinsIs(25, 3, g, "", t)
 	MinigameCoinsIs(15, 3, g, "", t)
 }
@@ -60,7 +60,7 @@ func Test2V2Minigame(t *testing.T) {
 	}
 
 	g.NextEvent.Handle(Minigame2V2HandcarHavoc, &g)
-	g.NextEvent.Handle(0, &g) //Daisy and DonkeyKong win
+	g.NextEvent.Handle(Minigame2V2BlueWin, &g)
 	CoinsIs(20, 0, g, "", t)
 	MinigameCoinsIs(10, 0, g, "", t)
 	CoinsIs(20, 2, g, "", t)
@@ -75,9 +75,9 @@ func TestGreenToBlue(t *testing.T) {
 	g.Players[3].LastSpaceType = Blue
 
 	g.FindGreenPlayer()
-	EventIs(DeterminePlayerTeamEvent{Boolean{}, 2}, g.NextEvent, "", t)
+	EventIs(DeterminePlayerTeamEvent{2}, g.NextEvent, "", t)
 
-	g.NextEvent.Handle(true, &g)
+	g.NextEvent.Handle(BlueTeam, &g)
 	SpaceTypeIs(Blue, g.Players[2].LastSpaceType, "", t)
 }
 
@@ -86,11 +86,11 @@ func TestLandOnMinigameSpace(t *testing.T) {
 	g.MovePlayer(0, 1)
 	g.NextEvent.Handle(Minigame1PShellGame, &g)
 	gLose := g
-	gLose.NextEvent.Handle(Coins(-5), &gLose) //lose 5 coins
+	gLose.NextEvent.Handle(-5, &gLose) //lose 5 coins
 	CoinsIs(5, 0, gLose, "Lose", t)
 
 	gWin := g
-	gWin.NextEvent.Handle(Coins(10), &gWin) //won WAP
+	gWin.NextEvent.Handle(10, &gWin) //won WAP
 	CoinsIs(20, 0, gWin, "Win", t)
 }
 
@@ -104,6 +104,6 @@ func TestPlayer4MinigameSpace(t *testing.T) {
 
 	g.MovePlayer(3, 1)
 	g.NextEvent.Handle(Minigame1PShellGame, &g)
-	g.NextEvent.Handle(Coins(-5), &g)
+	g.NextEvent.Handle(-5, &g)
 	EventIs(MinigameFFASelector{}, g.NextEvent, "", t)
 }

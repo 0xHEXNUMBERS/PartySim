@@ -1,6 +1,9 @@
 package mp1
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 //PreBowserCheck is a check that happens before the player visits bowser.
 //If certain conditions are met, bowser will perform different actions
@@ -60,6 +63,10 @@ func (b BowserResponse) String() string {
 		return "Star Present"
 	}
 	return ""
+}
+
+func (b BowserEvent) Question(g *Game) string {
+	return "What did Bowser pick as the punishment?"
 }
 
 func (b BowserEvent) Type() EventType {
@@ -129,6 +136,14 @@ func GetBowserMinigameCoinLoss(turn uint8) int {
 //BowserBalloonBurstEvent holds the implementation for Bowser's Balloon Burst.
 type BowserBalloonBurstEvent struct{ Range }
 
+func (b BowserBalloonBurstEvent) Question(g *Game) string {
+	return "Which player popped the ballon?"
+}
+
+func (b BowserBalloonBurstEvent) Type() EventType {
+	return PLAYER_EVT_TYPE
+}
+
 func (b BowserBalloonBurstEvent) ControllingPlayer() int {
 	return CPU_PLAYER
 }
@@ -157,6 +172,14 @@ func (b BowserBalloonBurstEvent) Handle(r Response, g *Game) {
 type BowsersFaceLiftEvent struct {
 	Range
 	Player int
+}
+
+func (b BowsersFaceLiftEvent) Question(g *Game) string {
+	return "Which players won Bowser's Face Lift?"
+}
+
+func (b BowsersFaceLiftEvent) Type() EventType {
+	return MULTIWIN_PLAYER_EVT_TYPE
 }
 
 func (b BowsersFaceLiftEvent) ControllingPlayer() int {
@@ -215,6 +238,10 @@ var BTWResults = []Response{
 	BTW3TWin,
 }
 
+func (b BowsersTugoWarEvent) Question(g *Game) string {
+	return "Which Team won Bowser's Tug o War."
+}
+
 func (b BowsersTugoWarEvent) Type() EventType {
 	return ENUM_EVT_TYPE
 }
@@ -266,6 +293,11 @@ func NewBowsersBashnCash(player, coins int) BowsersBashnCash {
 	}
 }
 
+func (b BowsersBashnCash) Question(g *Game) string {
+	return fmt.Sprintf("How many times did %s get hit?",
+		g.Players[b.Player].Char)
+}
+
 func (b BowsersBashnCash) ControllingPlayer() int {
 	return CPU_PLAYER
 }
@@ -311,6 +343,10 @@ var BCTResponses = []Response{
 	BCTResponse{2, 10},
 	BCTResponse{2, 20},
 	BCTResponse{2, 30},
+}
+
+func (b BowsersChanceTimeEvent) Question(g *Game) string {
+	return "What is the result of Bowser's Chance Time?"
 }
 
 func (b BowsersChanceTimeEvent) Type() EventType {

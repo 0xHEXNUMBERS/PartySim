@@ -23,12 +23,12 @@ func TestBMMFork(t *testing.T) {
 	g.NextEvent.Handle(1, &g)
 
 	gIgnore := g
-	gIgnore.NextEvent.Handle(false, &gIgnore) //Do not pay
+	gIgnore.NextEvent.Handle(BMMBranchPayIgnore, &gIgnore) //Do not pay
 	SpaceIs(mp1.NewChainSpace(1, 0), 0, gIgnore, "Ignore", t)
 	CoinsIs(13, 0, gIgnore, "Ignore", t)
 
 	gPay := g
-	gPay.NextEvent.Handle(true, &gPay)
+	gPay.NextEvent.Handle(BMMBranchPayPay, &gPay)
 
 	CoinsIs(0, 0, gPay, "Pay", t)
 	expectedRes := []mp1.Response{mp1.NewChainSpace(1, 0), mp1.NewChainSpace(2, 2)}
@@ -66,7 +66,7 @@ func TestBMMVolcano(t *testing.T) {
 	g.NextEvent.Handle(1, &g) //Move P2
 	g.NextEvent.Handle(1, &g) //Move P3
 
-	g.NextEvent.Handle(false, &g) //P0 is red
+	g.NextEvent.Handle(mp1.RedTeam, &g) //P0 is red
 	g.NextEvent.Handle(mp1.MinigameFFAMusicalMushroom, &g)
 	g.NextEvent.Handle(3, &g) //P3 wins
 
@@ -96,8 +96,8 @@ func TestHiddenBlockOnInvisibleSpace(t *testing.T) {
 	g.SetDiceBlock()
 
 	g.NextEvent.Handle(mp1.NormalDiceBlock{Player: 0}, &g)
-	g.NextEvent.Handle(1, &g)     //Move
-	g.NextEvent.Handle(false, &g) //No hidden block here
+	g.NextEvent.Handle(1, &g)                       //Move
+	g.NextEvent.Handle(mp1.HiddenBlockNotThere, &g) //No hidden block here
 
 	CoinsIs(13, 0, g, "Coins", t)
 }

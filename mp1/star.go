@@ -31,6 +31,10 @@ type StarLocationEvent struct {
 	Moves  int
 }
 
+func (s StarLocationEvent) Question(g *Game) string {
+	return "Which space did the star appear?"
+}
+
 func (s StarLocationEvent) Type() EventType {
 	return CHAINSPACE_EVT_TYPE
 }

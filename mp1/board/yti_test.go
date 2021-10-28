@@ -17,7 +17,7 @@ func TestCanPayThwomp(t *testing.T) {
 	g := *mp1.InitializeGame(YTI, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 23)
 	g.MovePlayer(0, 10)
-	EventIs(YTIThwompBranchEvent{mp1.Boolean{}, 0, 6, 1}, g.NextEvent, "", t)
+	EventIs(YTIThwompBranchEvent{0, 6, 1}, g.NextEvent, "", t)
 }
 
 func TestCanNotPayThwomp(t *testing.T) {
@@ -44,7 +44,7 @@ func TestPayThwompAndGainCoins(t *testing.T) {
 	//Move player to invisible space
 	g.MovePlayer(0, 10)
 	//Accept payment to thwomp 1
-	g.NextEvent.Handle(true, &g)
+	g.NextEvent.Handle(YTIThwompBranchPay, &g)
 	//Pay thwomp 3 coins, move and land on blue space
 	g.NextEvent.Handle(3, &g)
 	EventIs(mp1.NormalDiceBlock{
@@ -59,7 +59,7 @@ func TestIgnoreThwomp(t *testing.T) {
 	g := *mp1.InitializeGame(YTI, mp1.GameConfig{MaxTurns: 20})
 	g.Players[0].CurrentSpace = mp1.NewChainSpace(1, 23)
 	g.MovePlayer(0, 10)
-	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(YTIThwompBranchIgnore, &g)
 	EventIs(mp1.NormalDiceBlock{Range: mp1.Range{Min: 1, Max: 10}, Player: 1}, g.NextEvent, "", t)
 	SpaceIs(mp1.NewChainSpace(1, 5), 0, g, "", t)
 	CoinsIs(13, 0, g, "", t)
@@ -95,7 +95,7 @@ func TestMushroomSpace(t *testing.T) {
 
 	//Received red mushroom
 	gRed := g
-	gRed.NextEvent.Handle(true, &gRed)
+	gRed.NextEvent.Handle(mp1.RedMushroom, &gRed)
 	EventIs(mp1.NormalDiceBlock{
 		Range:  mp1.Range{Min: 1, Max: 10},
 		Player: 0,
@@ -103,7 +103,7 @@ func TestMushroomSpace(t *testing.T) {
 
 	//Received poison mushroom
 	gPoison := g
-	gPoison.NextEvent.Handle(false, &gPoison)
+	gPoison.NextEvent.Handle(mp1.PoisonMushroom, &gPoison)
 	EventIs(mp1.NormalDiceBlock{
 		Range:  mp1.Range{Min: 1, Max: 10},
 		Player: 1,
@@ -122,13 +122,13 @@ func TestSkipTurnViaMinigame(t *testing.T) {
 
 	//All players receive poison mushroom
 	g.NextEvent.Handle(4, &g)
-	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(mp1.PoisonMushroom, &g)
 	g.NextEvent.Handle(4, &g)
-	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(mp1.PoisonMushroom, &g)
 	g.NextEvent.Handle(4, &g)
-	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(mp1.PoisonMushroom, &g)
 	g.NextEvent.Handle(4, &g)
-	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(mp1.PoisonMushroom, &g)
 
 	//Perform FFA Minigame
 	g.NextEvent.Handle(mp1.MinigameFFAMusicalMushroom, &g)
@@ -163,7 +163,7 @@ func TestSkipTurnViaCharacterTurn(t *testing.T) {
 
 	//Player 2 fails mushroom check
 	g.NextEvent.Handle(4, &g)
-	g.NextEvent.Handle(false, &g)
+	g.NextEvent.Handle(mp1.PoisonMushroom, &g)
 
 	//Player 3 moves to blue space
 	g.NextEvent.Handle(1, &g)

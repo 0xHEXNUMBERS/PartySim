@@ -93,6 +93,10 @@ func (c ChanceTimeResponse) String() string {
 	}
 }
 
+func (c ChanceTime) Question(g *Game) string {
+	return "What die was set and what did it land on?"
+}
+
 func (c ChanceTime) Type() EventType {
 	return ENUM_EVT_TYPE
 }

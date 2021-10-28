@@ -12,12 +12,12 @@ func TestWhompPayment(t *testing.T) {
 	g.NextEvent.Handle(5, &g)                       //Move
 
 	gPay := g
-	gPay.NextEvent.Handle(true, &gPay) //Pay Whomp
+	gPay.NextEvent.Handle(DKJAWhompPay, &gPay) //Pay Whomp
 	SpaceIs(mp1.NewChainSpace(4, 0), 0, gPay, "Pay", t)
 	CoinsIs(3, 0, gPay, "Pay", t)
 
 	gSkip := g
-	gSkip.NextEvent.Handle(false, &gSkip) //Ignore Whomp
+	gSkip.NextEvent.Handle(DKJAWhompIgnore, &gSkip) //Ignore Whomp
 	SpaceIs(mp1.NewChainSpace(1, 0), 0, gSkip, "Skip", t)
 	CoinsIs(13, 0, gSkip, "Skip", t)
 
@@ -35,14 +35,14 @@ func TestCoinBlockade(t *testing.T) {
 	g.NextEvent.Handle(mp1.NewChainSpace(0, 7), &g) //Star
 
 	gPass := g
-	gPass.NextEvent.Handle(1, &gPass)    //Move
-	gPass.NextEvent.Handle(true, &gPass) //Pass
+	gPass.NextEvent.Handle(1, &gPass)                       //Move
+	gPass.NextEvent.Handle(mp1.NewChainSpace(2, 0), &gPass) //Pass
 	SpaceIs(mp1.NewChainSpace(2, 0), 0, gPass, "Pass", t)
 	CoinsIs(23, 0, gPass, "Pass", t)
 
 	gSkip := g
-	gSkip.NextEvent.Handle(1, &gSkip)     //Move
-	gSkip.NextEvent.Handle(false, &gSkip) //Skip
+	gSkip.NextEvent.Handle(1, &gSkip)                       //Move
+	gSkip.NextEvent.Handle(mp1.NewChainSpace(3, 0), &gSkip) //Skip
 	SpaceIs(mp1.NewChainSpace(3, 0), 0, gSkip, "Skip", t)
 	CoinsIs(23, 0, gSkip, "Skip", t)
 

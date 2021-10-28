@@ -105,8 +105,8 @@ func TestSwapGatesTwice(t *testing.T) {
 	g.Players[0].Coins = 20
 	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g) //Star
 
-	g.NextEvent.Handle(1, &g)    //Move
-	g.NextEvent.Handle(true, &g) //Swap Gates
+	g.NextEvent.Handle(1, &g)           //Move
+	g.NextEvent.Handle(LERRobotPay, &g) //Swap Gates
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
 		t.Errorf("Gates did not swap twice")

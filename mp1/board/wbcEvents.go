@@ -93,6 +93,11 @@ var wbcCannonDestinations = []mp1.Response{
 	mp1.NewChainSpace(4, 6),
 }
 
+func (w WBCCannon) Question(g *mp1.Game) string {
+	return fmt.Sprintf("What space did %s land on?",
+		g.Players[w.Player].Char)
+}
+
 func (w WBCCannon) Type() mp1.EventType {
 	return mp1.CHAINSPACE_EVT_TYPE
 }
@@ -118,6 +123,11 @@ func (w WBCCannon) Handle(r mp1.Response, g *mp1.Game) {
 type WBCBowserCannon struct {
 	Player int
 	Moves  int
+}
+
+func (w WBCBowserCannon) Question(g *mp1.Game) string {
+	return fmt.Sprintf("Which space did %s land on?",
+		g.Players[w.Player].Char)
 }
 
 func (w WBCBowserCannon) Type() mp1.EventType {
@@ -207,6 +217,11 @@ var wbcShyGuyResponses = [4][]mp1.Response{
 		WBCShyGuyResponse{WBCBringPlayer, 1},
 		WBCShyGuyResponse{WBCBringPlayer, 2},
 	},
+}
+
+func (w WBCShyGuyEvent) Question(g *mp1.Game) string {
+	return fmt.Sprintf("What does %s do with the Shy Guy?",
+		g.Players[w.Player].Char)
 }
 
 func (w WBCShyGuyEvent) Type() mp1.EventType {
