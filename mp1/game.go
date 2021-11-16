@@ -216,6 +216,7 @@ func (g *Game) MovePlayer(playerIdx, moves int) {
 	for moves > 0 {
 		playerPos.Space++
 		if playerPos.Space >= len(chains[playerPos.Chain]) {
+			playerPos.Space--
 			if g.CheckLinks(playerIdx, playerPos.Chain, moves) {
 				return
 			}
