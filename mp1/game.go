@@ -28,7 +28,10 @@ type Game struct {
 
 //Responses returns the valid responses for the next event.
 func (g *Game) Responses() []Response {
-	return g.NextEvent.Responses()
+	if g.NextEvent != nil {
+		return g.NextEvent.Responses()
+	}
+	return nil
 }
 
 //HandleEvent executes the next event using the given Response r.
