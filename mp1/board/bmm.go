@@ -21,7 +21,9 @@ func bmmEruptVolcano(g *mp1.Game, player int) {
 
 //bmmCharacterEndTurn decrements the turn counter at the end of each
 //character's turn, swapping all *red* spaces back to *blue* spaces.
-func bmmCharacterEndTurn(g *mp1.Game, player int) {
+type bmmCharacterEndTurn struct{}
+
+func (_ bmmCharacterEndTurn) EndCharacterTurn(g *mp1.Game, player int) {
 	bd := g.Board.Data.(bmmBoardData)
 	if bd.MagmaActive {
 		bd.MagmaTurnCount--
@@ -176,7 +178,7 @@ var BMM = mp1.Board{
 		4: {mp1.NewChainSpace(0, 0)},
 		5: {mp1.NewChainSpace(0, 0)},
 	},
-	BowserCoins:           0,
-	Data:                  bmmBoardData{},
-	EndCharacterTurnEvent: bmmCharacterEndTurn,
+	BowserCoins:      0,
+	Data:             bmmBoardData{},
+	EndCharacterTurn: bmmCharacterEndTurn{},
 }

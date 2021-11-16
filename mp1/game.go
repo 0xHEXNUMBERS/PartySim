@@ -376,8 +376,8 @@ func (g *Game) StartMinigamePrep() {
 //poison mushroom, Starting minigame preparation if player 3 just
 //finished, and calling the board's specifc end of turn event.
 func (g *Game) EndCharacterTurn() {
-	if g.Board.EndCharacterTurnEvent != nil {
-		g.Board.EndCharacterTurnEvent(g, g.CurrentPlayer)
+	if g.Board.EndCharacterTurn != nil {
+		g.Board.EndCharacterTurn.EndCharacterTurn(g, g.CurrentPlayer)
 	}
 	g.CurrentPlayer = (g.CurrentPlayer + 1) % 4
 	if g.CurrentPlayer == 0 {

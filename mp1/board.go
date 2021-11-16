@@ -55,9 +55,14 @@ func NewChainSpace(chain, space int) ChainSpace {
 //specific function calls may manipulate this data.
 type ExtraBoardData interface{}
 
+//EndCharacterTurnEvent is used anytime a player's turn is over.
+type EndCharacterTurnEvent interface {
+	EndCharacterTurn(game *Game, player int)
+}
+
 //Board holds all data specifc to an MP1 board.
 type Board struct {
-	//Chains is a list  of chains on the board.
+	//Chains is a list of chains on the board.
 	Chains *[]Chain
 
 	//Links is a linking between the end of each chain to the
@@ -71,7 +76,12 @@ type Board struct {
 	//Data holds the board specific data.
 	Data ExtraBoardData
 
-	//EndCharacterTurnEvent is a function that gets called at the end
-	//of every player's turn.
-	EndCharacterTurnEvent func(game *Game, player int)
+	//EndCharacterTurn is a function that gets called at the end
+	//of every player's turn. If EndCharacterTurn is nil, the function
+	//is not called.
+	//This function should only mutate the game state with relevance to
+	//board events. The example used in this module (in board/bmm.go)
+	//decrements a counter at the end of each player turn to determine
+	//what space types are available on the board.
+	EndCharacterTurn EndCharacterTurnEvent
 }
