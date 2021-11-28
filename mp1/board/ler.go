@@ -7,14 +7,24 @@ type lerBoardData struct {
 	BlueUp bool
 }
 
+type lerEndCharacterTurn struct{}
+
+func (_ lerEndCharacterTurn) EndCharacterTurn(g *mp1.Game, player int) {
+	if player == 3 { //If end of turn before minigame
+		data := g.Board.Data.(lerBoardData)
+		data.BlueUp = !data.BlueUp
+		g.Board.Data = data
+	}
+}
+
 //lerRBRFork handles the 3-way fork on the board.
 func lerRBRFork(g *mp1.Game, player, moves int) int {
 	bd := g.Board.Data.(lerBoardData)
 	if bd.BlueUp {
 		g.NextEvent = mp1.BranchEvent{
-			player,
-			moves,
-			&[]mp1.ChainSpace{
+			Player: player,
+			Moves:  moves,
+			Links: &[]mp1.ChainSpace{
 				mp1.NewChainSpace(3, 0),
 				mp1.NewChainSpace(11, 0),
 			},
@@ -217,6 +227,7 @@ var LER = mp1.Board{
 		10: {mp1.NewChainSpace(0, 0)},
 		11: {mp1.NewChainSpace(9, 7)},
 	},
-	BowserCoins: 19,
-	Data:        lerBoardData{},
+	BowserCoins:      19,
+	Data:             lerBoardData{},
+	EndCharacterTurn: lerEndCharacterTurn{},
 }

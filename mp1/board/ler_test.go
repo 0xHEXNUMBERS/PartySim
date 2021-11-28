@@ -134,3 +134,18 @@ func TestNormalBranch(t *testing.T) {
 
 	SpaceIs(mp1.NewChainSpace(1, 0), 0, g, "", t)
 }
+
+func TestSwitchGatesOnEOT(t *testing.T) {
+	g := *mp1.InitializeGame(LER, mp1.GameConfig{MaxTurns: 20})
+	g.NextEvent.Handle(mp1.NewChainSpace(3, 2), &g)
+
+	g.NextEvent.Handle(1, &g) //Move player 1
+	g.NextEvent.Handle(1, &g) //Move player 2
+	g.NextEvent.Handle(1, &g) //Move player 3
+	g.NextEvent.Handle(1, &g) //Move player 4
+
+	bd := g.Board.Data.(lerBoardData)
+	if !bd.BlueUp {
+		t.Errorf("Gates did not swap")
+	}
+}
