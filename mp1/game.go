@@ -146,7 +146,7 @@ func (g *Game) CheckLinks(player, chain, moves int) (branch bool) {
 		default:
 			g.NextEvent = BranchEvent{
 				player,
-				moves - 1,
+				moves,
 				linksPtr,
 			}
 			return true
